@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 ENT.Type                     = "anim"
 ENT.Base                     = "base_entity"
-ENT.RenderGroup              = RENDERGROUP_TRANSLUCENT
+ENT.RenderGroup              = RENDERGROUP_OPAQUE
 
 ENT.PrintName                = "Frag Grenade (Ammo)"
 ENT.Category                 = "Tactical RP"

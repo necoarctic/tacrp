@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 ENT.Type                     = "anim"
 ENT.Base                     = "base_entity"
-ENT.RenderGroup              = RENDERGROUP_TRANSLUCENT
+ENT.RenderGroup              = RENDERGROUP_OPAQUE
 
 ENT.PrintName                = "Attachment"
 ENT.Category                 = "Tactical Intervention - Attachments"
@@ -112,8 +112,13 @@ elseif CLIENT then
         cam.End3D2D()
     end
 
-    function ENT:Draw()
-        self:DrawModel()
+    function ENT:Draw(flags)
+        local isDepthPass = ( bit.band( flags, STUDIO_SSAODEPTHTEXTURE ) != 0 || bit.band( flags, STUDIO_SHADOWDEPTHTEXTURE ) != 0 )
+        
+        self:DrawModel(flags)
+
+        if isDepthPass then return end
+        
         local distsqr = (EyePos() - self:WorldSpaceCenter()):LengthSqr()
         if distsqr <= 262144 then -- 512^2
             local a = math.Clamp(1 - (distsqr - 196608) / 65536, 0, 1)

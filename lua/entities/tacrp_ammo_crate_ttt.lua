@@ -240,8 +240,8 @@ elseif CLIENT then
         self:Draw()
     end
 
-    function ENT:Draw()
-        self:DrawModel()
+    function ENT:Draw(flags)
+        self:DrawModel(flags)
     end
 
 end

@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 ENT.Type                     = "anim"
 ENT.Base                     = "base_entity"
-ENT.RenderGroup              = RENDERGROUP_TRANSLUCENT
+ENT.RenderGroup              = RENDERGROUP_OPAQUE
 
 ENT.PrintName                = "Ammo Pickup"
 ENT.Category                 = "Tactical RP"
@@ -166,8 +166,8 @@ elseif CLIENT then
         self:Draw()
     end
 
-    function ENT:Draw()
-        self:DrawModel()
+    function ENT:Draw(flags)
+        self:DrawModel(flags)
     end
 
 end
