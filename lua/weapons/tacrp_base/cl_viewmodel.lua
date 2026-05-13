@@ -207,7 +207,7 @@ end
 
 function SWEP:PreDrawViewModel()
     if self:GetValue("ScopeHideWeapon") and self:IsInScope() then
-        render.SetBlend(0)
+        render.OverrideColorWriteEnable(true, false)
     end
 
     // Set shell color on viewmodel for matproxy
@@ -235,7 +235,7 @@ function SWEP:PostDrawViewModel(viewmodel, player, weapon, flags)
     cam.IgnoreZ(false)
 
     if self:GetValue("ScopeHideWeapon") and self:IsInScope() then
-        render.SetBlend(1)
+        render.OverrideColorWriteEnable(false, false)
     end
 
     local isDepthPass = ( bit.band( flags, STUDIO_SSAODEPTHTEXTURE ) != 0 || bit.band( flags, STUDIO_SHADOWDEPTHTEXTURE ) != 0 )
