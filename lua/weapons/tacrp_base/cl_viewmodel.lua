@@ -1,11 +1,11 @@
 function SWEP:ViewModelDrawn(ViewModel, flags)
+    local isDepthPass = ( bit.band( flags, STUDIO_SSAODEPTHTEXTURE ) != 0 || bit.band( flags, STUDIO_SHADOWDEPTHTEXTURE ) != 0 )
+    
     if IsValid(self.QuickNadeModel) then
         self.QuickNadeModel:DrawModel()
     end
 
-    self:DrawCustomModel(false)
-
-    local isDepthPass = ( bit.band( flags, STUDIO_SSAODEPTHTEXTURE ) != 0 || bit.band( flags, STUDIO_SHADOWDEPTHTEXTURE ) != 0 )
+    self:DrawCustomModel(false, false, isDepthPass)
     
     if ( isDepthPass ) then return end
     
@@ -24,7 +24,7 @@ function SWEP:ViewModelDrawn(ViewModel, flags)
     self.ActiveEffects = newactiveeffects
 end
 
-function SWEP:DrawCustomModel(wm, custom_wm)
+function SWEP:DrawCustomModel(wm, custom_wm, isDepthPass)
 
     if !wm and !IsValid(self:GetOwner()) then return end
     if !wm and self:GetOwner():IsNPC() then return end
@@ -187,7 +187,7 @@ function SWEP:DrawCustomModel(wm, custom_wm)
         model:SetRenderOrigin(apos)
         model:SetRenderAngles(aang)
 
-        if model.IsHolosight and !wm then
+        if model.IsHolosight and !wm and !isDepthPass then
             cam.Start3D(EyePos(), EyeAngles(), self.ViewModelFOV, 0, 0, nil, nil, 1, 10000)
             render.DepthRange(0.0, 0.1)
             self:DoHolosight(model)
