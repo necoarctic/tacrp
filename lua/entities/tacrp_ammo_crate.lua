@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 ENT.Type                     = "anim"
 ENT.Base                     = "tacrp_ammo"
-ENT.RenderGroup              = RENDERGROUP_TRANSLUCENT
+ENT.RenderGroup              = RENDERGROUP_OPAQUE
 
 ENT.PrintName                = "Ammo Crate"
 ENT.Category                 = "Tactical RP"
