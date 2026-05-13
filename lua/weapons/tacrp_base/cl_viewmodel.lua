@@ -1,9 +1,14 @@
-function SWEP:ViewModelDrawn()
+function SWEP:ViewModelDrawn(ViewModel, flags)
     if IsValid(self.QuickNadeModel) then
         self.QuickNadeModel:DrawModel()
     end
 
     self:DrawCustomModel(false)
+
+    local isDepthPass = ( bit.band( flags, STUDIO_SSAODEPTHTEXTURE ) != 0 || bit.band( flags, STUDIO_SHADOWDEPTHTEXTURE ) != 0 )
+    
+    if ( isDepthPass ) then return end
+    
     self:DrawLasers()
 
     local newactiveeffects = {}
