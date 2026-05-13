@@ -226,12 +226,15 @@ function SWEP:PreDrawViewModel()
     render.DepthRange(0.0, 0.1)
 end
 
-function SWEP:PostDrawViewModel()
+function SWEP:PostDrawViewModel(viewmodel, player, weapon, flags)
     cam.IgnoreZ(false)
 
     if self:GetValue("ScopeHideWeapon") and self:IsInScope() then
         render.SetBlend(1)
     end
+
+    local isDepthPass = ( bit.band( flags, STUDIO_SSAODEPTHTEXTURE ) != 0 || bit.band( flags, STUDIO_SHADOWDEPTHTEXTURE ) != 0 )
+    if isDepthPass then return end
 
     cam.Start3D()
         cam.IgnoreZ(false)
