@@ -1385,6 +1385,7 @@ Not dead, just pining for the fjords.
 <li><b>Fixed:</b> Depth buffer issues causing incompatibility with GShader (contributed by Evgeny Akabenko).
 <li><b>Fixed:</b> Smoke visual blocking effect persisting after smoke dissipates (probably?).
 <li><b>Fixed:</b> Double deploy issue when releasing held props.
+<li><b>Fixed:</b> TTT error on roundstart caused by quicknade ammo (probably?)
 </ul>
 ]]
     },
