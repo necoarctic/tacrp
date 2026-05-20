@@ -1378,6 +1378,7 @@ Not dead, just pining for the fjords.
 <li><b>Added:</b> Partial Russian localization (contributed by Flarky55).
 <li><b>Added:</b> 40mm Baseball Grenades.
 <li><b>Added:</b> Spread multiplier convars.
+<li><b>Added:</b> Updated localization files (yes, really).
 <li><b>Rebalance:</b> Melee projectile velocity now scales off Brawn instead of Strategy.
 <li><b>Rebalance:</b> Adjusted Strategy recharge scaling.
 <li><b>Rebalance:</b> Baseball projectile reflects towards owner when impacting a player, NPC or nextbot.
@@ -1386,6 +1387,7 @@ Not dead, just pining for the fjords.
 <li><b>Fixed:</b> Smoke visual blocking effect persisting after smoke dissipates (probably?).
 <li><b>Fixed:</b> Double deploy issue when releasing held props.
 <li><b>Fixed:</b> TTT error on roundstart caused by quicknade ammo (probably?)
+
 </ul>
 ]]
     },
