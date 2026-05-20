@@ -1366,7 +1366,7 @@ The fourth major expansion, featuring 42 weapons themed around zombies, the apoc
     {
         Title = "Update 35",
         Type = "Patch Notes",
-        Date = "2026-05-13",
+        Date = "2026-05-20",
         Author = "8Z",
         Major = false,
         Summary = "Huh.",
