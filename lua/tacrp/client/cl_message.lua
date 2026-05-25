@@ -153,7 +153,7 @@ hook.Add("InitPostEntity", "hitGeoMsg", function()
                 local org = orgs[code] or orgs.DEFAULT
 
                 sayMsg(
-					"LGBTQ+ rights matter in " .. country .. ", and TacRP is made by queers!",
+					"TacRP is made by queer folk! Support LGBTQ+ rights in " .. country .. "!",
 					"Regional support/info: " .. org[1],
                     org[2]
                 )
