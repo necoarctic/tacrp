@@ -99,11 +99,7 @@ function SWEP:Idle()
                 self:PlayAnimation("idle")
             end
         else
-            if leftEmpty then
-                self:PlayAnimation("dryfire", 0, false, false)
-            else
-                self:PlayAnimation("idle")
-            end
+            self:PlayAnimation("idle")
         end
     end
 
