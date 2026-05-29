@@ -1407,6 +1407,22 @@ It's not that dramatic.
 </ul>
 ]]
     },
+    {
+        Title = "Update 36 Patch",
+        Type = "Patch Notes",
+        Date = "2026-05-29",
+        Author = "8Z",
+        Major = false,
+        Summary = "",
+        Contents = [[<body style="font-family:'Myriad Pro';color:white;font-size:125%;">
+<h3>Changelist</h3>
+<ul>
+<li><b>Fixed:</b> Localization not occurring for attachment entities.
+<li><b>Fixed:</b> (Scavenger's Spoils) Mad Minute bolt localization.
+<li><b>Rebalanced:</b> (Scavenger's Spoils) SMLE and Mad Minute bolt stats.
+</ul>
+]],
+    },
 }
 TacRP.NewsRead = TacRP.NewsRead or {}
 TacRP.NewsFirstLoad = false
