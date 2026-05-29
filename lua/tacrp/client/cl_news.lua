@@ -1397,34 +1397,14 @@ Not dead, just pining for the fjords.
         Date = "2026-05-28",
         Author = "8Z",
         Major = false,
-        Summary = "",
+        Summary = "From the ashes...",
         Contents = [[<body style="font-family:'Myriad Pro';color:white;font-size:125%;">
+It's not that dramatic.
 <h3>Changelist:</h3>
 <ul>
 <li><b>Added:</b> (Base) LAR Grizzly, Security grade magnum pistol.
 <li><b>Removed:</b> Self-shoot feature (for Workshop policy reasons).
 </ul>
-]]
-    },
-    {
-        Title = "Reupload Notice and Clarification",
-        Type = "Important News",
-        Date = "2026-05-28",
-        Author = "8Z",
-        Major = true,
-        Summary = "",
-        Contents = [[<body style="font-family:'Myriad Pro';color:white;font-size:125%;">
-<p>The original upload of TacRP was taken down by Steam due to content depicting self-harm, as part of recent Steam guidelines not in place when the self-shooting feature was added. We were not aware of this, but Steam Support did not allow us the opportunity to modify and restore the original addon. We apologize for the inconvenience.</p>
-
-<p>Prior to this takedown, a TacRP contributor added a message urging users to support LGBTQ rights in their country, utilizing a reputable third-party API for the sole purpose of displaying the user's country as part of the message. This data is never stored or transmitted. Claims of TacRP gathering personal information or tracking users are untrue.</p>
-
-<p><b>TacRP is made by a diverse group of LGBTQ creators.</b> We hoped that the people who enjoyed our work would recongize the prejudice and oppression that threaten queer people like us. It is saddening to see an outpour of vitriol in response to such a simple plea. For many users, even acknowleding our identity and humanity was too much to ask for.</p>
-
-<p>In spite of this, we have decided to reupload and continue maintaining TacRP. Some TacRP addons are also being reuploaded to consolidate the items under one user.</p>
-
-<p><b>We urge you to report unauthorized reuploads of TacRP</b>, as they are in violation of Workshop guidelines and still contain self-harm content.</p>
-
-<p>We appreciate those who support our right to exist and live as equals. We will not be so easily erased.</p>
 ]]
     },
 }
