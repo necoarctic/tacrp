@@ -110,9 +110,12 @@ function SWEP:GetHintCapabilities()
                 self.CachedCapabilities["+zoom/+moveleft"] = {so = 39.1, str = "hint.blindfire.left"}
                 self.CachedCapabilities["+zoom/+moveright"] = {so = 39.2, str = "hint.blindfire.right"}
                 self.CachedCapabilities["+zoom/+back"] = {so = 39.3, str = "hint.blindfire.cancel"}
+                --[[
+                -- Disabled for Workshop policy compliance
                 if !TacRP.ConVars["idunwannadie"]:GetBool() then
                     self.CachedCapabilities["+zoom/+speed/+walk"] = {so = 39.4, str = "hint.blindfire.kys"}
                 end
+                ]]
                 return self.CachedCapabilities
             else
                 self.CachedCapabilities["+zoom"] = {so = 39, str = "hint.blindfire"}

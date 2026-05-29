@@ -471,6 +471,24 @@ function SWEP:Func_ClipSize(modifiers)
     modifiers.add = modifiers.add - math.floor(totalAdd / 2)
 end
 
+function SWEP:Func_Spread(modifiers)
+    // DualAkimbo weapons can't ADS; their base Spread IS their hipfire spread,
+    // so route it through the hipfire multiplier instead of the ADS one.
+    if self:GetBaseValue("DualAkimbo") then
+        modifiers.mul = modifiers.mul * TacRP.ConVars["mult_spread_hip"]:GetFloat()
+    else
+        modifiers.mul = modifiers.mul * TacRP.ConVars["mult_spread_ads"]:GetFloat()
+    end
+end
+
+function SWEP:Func_HipFireSpreadPenalty(modifiers)
+    modifiers.mul = modifiers.mul * TacRP.ConVars["mult_spread_hip"]:GetFloat()
+end
+
+function SWEP:Func_ShotgunPelletSpread(modifiers)
+    modifiers.mul = modifiers.mul * TacRP.ConVars["mult_spread_shotgun"]:GetFloat()
+end
+
 function SWEP:Func_ClipSize2(modifiers)
     if !self.DualAkimbo then return end
     // ClipSize2 gets the same bonuses as ClipSize would get
@@ -656,6 +674,7 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Bool", 16, "LastWasSprinting")
     self:NetworkVar("Bool", 17, "EmptyReload")
     self:NetworkVar("Bool", 18, "LastFiredRight") // For DualAkimbo tracer origin prediction
+    self:NetworkVar("Bool", 19, "OBANextRight") // One-Button Akimbo alternating state (semi/burst)
 
     self:NetworkVar("Angle", 0, "FreeAimAngle")
     self:NetworkVar("Angle", 1, "LastAimAngle")
@@ -687,9 +706,20 @@ function SWEP:OnDrop(owner)
     self:SetReady(false)
 end
 
+function SWEP:IsOneButtonAkimbo()
+    if !self:GetValue("DualAkimbo") then return false end
+    local owner = self:GetOwner()
+    return TacRP.ConVars["onebutton_akimbo"]:GetBool() or owner:GetInfoNum("tacrp_onebutton_akimbo_client", 0) != 0
+end
+
 function SWEP:SecondaryAttack()
-    if self:GetValue("DualAkimbo") then
+    if self:GetValue("DualAkimbo") and !self:IsOneButtonAkimbo() then
         self:SecondaryShoot()
+        return
+    end
+    if self:IsOneButtonAkimbo() and self:GetValue("CanMeleeAttack") then
+        self:SetSafe(false)
+        self:Melee()
         return
     end
     self:RunHook("Hook_SecondaryAttack")

@@ -23,7 +23,7 @@ function SWEP:DrawWorldModel(flags)
 end
 
 hook.Add("PostDrawTranslucentRenderables", "TacRP_TranslucentDraw", function()
-    for _, ply in pairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         local wep = ply:GetActiveWeapon()
         if ply != LocalPlayer() and IsValid(wep) and wep.ArcticTacRP then
             wep:DrawLasers(true)

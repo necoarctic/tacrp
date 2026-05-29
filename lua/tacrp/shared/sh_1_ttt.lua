@@ -211,7 +211,7 @@ hook.Add("TTTPrepareRound", "TacRP_TTT", function()
     local give = TacRP.ConVars["ttt_atts_giveonspawn"]:GetInt()
     if give <= 0 then return end
 
-    for _, ply in pairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         ply.TacRP_AttInv = {}
         for i = 1, give do
             local id

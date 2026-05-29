@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 ENT.Type                     = "anim"
 ENT.Base                     = "base_entity"
-ENT.RenderGroup              = RENDERGROUP_TRANSLUCENT
+ENT.RenderGroup              = RENDERGROUP_OPAQUE
 
 ENT.PrintName                = "Base Projectile"
 ENT.Category                 = ""
@@ -583,10 +583,13 @@ end
 
 local mat = Material("effects/ar2_altfire1b")
 
-function ENT:Draw()
+function ENT:Draw(flags)
     if self:GetOwner() == LocalPlayer() and (self.SpawnTime + 0.05) > CurTime() then return end
 
-    self:DrawModel()
+    self:DrawModel(flags)
+
+    local isDepthPass = ( bit.band( flags, STUDIO_SSAODEPTHTEXTURE ) != 0 || bit.band( flags, STUDIO_SHADOWDEPTHTEXTURE ) != 0 )
+    if isDepthPass then return end
 
     if self.FlareColor then
         local mult = self.SafetyFuse and math.Clamp((CurTime() - (self.SpawnTime + self.SafetyFuse)) / self.SafetyFuse, 0.1, 1) or 1

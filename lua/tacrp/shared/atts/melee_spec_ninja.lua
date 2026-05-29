@@ -1,6 +1,6 @@
-ATT.PrintName = "Ninja"
+ATT.PrintName = "att.melee_spec_ninja.name"
 ATT.Icon = Material("entities/tacrp_att_melee_spec_ninja.png", "mips smooth")
-ATT.Description = "Disrupt your enemies and strike with the element of surprise."
+ATT.Description = "att.melee_spec_ninja.desc"
 ATT.Pros = { "att.pro.melee_spec_ninja1", "att.pro.melee_spec_ninja2", "att.pro.melee_spec_ninja3", "att.pro.melee_spec_ninja4" }
 
 ATT.Category = {"melee_spec"}
@@ -59,7 +59,7 @@ ATT.Hook_PreReload = function(wep)
     local ply = wep:GetOwner()
     if !ply:KeyPressed(IN_RELOAD) then return end
 
-    if ply:IsOnGround() and ply:Crouching() then
+    if ply:IsOnGround() and ply:IsFlagSet(4) then
         if ply:GetNWFloat("TacRPDiveTime", 0) + 1 > CurTime() or getcharge(wep) < cost * 1.5 then return true end
         --[[]
         if ply:GetNWFloat("TacRPNinjaSmoke", 0) <= CurTime() and SERVER then
@@ -82,7 +82,7 @@ ATT.Hook_PreReload = function(wep)
             ply:SetVelocity(ang:Forward() * -math.max(100, 400 + 400 * wep:GetValue("MeleePerkAgi") - ply:GetVelocity():Length()))
         end
         ply:SetNWFloat("TacRPDiveTime", CurTime())
-    elseif !ply:IsOnGround() and ply:Crouching() then
+    elseif !ply:IsOnGround() and ply:IsFlagSet(4) then
         if ply:GetMoveType() != MOVETYPE_NOCLIP and !ply:GetNWBool("TacRPNinjaDive") and ply:GetNWFloat("TacRPDiveTime", 0) + 0.5 < CurTime() and ply:EyeAngles():Forward():Dot(Vector(0, 0, 1)) < -0.25 then
             ply:SetNWBool("TacRPNinjaDive", true)
             ply:SetNWFloat("TacRPDiveTime", CurTime())

@@ -1,3 +1,4 @@
 *.cmd
 *.code-workspace
 .vscode
+.claude

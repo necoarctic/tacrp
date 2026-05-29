@@ -61,7 +61,6 @@ spawnmenu.AddContentType("tacrp_weapon", function(container, obj)
         SWEPinfo = list.Get("Weapon")[obj.spawnname]
     end
 
-
     if SWEPinfo then
         toolTip = toolTip .. "\n"
 

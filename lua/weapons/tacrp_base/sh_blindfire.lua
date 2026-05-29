@@ -219,6 +219,12 @@ function SWEP:SetBlindFireMode(mode)
         print("[TacRP] WARNING! Trying to set invalid blindfire mode: " .. tostring(mode))
         mode = 0
     end
+
+    -- Disabled for Workshop policy compliance
+    if mode == TacRP.BLINDFIRE_KYS then
+        mode = 0
+    end
+
     self:SetBlindFire(bfmode[mode][1])
     self:SetBlindFireLeft(bfmode[mode][2])
     self:SetBlindFireRight(bfmode[mode][3])
@@ -274,8 +280,9 @@ function SWEP:ThinkBlindFire()
             self:ToggleBlindFire(TacRP.BLINDFIRE_LEFT)
         elseif self:GetOwner():KeyDown(IN_MOVERIGHT) and !self:GetOwner():KeyDown(IN_MOVELEFT)  then
             self:ToggleBlindFire(TacRP.BLINDFIRE_RIGHT)
-        elseif self:GetOwner():KeyDown(IN_SPEED) and self:GetOwner():KeyDown(IN_WALK) and !tobool(self:GetOwner():GetInfo("tacrp_idunwannadie")) then
-            self:ToggleBlindFire(TacRP.BLINDFIRE_KYS)
+        -- Disabled for Workshop policy compliance
+        --elseif self:GetOwner():KeyDown(IN_SPEED) and self:GetOwner():KeyDown(IN_WALK) and !tobool(self:GetOwner():GetInfo("tacrp_idunwannadie")) then
+        --    self:ToggleBlindFire(TacRP.BLINDFIRE_KYS)
         elseif self:GetOwner():KeyDown(IN_BACK) then
             self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
         end

@@ -309,7 +309,7 @@ function SWEP:SetBaseSettings()
 
     if self.PrimaryGrenade then
         self.Primary.ClipSize = -1
-        self.Primary.Ammo = TacRP.QuickNades[self.PrimaryGrenade].Ammo or ""
+        self.Primary.Ammo = TacRP.QuickNades[self.PrimaryGrenade] and TacRP.QuickNades[self.PrimaryGrenade].Ammo or ""
         self.Primary.DefaultClip = 1
     else
         self.Primary.ClipSize = self:GetCapacity()

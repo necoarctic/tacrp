@@ -32,8 +32,14 @@ function SWEP:DoDrawCrosshair(x, y)
 
     local dir = self:GetShootDir(true)
 
+    local tr = util.TraceLine({
+        start = self:GetMuzzleOrigin(),
+        endpos = self:GetMuzzleOrigin() + (dir:Forward() * 50000),
+        mask = MASK_SHOT,
+        filter = self:GetOwner()
+    })
     cam.Start3D()
-        local w2s = (EyePos() + dir:Forward()):ToScreen() -- we can lie a little bit
+        local w2s = tr.HitPos:ToScreen()
         x = math.Round(w2s.x)
         y = math.Round(w2s.y)
     cam.End3D()
@@ -107,12 +113,6 @@ function SWEP:DoDrawCrosshair(x, y)
     -- Developer Crosshair
     if dev then
 
-        local tr = util.TraceLine({
-            start = self:GetMuzzleOrigin(),
-            endpos = self:GetMuzzleOrigin() + (dir:Forward() * 50000),
-            mask = MASK_SHOT,
-            filter = self:GetOwner()
-        })
         if self:StillWaiting() then
             surface.SetDrawColor(150, 150, 150, 75)
         else
@@ -1053,7 +1053,7 @@ function SWEP:CustomAmmoDisplay()
     self.AmmoDisplay.Draw = true
 
     if TacRP.IsGrenadeInfiniteAmmo(self:GetGrenadeIndex()) then
-        self.AmmoDisplay.SecondaryAmmo = 99
+        self.AmmoDisplay.SecondaryAmmo = -1
     end
 
     if self.Primary.ClipSize <= 0 and self.Primary.Ammo != "" then
@@ -1062,15 +1062,24 @@ function SWEP:CustomAmmoDisplay()
             self.AmmoDisplay.PrimaryClip = -1
             self.AmmoDisplay.PrimaryAmmo = -1
         else
-            self.AmmoDisplay.PrimaryClip = self:Ammo1()
+            self.AmmoDisplay.PrimaryClip = self:GetInfiniteAmmo() and -1 or self:Ammo1()
             self.AmmoDisplay.PrimaryAmmo = -1
         end
     elseif self.Primary.ClipSize <= 0 then
         self.AmmoDisplay.PrimaryClip = -1
     else
         self.AmmoDisplay.PrimaryClip = self:Clip1()
-        self.AmmoDisplay.PrimaryAmmo = self:GetInfiniteAmmo() and 9999 or self:Ammo1()
+        self.AmmoDisplay.PrimaryAmmo = self:GetInfiniteAmmo() and -1 or self:Ammo1()
     end
+
+    if self:GetValue("DualAkimbo") then
+        if self.Primary.ClipSize <= 0 then
+            self.AmmoDisplay.SecondaryAmmo = -1
+        else
+            self.AmmoDisplay.SecondaryAmmo = self:Clip2()
+        end
+    end
+
     return self.AmmoDisplay
 end
 

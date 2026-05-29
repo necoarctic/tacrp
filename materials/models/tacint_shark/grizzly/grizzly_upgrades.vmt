@@ -1,0 +1,28 @@
+VertexLitGeneric
+{
+	$basetexture "models\tacint_shark\grizzly/grizzly_upgrades_2D_View"
+	$bumpmap "models\tacint_shark\grizzly/grizzly_upgrades_Normal_DirectX"
+
+	$nocull 1
+
+	//$envmap "env_cubemap"
+	$basealphaenvmapmask 1
+	$envmaptint "[0.01 0.01 0.01]"
+	$envmapfresnel 0.1
+
+	$phong 1
+	$phongexponenttexture "models\tacint_shark\grizzly/grizzly_upgrades_E"
+	$phongfresnelranges "[1 5 10]"
+	$phongwarptexture "models\tacint_shark\grizzly/phongwarp_steel"
+	$phongalbedotint 1
+	$phongboost 1
+
+	$rimlight 1
+	$rimlightexponent 100
+	$rimlightboost 0.8
+
+	$nodecal 1
+
+	$color2 "[1.75 1.75 1.75]"
+	////$blendtintbybasealpha 1
+}

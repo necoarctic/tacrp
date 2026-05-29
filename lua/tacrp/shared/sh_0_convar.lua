@@ -235,12 +235,15 @@ local conVars = {
         max = 10,
         replicated = true,
     },
+    -- Disabled for Workshop policy compliance
+    --[[
     {
         name = "idunwannadie",
         default = "0",
         client = true,
         userinfo = true,
     },
+    ]]
     {
         name = "aim_cancels_sprint",
         default = "1",
@@ -814,6 +817,22 @@ local conVars = {
         min = 0,
         max = 1,
     },
+    {
+        name = "onebutton_akimbo",
+        default = "0",
+        replicated = true,
+        notify = true,
+        min = 0,
+        max = 1,
+    },
+    {
+        name = "onebutton_akimbo_client",
+        default = "0",
+        client = true,
+        userinfo = true,
+        min = 0,
+        max = 1,
+    },
 
     // --------------------------- Multipliers
     {
@@ -886,6 +905,24 @@ local conVars = {
         name = "mult_damage_melee",
         default = "1",
         min = 0.01,
+        replicated = true,
+    },
+    {
+        name = "mult_spread_ads",
+        default = "1",
+        min = 0,
+        replicated = true,
+    },
+    {
+        name = "mult_spread_hip",
+        default = "1",
+        min = 0,
+        replicated = true,
+    },
+    {
+        name = "mult_spread_shotgun",
+        default = "1",
+        min = 0,
         replicated = true,
     },
 
@@ -1329,6 +1366,11 @@ local function menu_client_ti(panel)
         command = "tacrp_inversepeek"
     })
     panel:ControlHelp("#tacrp.client.inversepeek.desc")
+    panel:AddControl("checkbox", {
+        label = "#tacrp.mechanics.onebuttonakimbo", -- One-Button Akimbo
+        command = "tacrp_onebutton_akimbo_client"
+    })
+    panel:ControlHelp("#tacrp.mechanics.onebuttonakimbo.desc")
 
     panel:AddControl("slider", {
         label = "#tacrp.client.aimsens", -- Aiming Sensitivity
@@ -1406,10 +1448,13 @@ local function menu_client_ti(panel)
     })
     panel:ControlHelp("#tacrp.client.nearwall.desc")
 
+    -- Disabled for Workshop policy compliance
+    --[[]
     panel:AddControl("checkbox", {
         label = "#tacrp.client.disablesuicide", -- Disable Suicide Mode
         command = "tacrp_idunwannadie"
     })
+    ]]
     panel:ControlHelp("#tacrp.client.disablesuicide.desc")
     panel:AddControl("checkbox", {
         label = "#tacrp.client.drawholstered", -- Draw Holstered Weapons
@@ -1704,6 +1749,30 @@ local function menu_balance_ti(panel)
         min = 0.5,
         max = 1.5,
     })
+    panel:AddControl("slider", {
+        label = "#tacrp.balance.adsspread", -- ADS Spread Multiplier
+        command = "tacrp_mult_spread_ads",
+        type = "float",
+        min = 0,
+        max = 3,
+    })
+    panel:ControlHelp("#tacrp.balance.adsspread.desc")
+    panel:AddControl("slider", {
+        label = "#tacrp.balance.hipspread", -- Hipfire Spread Multiplier
+        command = "tacrp_mult_spread_hip",
+        type = "float",
+        min = 0,
+        max = 3,
+    })
+    panel:ControlHelp("#tacrp.balance.hipspread.desc")
+    panel:AddControl("slider", {
+        label = "#tacrp.balance.shotgunspread", -- Shotgun Pellet Spread Multiplier
+        command = "tacrp_mult_spread_shotgun",
+        type = "float",
+        min = 0,
+        max = 3,
+    })
+    panel:ControlHelp("#tacrp.balance.shotgunspread.desc")
 
 
     header(panel, "#tacrp.balance.ammoreload") -- \nAmmo & Reloading
@@ -1847,6 +1916,11 @@ local function menu_mechanics_ti(panel)
         label = "#tacrp.mechanics.quicknade", -- Enable Quick Grenades
         command = "tacrp_quicknade"
     })
+    panel:AddControl("checkbox", {
+        label = "#tacrp.mechanics.onebuttonakimbo", -- One-Button Akimbo
+        command = "tacrp_onebutton_akimbo"
+    })
+    panel:ControlHelp("#tacrp.mechanics.onebuttonakimbo.desc")
 end
 
 local function menu_atts_ti(panel)

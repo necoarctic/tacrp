@@ -212,17 +212,17 @@ function SWEP:DrawGrenadeHUD()
         surface.SetTextPos(nadex - nadetextw * 0.5, nadey + TacRP.SS(6))
         surface.DrawText(nadetext)
 
-		if !TacRP.IsGrenadeInfiniteAmmo(nade.Index) then
-			local qty
-			if nade.Singleton then
-				qty = self:GetOwner():HasWeapon(nade.GrenadeWep) and "x1" or "x0"
-			else
-				qty = "x" .. tostring(self:GetOwner():GetAmmoCount(nade.Ammo))
-			end
-			local qtyw = surface.GetTextSize(qty)
-			surface.SetTextPos(nadex - qtyw * 0.5, nadey + TacRP.SS(15))
-			surface.DrawText(qty)
-		end
+        if !TacRP.IsGrenadeInfiniteAmmo(nade.Index) then
+            local qty
+            if nade.Singleton then
+                qty = self:GetOwner():HasWeapon(nade.GrenadeWep) and "x1" or "x0"
+            else
+                qty = "x" .. tostring(self:GetOwner():GetAmmoCount(nade.Ammo))
+            end
+            local qtyw = surface.GetTextSize(qty)
+            surface.SetTextPos(nadex - qtyw * 0.5, nadey + TacRP.SS(15))
+            surface.DrawText(qty)
+        end
 
         d = d - arcdegrees
 
@@ -268,10 +268,10 @@ function SWEP:DrawGrenadeHUD()
     TacRP.DrawCorneredBox(tx, ty - h * 0.5 - TacRP.SS(28), w, TacRP.SS(24), col)
     surface.SetTextColor(255, 255, 255, a * 255)
 
-    local name = TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".name.full")  
-	or TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".name")  
-	or nade.FullName 
-	or nade.PrintName
+    local name = TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".name.full")
+    or TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".name")
+    or nade.FullName
+    or nade.PrintName
     surface.SetFont("TacRP_Myriad_Pro_16")
     local name_w, name_h = surface.GetTextSize(name)
     if name_w > w then
@@ -328,24 +328,24 @@ function SWEP:DrawGrenadeHUD()
 
         surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(4))
         surface.DrawText( "[ " .. TacRP.GetBind("+attack") .. " ] " .. TacRP:GetPhrase("hint.quicknade.over") )
-		
+
         surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(12))
         surface.DrawText( "[ " .. TacRP.GetBind("+attack2") .. " ] " .. TacRP:GetPhrase("hint.quicknade.under") )
-		
+
         if TacRP.AreTheGrenadeAnimsReadyYet then
             surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(20))
-			surface.DrawText( "[ MOUSE3 ] " .. TacRP:GetPhrase("hint.quicknade.pull_out") )
+            surface.DrawText( "[ MOUSE3 ] " .. TacRP:GetPhrase("hint.quicknade.pull_out") )
         end
     else
-		local binded = input.LookupBinding("grenade1")
+        local binded = input.LookupBinding("grenade1")
 
-		if binded then button = TacRP.GetBind("grenade1") else button = "G" end
+        if binded then button = TacRP.GetBind("grenade1") else button = "G" end
 
         TacRP.DrawCorneredBox(tx, ty + h * 0.5 + TacRP.SS(2), w, TacRP.SS(28), col)
 
         surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(4))
         surface.DrawText("[ " ..button .. " ] " .. TacRP:GetPhrase("hint.quicknade.over") .. " " .. TacRP:GetPhrase("hint.hold") )
-		
+
         surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(12))
         surface.DrawText("[ " .. button .. " ] " .. TacRP:GetPhrase("hint.quicknade.under") )
 
@@ -772,7 +772,9 @@ local startseefunnylinetime = 0
 function SWEP:DrawBlindFireHUD()
     if !TacRP.ConVars["blindfiremenu"]:GetBool() then lastseenfunnyline = false return end
     local nocenter = TacRP.ConVars["blindfiremenu_nocenter"]:GetBool()
-    local nosuicide = nocenter or TacRP.ConVars["idunwannadie"]:GetBool()
+
+    -- Disabled for Workshop policy compliance
+    local nosuicide = true --nocenter or TacRP.ConVars["idunwannadie"]:GetBool()
 
     -- adapted from tfa vox radial menu
     local ft = FrameTime()
@@ -936,10 +938,10 @@ function SWEP:DrawBlindFireHUD()
         if bf_suicidelock > 0 then
             surface.SetFont("TacRP_Myriad_Pro_8")
             t2 = "[ " .. TacRP.GetBind("attack") .. " ] - " .. TacRP:GetPhrase("hint.unlock")
-			
-			if self:GetCustomize() then
-				t2 = TacRP:GetPhrase("hint.exitcustmenu")
-			end
+
+            if self:GetCustomize() then
+                t2 = TacRP:GetPhrase("hint.exitcustmenu")
+            end
             lastseenfunnyline = false
         elseif !bf_funnyline then
             bf_funnyline = bf_lines[math.random(1, #bf_lines)]
