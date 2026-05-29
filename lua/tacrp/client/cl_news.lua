@@ -1401,8 +1401,8 @@ Not dead, just pining for the fjords.
         Contents = [[<body style="font-family:'Myriad Pro';color:white;font-size:125%;">
 <h3>Changelist:</h3>
 <ul>
-<li><b>Removed:</b> Self-shoot feature (for Workshop policy reasons.)
-
+<li><b>Added:</b> (Base) LAR Grizzly, Security grade magnum pistol.
+<li><b>Removed:</b> Self-shoot feature (for Workshop policy reasons).
 </ul>
 ]]
     },

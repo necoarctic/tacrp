@@ -1,0 +1,28 @@
+VertexLitGeneric
+{
+	$basetexture "models\tacint_shark\grizzly/lar_grizzly_mkv_mag_2D_View"
+	$bumpmap "models\tacint_shark\grizzly/lar_grizzly_mkv_mag_Normal_DirectX"
+
+	$nocull 1
+
+	//$envmap "env_cubemap"
+	$basealphaenvmapmask 1
+	$envmaptint "[0.01 0.01 0.01]"
+	$envmapfresnel 0.1
+
+	$phong 1
+	$phongexponenttexture "models\tacint_shark\grizzly/lar_grizzly_mkv_mag_E"
+	$phongfresnelranges "[1 5 10]"
+	$phongwarptexture "models\tacint_shark\grizzly/phongwarp_steel"
+	$phongalbedotint 1
+	$phongboost 1
+
+	$rimlight 1
+	$rimlightexponent 100
+	$rimlightboost 0.8
+
+	$nodecal 1
+
+	$color2 "[5.85 5.85 5.85]"
+	$blendtintbybasealpha 1
+}
