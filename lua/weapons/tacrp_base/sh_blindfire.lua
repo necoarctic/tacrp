@@ -228,6 +228,8 @@ function SWEP:SetBlindFireMode(mode)
     self:SetBlindFire(bfmode[mode][1])
     self:SetBlindFireLeft(bfmode[mode][2])
     self:SetBlindFireRight(bfmode[mode][3])
+
+    self:SetCharge(false)
 end
 
 function SWEP:CheckBlindFire(suicide)
