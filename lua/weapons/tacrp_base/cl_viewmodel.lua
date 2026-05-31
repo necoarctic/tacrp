@@ -1,14 +1,14 @@
 function SWEP:ViewModelDrawn(ViewModel, flags)
     local isDepthPass = ( bit.band( flags, STUDIO_SSAODEPTHTEXTURE ) != 0 || bit.band( flags, STUDIO_SHADOWDEPTHTEXTURE ) != 0 )
-    
+
     if IsValid(self.QuickNadeModel) then
         self.QuickNadeModel:DrawModel()
     end
 
     self:DrawCustomModel(false, false, isDepthPass)
-    
+
     if ( isDepthPass ) then return end
-    
+
     self:DrawLasers()
 
     local newactiveeffects = {}
@@ -238,7 +238,7 @@ function SWEP:PostDrawViewModel(viewmodel, player, weapon, flags)
         render.OverrideColorWriteEnable(false, false)
     end
 
-    local isDepthPass = ( bit.band( flags, STUDIO_SSAODEPTHTEXTURE ) != 0 || bit.band( flags, STUDIO_SHADOWDEPTHTEXTURE ) != 0 )
+    local isDepthPass = ( bit.band( flags or 0, STUDIO_SSAODEPTHTEXTURE ) != 0 or bit.band( flags or 0, STUDIO_SHADOWDEPTHTEXTURE ) != 0 )
     if isDepthPass then return end
 
     cam.Start3D()
