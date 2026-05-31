@@ -58,7 +58,7 @@ if CLIENT then
                 if weptbl and weptbl.ArcticTacRP and weptbl.Spawnable
                         and weptbl.NPCUsable and !weptbl.PrimaryMelee and !weptbl.PrimaryGrenade and weptbl.SubCatType then
                     local cat = k.SubCatType
-                    if !catdict[cat] then
+                    if cat and !catdict[cat] then
                         catdict[cat] = true
                         table.insert(catnames, cat)
                     end
