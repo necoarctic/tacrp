@@ -318,7 +318,7 @@ function SWEP:SetBaseSettings()
     end
 
     if self:IsQuickNadeAllowed() then
-        self.Secondary.Ammo = self:GetGrenade().Ammo or "grenade"
+        self.Secondary.Ammo = (self:GetGrenade() or {}).Ammo or "grenade"
     else
         self.Secondary.Ammo = "none"
     end
