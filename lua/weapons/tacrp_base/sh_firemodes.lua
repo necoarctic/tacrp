@@ -69,6 +69,7 @@ local mat_1 = Material("tacrp/hud/firemode_1.png", "mips smooth")
 local mat_2 = Material("tacrp/hud/firemode_2.png", "mips smooth")
 local mat_3 = Material("tacrp/hud/firemode_3.png", "mips smooth")
 local mat_4 = Material("tacrp/hud/firemode_4.png", "mips smooth")
+local mat_5 = Material("tacrp/hud/firemode_5plus.png", "mips smooth")
 local mat_a = Material("tacrp/hud/firemode_a.png", "mips smooth")
 local mat_s = Material("tacrp/hud/firemode_s.png", "mips smooth")
 
@@ -85,6 +86,8 @@ function SWEP:GetFiremodeMat(mode)
         return mat_3
 	elseif mode == -4 then
         return mat_4
+	elseif mode <= -5 then
+        return mat_5
     else
         return mat_1 // epic fail
     end
@@ -113,4 +116,5 @@ function SWEP:GetFiremodeBurstLength(base)
     else
         return valfunc(self, "Firemode") < 0 and -valfunc(self, "Firemode") or false
     end
+
 end
