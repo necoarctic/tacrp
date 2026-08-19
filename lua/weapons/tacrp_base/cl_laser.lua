@@ -3,6 +3,8 @@ local flaremat = Material("effects/whiteflare")
 
 function SWEP:DrawLaser(pos, ang, strength, thirdperson)
     strength = strength or 1
+    
+    render.SetStencilEnable(false)
 
     local alwaysacc = self:GetValue("LaserAlwaysAccurate")
     local behavior = (self:GetValue("ScopeHideWeapon") and self:IsInScope())
