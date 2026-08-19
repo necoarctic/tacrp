@@ -2,21 +2,21 @@ function SWEP:DoHolosight(mdl)
     if TacRP.OverDraw then return end
     if self:GetSightAmount() <= 0 then return end
 
-    local ref = 64
+    local ref = 63
 
     render.UpdateScreenEffectTexture()
-    render.ClearStencil()
+    -- render.ClearStencil()
     render.SetStencilEnable(true)
     render.SetStencilCompareFunction(STENCIL_ALWAYS)
     render.SetStencilPassOperation(STENCIL_REPLACE)
     render.SetStencilFailOperation(STENCIL_KEEP)
     render.SetStencilZFailOperation(STENCIL_KEEP)
-    render.SetStencilWriteMask(255)
-    render.SetStencilTestMask(255)
+    render.SetStencilWriteMask(ref)
+    render.SetStencilTestMask(ref)
 
     render.SetBlend(0)
 
-    render.SetStencilReferenceValue(ref)
+    render.SetStencilReferenceValue(bit.bor(ref, 63))
 
     mdl:DrawModel()
 
@@ -80,5 +80,12 @@ function SWEP:DoHolosight(mdl)
     end
     -- cam.End2D()
 
-    render.SetStencilEnable(false)
+    render.SetStencilWriteMask(64) 
+    render.SetStencilTestMask(64)
+    render.SetStencilReferenceValue(68)
+    render.SetStencilCompareFunction(STENCIL_ALWAYS)
+    render.SetStencilPassOperation(STENCIL_REPLACE)
+    render.SetStencilFailOperation(STENCIL_KEEP)
+    render.SetStencilZFailOperation(STENCIL_KEEP)
+    render.SetStencilEnable(true)
 end
