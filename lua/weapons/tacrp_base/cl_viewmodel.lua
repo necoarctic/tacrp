@@ -6,6 +6,8 @@ function SWEP:ViewModelDrawn(ViewModel, flags)
     end
 
     self:DrawCustomModel(false, false, isDepthPass)
+    
+    render.SetStencilEnable(false) -- just in case 
 
     if ( isDepthPass ) then return end
 
