@@ -82,34 +82,36 @@ function SWEP:Think()
         self:SetPatternCount(0)
     end
 
-    if owner:KeyPressed(TacRP.IN_CUSTOMIZE) then
-        if self:GetScopeLevel() == 0 then
-            self:ToggleCustomize(!self:GetCustomize())
-        else
-            if !self:GetValue("AlwaysPeek") then
-                local shouldpeek = !self:GetPeeking()
+    if (SERVER or !game.SinglePlayer()) then
+        if owner:KeyPressed(TacRP.IN_CUSTOMIZE) then
+            if (self:GetScopeLevel() == 0) then
+                self:ToggleCustomize(!self:GetCustomize())
+            else
+                if !self:GetValue("AlwaysPeek") then
+                    local shouldpeek = !self:GetPeeking()
 
-                if owner:GetInfoNum("tacrp_togglepeek", 0) == 0 then
-                    shouldpeek = true
-                end
+                    if (owner:GetInfoNum("tacrp_togglepeek", 0) == 0) then
+                        shouldpeek = true
+                    end
 
-                self:SetPeeking(shouldpeek)
+                    self:SetPeeking(shouldpeek)
 
-                if self:GetSightAmount() > 0 then
-                    self:SetLastScopeTime(CurTime())
+                    if (self:GetSightAmount() > 0) then
+                        self:SetLastScopeTime(CurTime())
+                    end
                 end
             end
-        end
-    elseif !self:GetValue("AlwaysPeek") and owner:GetInfoNum("tacrp_togglepeek", 0) == 0 and self:GetPeeking() and owner:KeyReleased(TacRP.IN_CUSTOMIZE) then
-        self:SetPeeking(false)
+        elseif (owner:KeyReleased(TacRP.IN_CUSTOMIZE) and !self:GetValue("AlwaysPeek") and owner:GetInfoNum("tacrp_togglepeek", 0) == 0 and self:GetPeeking()) then
+            self:SetPeeking(false)
 
-        if self:GetSightAmount() > 0 then
-            self:SetLastScopeTime(CurTime())
+            if (self:GetSightAmount() > 0) then
+                self:SetLastScopeTime(CurTime())
+            end
         end
-    end
 
-    if owner:KeyPressed(TacRP.IN_TACTICAL) then
-        self:ToggleTactical()
+        if owner:KeyPressed(TacRP.IN_TACTICAL) then
+            self:ToggleTactical()
+        end
     end
 
     self:ThinkRecoil()
