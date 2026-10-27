@@ -1423,6 +1423,23 @@ It's not that dramatic.
 </ul>
 ]],
     },
+    {
+        Title = "Update 36 Patch 2",
+        Type = "Patch Notes",
+        Date = "2026-10-27",
+        Author = "8Z",
+        Major = false,
+        Summary = "M",
+        Contents = [[<body style="font-family:'Myriad Pro';color:white;font-size:125%;">
+<h3>Changelist</h3>
+<ul>
+<li><b>Added:</b> Support for burst fire of 5 rounds and above, with its own icon (contribution by UMP45).
+<li><b>Fixed:</b> Singleplayer customization and tactical toggle issues caused by recent update.
+<li><b>Fixed:</b> Dryfire animation playing when it shouldn't (contribution by UMP45).
+<li><b>Fixed:</b> HK94 worldmodel.
+</ul>
+]],
+    },
 }
 TacRP.NewsRead = TacRP.NewsRead or {}
 TacRP.NewsFirstLoad = false
