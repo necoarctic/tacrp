@@ -1062,11 +1062,6 @@ Notably, some weapons in the base pack are now Value grade, a new lowest grade t
 <p>Greetings all. Unfortunately the long-awaited post-apocalypse pack still isn't finished, but rest assured we are still working on it and it will see the light of day eventually.
 For now, enjoy a small-ish update that consists mostly of visual updates but also contains some fancy new content.</p>
 
-<h2>SIG SG 510 "Black Shark" One-Off Release</h2>
-<p><input type='submit' value='Open Workshop' onclick='console.log("RUNLUA:gui.OpenURL(\"https://steamcommunity.com/sharedfiles/filedetails/?id=3360753764\")")' /></p>
-<p>I made this in an afternoon on a whim; a customized SG 510 visually inspired by Battlefield Hardline's weird hybridized 510 and functionally inspired by the infamous "Rico Special" that was featured on Forgotten Weapons.
-Give it a whirl! Apologies in advance for the blindness and potential motion sickness.</p>
-
 <h3>Changelist:</h3>
 <ul>
 <li><b>Added:</b> (Base) ConVar to disable quick grenades (but this will make us sad).
@@ -1436,8 +1431,33 @@ It's not that dramatic.
 <li><b>Added:</b> Support for burst fire of 5 rounds and above, with its own icon (contribution by UMP45).
 <li><b>Fixed:</b> Singleplayer customization and tactical toggle issues caused by recent update.
 <li><b>Fixed:</b> Dryfire animation playing when it shouldn't (contribution by UMP45).
-<li><b>Fixed:</b> HK94 worldmodel.
+]],
+    },
+    {
+        Title = "Update 36 Patch 3",
+        Type = "Patch Notes",
+        Date = "11/5/2026",
+        Author = "VinierAardvark1",
+        Major = false,
+        Summary = "PHYSMODLAS!!!!! :)))))",
+        Contents = [[<body style="font-family:'Myriad Pro';color:white;font-size:125%;">
+<p>Hey all, VA1 here. This marks the first time I'll have written patch notes through an in-game newsletter system... pretty cool, honestly. I've been working on-and-off in the background for the past couple of years. Mostly stuff like localization edits, minor balance tweaks, and other such things. I know people tend to get excited when an addon they like gets updated, I do as well, but this update is nothing very noteworthy. Unless you're the kind of person that REALLY cares about the physics model on a gun. I don't know.</p>
+<h3>Changelist</h3>
+<ul>
+<li><b>Removed:</b> (Heavy Duty): Removed an experimental attachment that was accidentially left in. To those that have discovered and been using this... whoops! It will return elsewhere at a later date, I promise.
 </ul>
+<p>The following weapons have had their physics models tweaked and/or recreated:</p>
+<ul>
+<li><b>Fixed:</b> (TacRP Base): HK94
+<li><b>Fixed:</b> (Armalite Revolution): Gilboa DBR Snake, VLTOR SBR
+<li><b>Fixed:</b> (Exo Ops): Magpul Masada
+<li><b>Fixed:</b> (Heavy Duty): SPAS-12
+<li><b>Fixed:</b> (Iron Curtain): Galil ARM
+<li><b>Fixed:</b> (Scavenger's Spoils): FN MAG, Mosin-Nagant 91/30, Makarov PM, Remington 700 Obrez, SVT-40, Serbu Super Shorty, IMI Uzi, VKS Vykhlop
+<li><b>Fixed:</b> (Special Delivery): AAC Honey Badger, M1A1 Thompson
+</ul>
+<p>Big thanks to Sunw5w for creating an unofficial world model patch in the meantime!</p>
+<p>Maybe I'll push more minor updates in the future, maybe not. Hard to tell at the moment, as it is 1:13 AM as of writing these patch notes. Anyways, enjoy!</p>
 ]],
     },
 }
