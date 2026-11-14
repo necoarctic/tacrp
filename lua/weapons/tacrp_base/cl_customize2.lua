@@ -31,6 +31,28 @@ local function CloseAttachmentSelect()
 	if IsValid(selecta) then selecta:Remove() end
 end
 
+local function sort_atts(a, b)
+	a = a or ""
+	b = b or ""
+
+	if a == "" or b == "" then return true end
+
+	local atttbl_a = TacRP.GetAttTable(a)
+	local atttbl_b = TacRP.GetAttTable(b)
+
+	local order_a = 0
+	local order_b = 0
+
+	order_a = atttbl_a.SortOrder or order_a
+	order_b = atttbl_b.SortOrder or order_b
+
+	if order_a == order_b then
+		return (atttbl_a.PrintName or "") < (atttbl_b.PrintName or "")
+	end
+
+	return order_a < order_b
+end
+
 local function GenerateAttachmentSelect( context, host, slotnum, slottab, parent )
 	CloseAttachmentSelect()
 	selecta = vgui.Create( "Panel", parent )
@@ -49,28 +71,7 @@ local function GenerateAttachmentSelect( context, host, slotnum, slottab, parent
 	sp:DockMargin( PADDING, PADDING, PADDING, PADDING )
 
 	local atts = TacRP.GetAttsForCats( slottab.Category or "", context.weapon )
-
-	table.sort(atts, function(a, b)
-		a = a or ""
-		b = b or ""
-
-		if a == "" or b == "" then return true end
-
-		local atttbl_a = TacRP.GetAttTable(a)
-		local atttbl_b = TacRP.GetAttTable(b)
-
-		local order_a = 0
-		local order_b = 0
-
-		order_a = atttbl_a.SortOrder or order_a
-		order_b = atttbl_b.SortOrder or order_b
-
-		if order_a == order_b then
-			return (atttbl_a.PrintName or "") < (atttbl_b.PrintName or "")
-		end
-
-		return order_a < order_b
-	end)
+	table.sort(atts, sort_atts)
 
 	for _, att in pairs( atts ) do
 		local ati = TacRP.GetAttTable( att )
@@ -202,13 +203,16 @@ function C2_GradientLine( x, y, h )
 	surface.DrawTexturedRect( x, y, 1, h )
 end
 
-function C2_FullBox( x, y, w, h )
+function C2_Box( x, y, w, h )
 	surface.SetDrawColor( C2_COLOR_Main )
 	surface.DrawRect( x, y, w, h )
 	surface.SetDrawColor( C2_COLOR_Accent )
 	surface.SetMaterial( (c_2_gd:GetBool() and grad2) or grad )
 	surface.DrawTexturedRect( x, y, w, h )
+end
 
+function C2_FullBox( x, y, w, h )
+	C2_Box( x, y, w, h )
 	C2_Outline( x, y, w, h )
 end
 local function paint_box( _, w, h )
@@ -968,6 +972,294 @@ function SWEP:C2_Open()
 			end
 		end
 	end
+end
+
+local MARGIN_XS = 2
+local MARGIN_S = 4
+local MARGIN_M = 8
+local MARGIN_L = 12
+local MARGIN_XL = 16
+
+local BUTTON_HEIGHT_EMPTY = s(18)
+local BUTTON_HEIGHT = s(36)
+
+-- vgui registration
+do
+	local C2Panel = {}
+	function C2Panel:Paint( w, h )
+		C2_FullBox( 0, 0, w, h )
+	end
+	vgui.Register("C2_Panel", C2Panel, "Panel")
+end
+do
+	local button = {}
+	button.Weapon = nil
+	button.SlotIndex = nil
+	button.SlotData = nil
+	button.AttList = nil
+	
+	function button:GetAttachment()
+		if not self.SlotData.Installed then
+			return
+		end
+		return TacRP.Attachments[self.SlotData.Installed]
+	end
+
+	function button:Paint( w, h )
+		C2_Box( 0, 0, w, h )
+
+		C2_DrawText(
+			self.SlotData.PrintName,
+			"TacRP_C2_10",
+			s(MARGIN_S), s(MARGIN_S),
+			color_white
+		)
+
+		local att_data = self:GetAttachment()
+		if not att_data then C2_Outline( 0, 0, w, h ) return true end
+
+		C2_DrawText(
+			TacRP:TryTranslate(att_data.PrintName),
+			"TacRP_C2_12",
+			s(MARGIN_S), h/2,
+			color_white,
+			nil, TEXT_ALIGN_CENTER
+		)
+		
+		local size = h
+		surface.SetDrawColor( 255, 255, 255 )
+		surface.SetMaterial( att_data.Icon )
+		surface.DrawTexturedRect( w - size, h/2 - size/2, size, size )
+
+		C2_Outline( 0, 0, w, h )
+		return true
+	end
+
+	function button:EvaluateSize()
+		self:SetTall( self:GetAttachment() and BUTTON_HEIGHT or BUTTON_HEIGHT_EMPTY )
+	end
+
+	function button:DoClick()
+		if self.AttList.ActiveSlot == self.SlotIndex then
+			self.AttList:Clear()
+		else
+			self.AttList:Populate( self.SlotData.Category, self.Weapon, self.SlotIndex )
+		end
+	end
+
+	function button:DoRightClick()
+		if self.SlotData.Installed then
+			self.Weapon:Detach( self.SlotIndex )
+		end
+	end
+
+	function button:Think()
+		self:EvaluateSize()
+	end
+
+	vgui.Register("C2_SlotButton", button, "DButton")
+end
+do
+	local button = {}
+	button.AttachmentName = nil
+	button.AttachmentData = nil
+	button.Weapon = nil
+	button.SlotIndex = nil
+
+	function button:Paint( w, h )
+		C2_Box( 0, 0, w, h )
+
+		local size = h
+		surface.SetDrawColor( 255, 255, 255 )
+		surface.SetMaterial( self.AttachmentData.Icon )
+		surface.DrawTexturedRect( w - size, h/2 - size/2, size, size )
+
+		C2_DrawText(
+			TacRP:TryTranslate(self.AttachmentData.PrintName),
+			"TacRP_C2_12",
+			s(MARGIN_S), s(MARGIN_S),
+			color_white
+		)
+
+		C2_Outline( 0, 0, w, h )
+		return true
+	end
+
+	function button:DoClick()
+		if self.Weapon.Attachments[ self.SlotIndex ].Installed == self.AttachmentName then
+			self.Weapon:Detach( self.SlotIndex )
+			return
+		end
+		self.Weapon:Detach( self.SlotIndex )
+		self.Weapon:Attach( self.SlotIndex, self.AttachmentName )
+	end
+
+	function button:DoRightClick()
+		if self.Weapon.Attachments[ self.SlotIndex ].Installed == self.AttachmentName then
+			self.Weapon:Detach( self.SlotIndex )
+		end
+	end
+	vgui.Register("C2_AttachmentButton", button, "DButton")
+end
+
+function SWEP:C2_Open()
+	if IsValid( c2 ) then c2:Remove() end
+	local sw, sh = ScrW(), ScrH()
+	local wep = self
+	c2 = vgui.Create( "Panel" )
+	c2:SetSize( sw, sh )
+	c2:Center()
+	c2:MakePopup()
+	c2:SetPopupStayAtBack( true )
+	c2:SetKeyboardInputEnabled( false )
+	c2.m_bDeleteOnClose = true
+	local margin = s(MARGIN_XL)
+	c2:DockPadding( margin, margin, margin, margin )
+	-- c2.Paint = paint_box
+
+	--[[ c2.Interp = 0
+	local align_top = c2:Add("Panel")
+	align_top:SetSize( sw, sh )
+	function align_top:Think()
+		c2.Interp = math.Approach(c2.Interp, 1, RealFrameTime() / .4 )
+		align_top:SetY( math.ease.InCirc( 1-c2.Interp ) * -sh/2 )
+	end
+
+	local align_left = c2:Add("Panel")
+	align_left:SetSize( sw, sh )
+	function align_left:Think()
+		c2.Interp = math.Approach(c2.Interp, 1, RealFrameTime() / .4 )
+		align_left:SetX( math.ease.InCirc( 1-c2.Interp ) * -sw/2 )
+	end ]]
+	
+	local top_bar = c2:Add("C2_Panel")
+	top_bar:Dock(TOP)
+	top_bar:SetTall( s(48) )
+	function top_bar:Paint( w, h )
+		local type_txt = TacRP.FormatTierType(wep.SubCatType, wep.SubCatTier, TacRP.UseTiers())
+		C2_FullBox( 0, 0, w, h )
+		C2_DrawText(
+			wep.PrintName,
+			"TacRP_C2_36",
+			s(MARGIN_L), h/2,
+			color_white,
+			nil,
+			TEXT_ALIGN_CENTER
+		)
+		C2_DrawText(
+			type_txt,
+			"TacRP_C2_12",
+			w - s(MARGIN_L), h/2 - s(6),
+			color_white,
+			TEXT_ALIGN_RIGHT,
+			TEXT_ALIGN_CENTER
+		)
+		C2_DrawText(
+			wep:GetValue("Trivia_Caliber"),
+			"TacRP_C2_12",
+			w - s(MARGIN_L), h/2 + s(6),
+			color_white,
+			TEXT_ALIGN_RIGHT,
+			TEXT_ALIGN_CENTER
+		)
+		return true
+	end
+
+	local bottom_bar = c2:Add("C2_Panel")
+	bottom_bar:Dock(BOTTOM)
+	bottom_bar:SetTall( s(48) )
+	bottom_bar:DockMargin( s(240), 0, s(240), 0 )
+	function bottom_bar:Paint( w, h )
+		C2_FullBox( 0, 0, w, h )
+		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_C2_12" )
+		local lines = #desc
+		for i, v in ipairs( desc ) do
+			C2_DrawText(
+				v,
+				"TacRP_C2_12",
+				s(12), s( 6+(12*(i-1)) ),
+				color_white
+			)
+		end
+		C2_DrawText(
+			wep.Description_Quote,
+			"TacRP_C2_12I",
+			s(12), s( 6+(12*(lines+1)) ),
+			color_white
+		)
+	end
+
+	function bottom_bar:PerformLayout( w, h )
+		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_C2_12" )
+		local lines = #desc
+		if wep.Description_Quote then lines = lines + 2 end
+		self:SetTall( s(6+(12*lines)+6) )
+	end
+	
+	local p_slotlist = c2:Add("Panel")
+	p_slotlist:SetWide( s(96) )
+	p_slotlist:Dock(LEFT)
+	p_slotlist:DockMargin( 0, s(MARGIN_S), 0, s(MARGIN_S) )
+	-- p_slotlist.Paint = paint_box
+
+	local list_slots = {}
+	local list_atts = {}
+	
+	local p_attlist = c2:Add("Panel")
+	p_attlist:SetWide( s(72) )
+	p_attlist:Dock(LEFT)
+	p_attlist:DockMargin( s(MARGIN_S), s(MARGIN_S), 0, s(MARGIN_S) )
+	p_attlist.ActiveSlot = nil
+	function p_attlist:Clear()
+		for i, v in ipairs(list_atts) do
+			v:Remove()
+			list_atts[i] = nil
+		end
+		self.ActiveSlot = nil
+	end
+
+	function p_attlist:Populate( category, weapon, slotindex )
+		self:Clear()
+		
+		local atts = TacRP.GetAttsForCats( category, weapon )
+		table.sort(atts, sort_atts)
+
+		for _, att in ipairs(atts) do
+			local button = p_attlist:Add("C2_AttachmentButton")
+			button:SetTall( BUTTON_HEIGHT )
+			button:Dock(TOP)
+			button:DockMargin( 0, 0, 0, s(MARGIN_S) )
+			button.AttachmentName = att
+			button.AttachmentData = TacRP.Attachments[att]
+			button.Weapon = wep
+			button.SlotIndex = slotindex
+
+			table.insert(list_atts, button)
+		end
+
+		self.ActiveSlot = slotindex
+	end
+
+	for i, slot_data in ipairs( self.Attachments ) do
+		local button = p_slotlist:Add("C2_SlotButton")
+		button:Dock(TOP)
+		button:SetTall( BUTTON_HEIGHT )
+		button:DockMargin( 0, 0, 0, s(MARGIN_S) )
+		button.Weapon = wep
+		button.SlotIndex = i
+		button.SlotData = slot_data
+		button.AttList = p_attlist
+		button:EvaluateSize()
+
+		list_slots[i] = button
+	end
+
+	--[[ function align_left:PerformLayout( w, h )
+		p_slotlist:SizeToChildren( false, true )
+		p_slotlist:SetY( h/2 - p_slotlist:GetTall() / 2)
+	end ]]
+	p_slotlist:InvalidateLayout( true )
+	p_slotlist:SizeToChildren( false, true )
 end
 
 -- reloading for development
