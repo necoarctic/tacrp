@@ -1,11 +1,9 @@
 
 -- function SWEP:DrawHUD()
 -- end
-local function s( height )
-	return height * ( ScrH() / 480.0 ) * 1.5
-end
-
 local h2_enabled = CreateClientConVar( "tacrp_h2", 1, true, false )
+local s = C2_ScreenScale
+
 
 local hide = {
 	["CHudHealth"] = true,
@@ -100,16 +98,16 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 			local Hx, Hy = s(12), sh - Hh - s(12)
 			C2_FullBox( s, Hx, Hy, Hw, Hh )
 
-			qd( s, "HEALTH", "H2_Subtitle", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
-			qd( s, p:Health(), "H2_General", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
+			C2_DrawText( "HEALTH", "H2_Subtitle", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
+			C2_DrawText( p:Health(), "H2_General", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
 			
 			do -- Health
 				local Hw, Hh = s(60), s(36)
 				local Hx, Hy = Hx + s(60) + s(12), sh - Hh - s(12)
 				GEM( s, Hx, Hy, Hw, Hh )
 
-				qd( s, "ARMOR", "H2_Subtitle", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
-				qd( s, p:Armor(), "H2_General", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
+				C2_DrawText( "ARMOR", "H2_Subtitle", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
+				C2_DrawText( p:Armor(), "H2_General", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
 			end
 		end
 
@@ -118,7 +116,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 			local Hx, Hy = sw - Hw - s(12), sh - Hh - s(12)
 			C2_FullBox( s, Hx, Hy, Hw, Hh )
 
-			--qd( s, "AMMO", "C2_4", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
+			--C2_DrawText( "AMMO", "C2_4", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
 
 			local S_CLIP, S_AMMO = self:Clip1(), p:GetAmmoCount( self:GetPrimaryAmmoType() )
 			if self:GetPrimaryAmmoType() == -1 then
@@ -132,7 +130,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 				S_AMMO = -1
 			end
 
-			qd( s, self:GetPrintName(), "TacRP_C2_12I", Hx + s(4), Hy + s(3), color_white, TEXT_ALIGN_LEFT )
+			C2_DrawText( self:GetPrintName(), "TacRP_C2_12I", Hx + s(4), Hy + s(3), color_white, TEXT_ALIGN_LEFT )
 
 			if self.ArcticTacRP then
 				local fm = self:GetCurrentFiremode()
@@ -149,7 +147,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 					fm = "Safety -- " .. fm
 				end
 				local samed = self:GetCurrentFiremode() == self:GetNextFiremode()
-				qd( s, fm, "H2_FiremodeC", Hx + Hw - s(4+1), Hy + Hh/2 + (samed and s(-0.5) or s(-3.5)), color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+				C2_DrawText( fm, "H2_FiremodeC", Hx + Hw - s(4+1), Hy + Hh/2 + (samed and s(-0.5) or s(-3.5)), color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 				if !samed then
 					local fm = self:GetNextFiremode()
 					if fm == 2 then
@@ -164,7 +162,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 					if self:GetSafe() then
 						fm = "Safety -- " .. fm
 					end
-					qd( s, "[E+R] " .. fm, "H2_FiremodeN", Hx + Hw - s(4+1), Hy + s(2+7), color_white, TEXT_ALIGN_RIGHT )
+					C2_DrawText( "[E+R] " .. fm, "H2_FiremodeN", Hx + Hw - s(4+1), Hy + s(2+7), color_white, TEXT_ALIGN_RIGHT )
 				end
 			end
 
@@ -237,7 +235,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 					Sy = Sy - math.ceil( s(4) )
 				end
 			end
-			qd( s, self:Clip1() .. " / " .. p:GetAmmoCount(self:GetPrimaryAmmoType()), "H2_FiremodeC", Hx + Hw + s(-2*Pass) - s(8), Hy + Sy - s(17), color_white, TEXT_ALIGN_RIGHT )
+			C2_DrawText( self:Clip1() .. " / " .. p:GetAmmoCount(self:GetPrimaryAmmoType()), "H2_FiremodeC", Hx + Hw + s(-2*Pass) - s(8), Hy + Sy - s(17), color_white, TEXT_ALIGN_RIGHT )
 
 			if false then for i=1, 6 do
 				if i==1 then
@@ -263,8 +261,8 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 				local Nx, Ny = sw - s( 12 ), Hy - s(14+2) - s((8)*(i-1))
 
 				--GEM( s, Nx, Ny, s( 140 ), s( 14 ) )
-				qd( s, strin, "C2_4", Nx - s(110), Ny + s(2), color_white, TEXT_ALIGN_LEFT )
-				qd( s, strin2, "C2_4", Nx, Ny + s(2), color_white, TEXT_ALIGN_RIGHT )
+				C2_DrawText( strin, "C2_4", Nx - s(110), Ny + s(2), color_white, TEXT_ALIGN_LEFT )
+				C2_DrawText( strin2, "C2_4", Nx, Ny + s(2), color_white, TEXT_ALIGN_RIGHT )
 			end end
 		end
 
@@ -274,15 +272,15 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 
 			C2_FullBox( s, Hx, Hy, Hw, Hh )
 
-			--qd( s, "WARNING", "H2_DialogHeader", Hx + Hw/2, Hy + s(4), color_white, TEXT_ALIGN_CENTER )
-			--qd( s, "Firemode switched to Full-auto", "H2_DialogText", Hx + Hw/2, Hy + s(12), color_white, TEXT_ALIGN_CENTER )
-			qd( s, "3-burst", "H2_DialogText", Hx + Hw/2, Hy + Hh/2 - s(10), color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			qd( s, "Full-auto", "H2_DialogText", Hx + Hw/2, Hy + Hh/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			qd( s, "Single-fire", "H2_DialogText", Hx + Hw/2, Hy + Hh/2 + s(10), color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			--C2_DrawText( "WARNING", "H2_DialogHeader", Hx + Hw/2, Hy + s(4), color_white, TEXT_ALIGN_CENTER )
+			--C2_DrawText( "Firemode switched to Full-auto", "H2_DialogText", Hx + Hw/2, Hy + s(12), color_white, TEXT_ALIGN_CENTER )
+			C2_DrawText( "3-burst", "H2_DialogText", Hx + Hw/2, Hy + Hh/2 - s(10), color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			C2_DrawText( "Full-auto", "H2_DialogText", Hx + Hw/2, Hy + Hh/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			C2_DrawText( "Single-fire", "H2_DialogText", Hx + Hw/2, Hy + Hh/2 + s(10), color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
 			local sp = qtl( "Full-auto", "H2_DialogText" )
-			qd( s, ">", "H2_DialogText", Hx + (Hw/2) - (sp/2) - s(4), Hy + Hh/2, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
-			qd( s, "<", "H2_DialogText", Hx + (Hw/2) + (sp/2) + s(4), Hy + Hh/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+			C2_DrawText( ">", "H2_DialogText", Hx + (Hw/2) - (sp/2) - s(4), Hy + Hh/2, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+			C2_DrawText( "<", "H2_DialogText", Hx + (Hw/2) + (sp/2) + s(4), Hy + Hh/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
 		end
 	end
 end)

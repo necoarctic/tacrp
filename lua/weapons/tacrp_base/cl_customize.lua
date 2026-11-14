@@ -14,17 +14,28 @@ local body_arms = Material("tacrp/hud/body_arms.png", "mips smooth")
 local body_legs = Material("tacrp/hud/body_legs.png", "mips smooth")
 
 local stk_clr = {
-    [1] = Color(255, 75, 75),
-    [2] = Color(120, 20, 20),
-    [3] = Color(130, 90, 90),
-    [4] = Color(60, 35, 35),
-    [5] = Color(80, 80, 80),
-    [6] = Color(160, 160, 160),
-    [7] = Color(180, 180, 180),
-    [8] = Color(200, 200, 200),
-    [9] = Color(220, 220, 220),
-    [10] = Color(240, 240, 240),
-    [11] = Color(255, 255, 255),
+    HSVToColor( 0, 1, 1 ),
+    HSVToColor( 15, .7, .8 ),
+    HSVToColor( 15, .55, .8 ),
+    HSVToColor( 15, .2, .6 ),
+    HSVToColor( 15, 0, .5 ),
+    HSVToColor( 15, 0, .4 ),
+    HSVToColor( 15, 0, .35 ),
+    HSVToColor( 15, 0, .25 ),
+    HSVToColor( 15, 0, .15 ),
+    HSVToColor( 15, 0, 0 ),
+}
+local stk_clr_amr = {
+    HSVToColor( 240, 1, 1 ),
+    HSVToColor( 215, .8, .8 ),
+    HSVToColor( 215, .55, .8 ),
+    HSVToColor( 215, .2, .6 ),
+    HSVToColor( 215, 0, .5 ),
+    HSVToColor( 215, 0, .4 ),
+    HSVToColor( 215, 0, .35 ),
+    HSVToColor( 215, 0, .25 ),
+    HSVToColor( 215, 0, .15 ),
+    HSVToColor( 215, 0, 0 ),
 }
 local function bodydamagetext(name, dmg, num, mult, x, y, hover)
 
@@ -44,12 +55,9 @@ local function bodydamagetext(name, dmg, num, mult, x, y, hover)
         surface.DrawText(math.floor(dmg * mult)) --  .. (num > 1 and ("×" .. num) or "")
     end
 
-    local c = stk_clr[math.Clamp(num > 1 and math.ceil(stk / num) or stk, 1, 11)]
-    if enable_armor then
-        surface.SetDrawColor(c.b, c.g, c.r - (c.r - c.g) * 0.25, 255)
-    else
-        surface.SetDrawColor(c.r, c.g, c.b, 255)
-    end
+    local clrlist = enable_armor and stk_clr_amr or stk_clr
+    local c = clrlist[math.min(num > 1 and math.ceil(stk / num) or stk, #clrlist)]
+    surface.SetDrawColor(c.r, c.g, c.b, 255)
 end
 
 local lastcustomize = false
@@ -292,13 +300,13 @@ function SWEP:CreateCustomizeHUD()
             TacRP.DrawCorneredBox(0, 0, w, h)
 
             local za = TacRP.SS(1)
-            for i=1, 7 do
-                local c = stk_clr[i]
-                if enable_armor then
-                    surface.SetDrawColor( c.b, c.g, c.r - (c.r - c.g) * 0.25, 255 )
-                else
-                    surface.SetDrawColor( c.r, c.g, c.b, 255 )
-                end
+
+            local clrlist = enable_armor and stk_clr_amr or stk_clr
+
+            for i=1, 9 do
+                local c = clrlist[i]
+                surface.SetDrawColor(c.r, c.g, c.b, 255)
+                
                 surface.DrawRect( math.Round(w - (za*5) - za*2), math.Round(h - (za*5*i) - za*2), math.Round(za*5), math.Round(za*5) )
 
                 surface.SetTextColor( 255, 255, 255, 127 )
@@ -957,8 +965,8 @@ function SWEP:CreateCustomizeHUD()
 
         local stat_box = vgui.Create("DPanel", bg)
         stat_box.PrintName = TacRP:GetPhrase("cust.stats")
-        stat_box:SetSize(w_statbox, scrh - TacRP.SS(20) )
-        stat_box:SetPos(scrw*0.25 - w_statbox/2, TacRP.SS(10) )
+        stat_box:SetSize(w_statbox, TacRP.SS(172))
+        stat_box:SetPos(scrw - w_statbox - airgap - smallgap, stack + smallgap * 2 + tabs_h)
         stat_box.Paint = function(self2, w, h)
             if !IsValid(self) then return end
 
