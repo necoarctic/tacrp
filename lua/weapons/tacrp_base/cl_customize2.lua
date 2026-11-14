@@ -144,8 +144,8 @@ local C2_COLOR_TextShadow = HSVToColor( 0, 0, 0.25 )
 C2_COLOR_TextShadow.a = 0.50*255
 
 -- Text shadow lower
-local C2_Color_TextShadowLoer = HSVToColor( 0, 0, 0.25 )
-C2_Color_TextShadowLoer.a = 0.25*255
+local C2_Color_TextShadowLower = HSVToColor( 0, 0, 0.25 )
+C2_Color_TextShadowLower.a = 0.25*255
 
 -- Main color
 local C2_COLOR_Main = HSVToColor( 100, 0.2, 1 )
@@ -205,18 +205,18 @@ function C2_DrawText( t, f, x, y, c, ax, ay )
 	draw.SimpleText( t, f, x+1, y+1, C2_COLOR_TextShadow, ax, ay )
 	draw.SimpleText( t, f, x+1, y+2, C2_COLOR_TextShadow, ax, ay )
 
-	draw.SimpleText( t, f, x-1, y, C2_Color_TextShadowLoer, ax, ay )
-	draw.SimpleText( t, f, x-1, y-1, C2_Color_TextShadowLoer, ax, ay )
-	draw.SimpleText( t, f, x+1, y-1, C2_Color_TextShadowLoer, ax, ay )
+	draw.SimpleText( t, f, x-1, y, C2_Color_TextShadowLower, ax, ay )
+	draw.SimpleText( t, f, x-1, y-1, C2_Color_TextShadowLower, ax, ay )
+	draw.SimpleText( t, f, x+1, y-1, C2_Color_TextShadowLower, ax, ay )
 
-	draw.SimpleText( t, f, x+2, y+2, C2_Color_TextShadowLoer, ax, ay )
-	draw.SimpleText( t, f, x+2, y, C2_Color_TextShadowLoer, ax, ay )
+	draw.SimpleText( t, f, x+2, y+2, C2_Color_TextShadowLower, ax, ay )
+	draw.SimpleText( t, f, x+2, y, C2_Color_TextShadowLower, ax, ay )
 
 	draw.SimpleText( t, f, x, y, c, ax, ay )
 end
 
 function qRect( x, y, ax, ay, context )
-	surface.SetDrawColor( C2_Color_TextShadowLoer )
+	surface.SetDrawColor( C2_Color_TextShadowLower )
 	surface.DrawRect( x, y+1, ax, ay )
 	surface.DrawRect( x+1, y+1, ax, ay )
 	surface.DrawRect( x+1, y+2, ax, ay )
@@ -816,8 +816,8 @@ table.insert(pages, {
 
 local uio = Material( "uio/shadow.png", "" )
 
-local c2_Currentpage = 1
-local c2_Desire = 1
+local page_interpolated = 1
+local page_target = 1
 
 function SWEP:C2_Open()
 	if IsValid( c2 ) then c2:Remove() end
@@ -830,9 +830,9 @@ function SWEP:C2_Open()
 	c2:SetKeyboardInputEnabled( false )
 
 	c2.TFrom = 0
-	c2.TTo = c2_Desire
+	c2.TTo = page_target
 	c2.Prog = 0
-	c2.Lastdesire = c2_Desire
+	c2.Lastdesire = page_target
 
 	local p = LocalPlayer()
 	local w = self
@@ -865,7 +865,7 @@ function SWEP:C2_Open()
 		mbutton:SetPos( i==2 and math.ceil( sw-s(20) ), sh*(1-0.7)/2 )
 		mbutton:SetText( "MEOW" )
 		function mbutton:DoClick()
-			c2_Desire = math.Clamp( c2_Desire+(i==1 and -1 or 1), 1, #pages )
+			page_target = math.Clamp( page_target+(i==1 and -1 or 1), 1, #pages )
 		end
 		mbutton.Glow = 0
 		function mbutton:Paint( w, h )
@@ -922,7 +922,7 @@ function SWEP:C2_Open()
 		mbutton:SetPos( s(24) + s((i-1)*(80+4)), s(24/2 - 16/2) )
 		mbutton:SetText( v.Name )
 		function mbutton:DoClick()
-			c2_Desire = i
+			page_target = i
 		end
 		function mbutton:Paint( w, h )
 			C2_PaintBox( s, w, h )
@@ -980,11 +980,11 @@ function SWEP:C2_Open()
 
 		C2_UpdateColors()
 	
-		if c2.Lastdesire != c2_Desire then
+		if c2.Lastdesire != page_target then
 			c2.Prog = 0
 			c2.TFrom = c2.Lastdesire
-			c2.TTo = c2_Desire
-			c2.Lastdesire = c2_Desire
+			c2.TTo = page_target
+			c2.Lastdesire = page_target
 		end
 		c2.Prog = math.Approach( c2.Prog, 1, FrameTime() / 0.3 )
 		local sake = math.ease.OutExpo( c2.Prog )
@@ -1045,7 +1045,7 @@ local blocklist = {
 hook.Add( "PlayerBindPress", "TacRP_C2_PlayerBindPress", function( ply, bind, pressed )
 	if IsValid( c2 ) and blocklist[bind] then
 		if pressed and blocklist[bind] >= 1 and blocklist[bind] <= #pages then
-			c2_Desire = blocklist[bind]
+			page_target = blocklist[bind]
 		end
 		return true
 	end
