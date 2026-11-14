@@ -27,19 +27,26 @@ local dCol = Color( 200, 200, 200 )
 local COLOR_POSITIVE = Color( 120, 255, 120 )
 local COLOR_NEGATIVE = Color( 255, 200, 200 )
 
-local function GenerateAttachmentSelect( context, host, slotnum, slottab )
+local function CloseAttachmentSelect()
 	if IsValid(selecta) then selecta:Remove() end
-	selecta = vgui.Create( "Panel" )
-	selecta:SetSize( s(180), s(380) )
-	selecta:Center()
+end
+
+local function GenerateAttachmentSelect( context, host, slotnum, slottab, parent )
+	CloseAttachmentSelect()
+	selecta = vgui.Create( "Panel", parent )
+	local PADDING = s(8)
+	selecta:SetSize( s(180+8+8), s(380+8+8) )
+	-- selecta:Center()
 	selecta:MakePopup()
 	selecta:SetKeyboardInputEnabled( false )
 	function selecta:Paint( w, h )
+		C2_FullBox( 0, 0, w, h )
 		return true
 	end
-
+	
 	local sp = selecta:Add("DScrollPanel")
 	sp:Dock( FILL )
+	sp:DockMargin( PADDING, PADDING, PADDING, PADDING )
 
 	local atts = TacRP.GetAttsForCats( slottab.Category or "", context.weapon )
 
@@ -100,18 +107,20 @@ local function GenerateAttachmentSelect( context, host, slotnum, slottab )
 				context.weapon:Attach( slotnum, att )
 			end
 			host:InvalidateLayout()
-			selecta:Remove()
+			CloseAttachmentSelect()
 		end
 
 		function button:DoRightClick()
 			if slottab.Installed == att then
 				context.weapon:Detach( slotnum )
 				host:InvalidateLayout()
-				selecta:Remove()
+				CloseAttachmentSelect()
 			end
 		end
 
 	end
+
+	return selecta
 end
 
 -- Drop-in empty panel Paint
@@ -187,6 +196,12 @@ function C2_Outline( x, y, w, h )
 	surface.DrawTexturedRect( x+w-1, y, 1, h )
 end
 
+function C2_GradientLine( x, y, h )
+	surface.SetDrawColor( 255, 255, 255 )
+	surface.SetMaterial( grad2 )
+	surface.DrawTexturedRect( x, y, 1, h )
+end
+
 function C2_FullBox( x, y, w, h )
 	surface.SetDrawColor( C2_COLOR_Main )
 	surface.DrawRect( x, y, w, h )
@@ -196,8 +211,9 @@ function C2_FullBox( x, y, w, h )
 
 	C2_Outline( x, y, w, h )
 end
-function C2_PaintBox( s, w, h )
+local function paint_box( _, w, h )
 	C2_FullBox( 0, 0, w, h )
+	return true
 end
 
 function C2_DrawText( t, f, x, y, c, ax, ay )
@@ -399,6 +415,7 @@ table.insert(pages, {
 			end
 
 			function slot:DoRightClick()
+				CloseAttachmentSelect()
 				if slottab.Installed then
 					context.weapon:Detach( slotnum )
 					page:InvalidateLayout()
@@ -406,7 +423,7 @@ table.insert(pages, {
 			end
 
 			function slot:DoClick()
-				GenerateAttachmentSelect( context, page, slotnum, slottab )
+				GenerateAttachmentSelect( context, page, slotnum, slottab, p_left )
 			end
 		end
 		function page:PerformLayout()
@@ -428,7 +445,10 @@ table.insert(pages, {
 		end
 
 		local p_right = page:Add( "Panel" )
-		p_right:SetTall( par:GetTall() )
+		-- p_right:SetTall( par:GetTall() )
+		p_right:Dock(RIGHT)
+		local PADDING = s(24)
+		p_right:DockPadding( PADDING, PADDING, PADDING, PADDING )
 		p_right:SetWide( s(24+140+24) )
 		p_right:SetMouseInputEnabled( true )
 		p_right.Paint = rt
@@ -443,92 +463,154 @@ table.insert(pages, {
 			p_right:SetX( ( (1-page.SlidePer) * (gapper or self:GetWide()) ) + (page:GetWide()-gapper-gapper) )
 		end
 
-		local rside = p_right:Add( "DScrollPanel" )
-		rside:SetY( s(24) )
-		rside:SetTall( par:GetTall() - s(24+24) )
-		rside:SetX( s(24) )
-		rside:SetWide( s(140) )
+		do
+			local p_statbox = p_right:Add( "DScrollPanel" )
+			p_statbox:Dock( FILL )
 
-		rside.pnlCanvas:DockPadding(1, 1+s(2), 1, s(4))
+			p_statbox.VBar:SetWide(4)
+			p_statbox.VBar:SetHideButtons(true)
 
-		rside.VBar:SetWide(4)
-		rside.VBar:SetHideButtons(true)
+			function p_statbox.VBar:Paint(w, h)
+			end
+			function p_statbox.VBar.btnGrip:Paint(w, h)
+				local todo = DisableClipping( true )
+					surface.SetDrawColor( 255, 255, 255 )
+					surface.DrawRect( 0, 2, 2, h-4 )
+				DisableClipping( todo )
+			end
+			p_statbox.Paint = paint_box
 
-		function rside.VBar:Paint(w, h)
-		end
-		function rside.VBar.btnGrip:Paint(w, h)
-			local todo = DisableClipping( true )
-				surface.SetDrawColor( 255, 255, 255 )
-				surface.DrawRect( 0, 1, 2, h-2	 )
-			DisableClipping( todo )
-		end
+			context.weapon.MiscCache["statbox"] = {}
+			context.weapon.StatRows = {}
 
+			for index, data in ipairs(context.weapon.StatDisplay) do
+				updatestat( context.weapon, index, data )
+			end
+			
+			--if !context.weapon.MiscCache["statbox"] then
+			--		populate_stats(layout)
+			--end
 
-		function rside:Paint( w, h )
-			C2_PaintBox( s, w, h )
-		end
+			for index, data in ipairs(context.weapon.StatDisplay) do
+				local cache = context.weapon.MiscCache["statbox"][index]
+				if !cache then continue end
 
-		context.weapon.MiscCache["statbox"] = {}
-		context.weapon.StatRows = {}
+				local stat = p_statbox:Add( "Panel" )
+				stat:Dock(TOP)
+				stat:DockMargin( 0, data.Spacer and s(4) or 0, 0, 0 )
+				stat:SetTall( s(18) )
 
-		for index, data in ipairs(context.weapon.StatDisplay) do
-			updatestat( context.weapon, index, data )
-		end
-		
-		--if !context.weapon.MiscCache["statbox"] then
-		----	populate_stats(layout)
-		--end
-
-		local Floop = false
-		for _, data in ipairs(context.weapon.StatDisplay) do
-			local cache = context.weapon.MiscCache["statbox"][_]
-			if !cache then continue end
-
-			local stat = rside:Add( "Panel" )
-			stat:Dock(TOP)
-			stat:SetTall(data.Spacer and s(18) or s(18))
-			stat.Floop = Floop
-			Floop = !Floop
-
-			function stat:Paint(w, h)
-				--surface.SetDrawColor( 0, 0, 0, (self.Floop and 30 or 70) )
-				--surface.DrawRect( 0, 0, w, h )
-				local tn = TacRP:TryTranslate(data.Name)
-				if data.Spacer then
-					surface.SetFont("TacRP_C2_16")
-					local tns = surface.GetTextSize(tn)
-					qRect( s(4), s(15), tns+s(4), s(1), color_white )
-					C2_DrawText( tn, data.Spacer and "TacRP_C2_16", data.Spacer and s(4), 0, color_white )
-				else
-					C2_DrawText( tn, "TacRP_C2_8", s(4+4), 0, color_white )
-				end
-
-				if !data.Spacer then
-					-- Base Value
-					local DifferentValue = cache[2] != cache[1]
-					local col = cache[4] and COLOR_POSITIVE or COLOR_NEGATIVE -- Good Change
-					if DifferentValue then -- Current Value
-						C2_DrawText( cache[2], "TacRP_C2_14", s(4+4+8), s(4), col )
-						
-						if cache[3] then -- Good Or Bad Change
-							if cache[5] then
-								surface.SetFont("TacRP_C2_14")
-								local tns = surface.GetTextSize(cache[2])
-								C2_DrawText( "(" .. cache[5] .. ")", "TacRP_C2_10", s(4+4+8+2)+tns, s(6.5), col )
-								local bleh = s(4+4+8+2)+tns
-								local tns = surface.GetTextSize("(" .. cache[5] .. ")")
-								C2_DrawText( cache[1], "TacRP_C2_10", bleh+s(2)+tns, s(6.5), dCol )
-							else
-								surface.SetFont("TacRP_C2_14")
-								local tns = surface.GetTextSize(cache[2])
-								C2_DrawText( cache[1], "TacRP_C2_10", s(4+4+8+2)+tns, s(6.5), dCol )
-							end
-						end
+				function stat:Paint(w, h)
+					local tn = TacRP:TryTranslate(data.Name)
+					if data.Spacer then
+						surface.SetFont("TacRP_C2_16")
+						local tns = surface.GetTextSize(tn)
+						-- qRect( s(4), s(15), tns+s(4), s(1), color_white )
+						C2_DrawText( tn, data.Spacer and "TacRP_C2_16", data.Spacer and s(4), 0, color_white )
 					else
-						C2_DrawText( cache[1], "TacRP_C2_14", s(4+4+8), s(4), color_white )
+						-- Base Value
+						C2_DrawText( tn, "TacRP_C2_8", s(4+4), 0, color_white )
+						local DifferentValue = cache[2] != cache[1]
+						local col = cache[4] and COLOR_POSITIVE or COLOR_NEGATIVE -- Good Change
+						if DifferentValue then -- Current Value
+							C2_DrawText( cache[2], "TacRP_C2_14", s(4+4+8), s(4), col )
+							
+							if cache[3] then -- Good Or Bad Change
+								if cache[5] then
+									surface.SetFont("TacRP_C2_14")
+									local tns = surface.GetTextSize(cache[2])
+									C2_DrawText( "(" .. cache[5] .. ")", "TacRP_C2_10", s(4+4+8+2)+tns, s(6.5), col )
+									local bleh = s(4+4+8+2)+tns
+									local tns = surface.GetTextSize("(" .. cache[5] .. ")")
+									C2_DrawText( cache[1], "TacRP_C2_10", bleh+s(2)+tns, s(6.5), dCol )
+								else
+									surface.SetFont("TacRP_C2_14")
+									local tns = surface.GetTextSize(cache[2])
+									C2_DrawText( cache[1], "TacRP_C2_10", s(4+4+8+2)+tns, s(6.5), dCol )
+								end
+							end
+						else
+							C2_DrawText( cache[1], "TacRP_C2_14", s(4+4+8), s(4), color_white )
+						end
 					end
 				end
-				return
+			end
+		end
+
+		do
+			local header = p_right:Add( "Panel" )
+			-- header:SetSize( context.sw - s(48), s(64) )
+			-- header:SetPos( s(24), s(24) )
+			header:SetTall( s(80) )
+			header:DockMargin( 0, 0, 0, s(8) )
+			header:Dock( TOP )
+
+			function header:Paint( w, h )
+				C2_FullBox( 0, 0, w, h )
+				local wep = context.weapon
+
+				-- if TacRP.ConVars["metricunit"]:GetBool() then
+				-- 	panel_range = 75 / TacRP.HUToM
+				-- end
+
+				local exp = wep:GetValue("ExplosiveDamage")
+				local dmult = wep:GetConfigDamageMultiplier()
+				local dmg_max = (wep:GetValue("Damage_Max") + exp) * dmult
+				local dmg_min = (wep:GetValue("Damage_Min") + exp) * dmult
+				local range_min, range_max = wep:GetMinMaxRange()
+
+				-- panel range expands to fit the entire damage range (+ some extra margin)
+				-- panel_range = panel_range * math.ceil((range_max + 13)/panel_range)
+				local right_space = s(32)
+				local phys_to_pixel = range_max/w
+				local panel_range = range_max + right_space*phys_to_pixel
+
+				local tall = h
+				local y = 0
+
+				local p1_x = w * (range_min / panel_range)
+				C2_GradientLine( p1_x, y, tall )
+				C2_DrawText(
+					dmg_max .. TacRP:GetPhrase("unit.damage"),
+					"TacRP_C2_10",
+					p1_x + s(2), y + s(4),
+					color_white
+				)
+				C2_DrawText(
+					wep:RangeUnitize(range_min),
+					"TacRP_C2_10",
+					p1_x + s(2), y + s(4+10),
+					color_white
+				)
+
+				local p2_x = w * (range_max / panel_range)
+				C2_GradientLine( p2_x, y, tall )
+				C2_DrawText(
+					dmg_min .. TacRP:GetPhrase("unit.damage"),
+					"TacRP_C2_10",
+					p2_x - s(2), y + s(4),
+					color_white,
+					TEXT_ALIGN_RIGHT
+				)
+				C2_DrawText(
+					wep:RangeUnitize(range_max),
+					"TacRP_C2_10",
+					p2_x - s(2), y + s(4+10),
+					color_white,
+					TEXT_ALIGN_RIGHT
+				)
+
+				-- lines
+				local max_y = h - (math.min(wep:GetValue("Damage_Max")/100, 1) * tall)
+				local min_y = h - (math.min(wep:GetValue("Damage_Min")/100, 1) * tall)
+				surface.SetDrawColor(255, 255, 255)
+				for i = 0, 1 do
+					surface.DrawLine( 0, max_y + i, p1_x, max_y + i )
+					surface.DrawLine( p1_x, max_y + i, p2_x, min_y + i )
+					surface.DrawLine( p2_x, min_y + i, w, min_y + i )
+				end
+
+				return true
 			end
 		end
 	end,
@@ -575,7 +657,7 @@ table.insert(pages, {
 			header:SetPos( s(24), s(24) )
 
 			function header:Paint( w, h )
-				C2_PaintBox( s, w, h )
+				C2_FullBox( 0, 0, w, h )
 
 				local type_txt = TacRP.FormatTierType(context.weapon.SubCatType, context.weapon.SubCatTier, TacRP.UseTiers())
 				C2_DrawText( context.weapon:GetPrintName(), "TacRP_C2_36", s(Margin_3), h/2, color_white, nil, TEXT_ALIGN_CENTER )
@@ -604,7 +686,7 @@ table.insert(pages, {
 				tb:SetSize( s(48), s(12) )
 				tb:SetPos( page:GetWide()/2 - f_w/2 + math.ceil( s((index-1))*(48+1)), 0 )
 				function tb:Paint( w, h )
-					C2_PaintBox( s, w, h )
+					C2_FullBox( 0, 0, w, h )
 					C2_DrawText( Taby[1], "TacRP_C2_10", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 					return true
 				end
@@ -612,7 +694,7 @@ table.insert(pages, {
 			end
 
 			function footer:Paint( w, h )
-				C2_PaintBox( s, w, h )
+				C2_FullBox( 0, 0, w, h )
 
 				local desc = TacRP.MultiLineText( context.weapon.Description, w - s(12*2), "TacRP_C2_12" )
 
@@ -643,7 +725,7 @@ table.insert(pages, {
 			footer:SetSize( f_w, f_h )
 			footer:SetPos( s(24), context.sh - f_h - s(12) )
 			function footer:Paint( w, h )
-				C2_PaintBox( s, w, h )
+				C2_FullBox( 0, 0, w, h )
 
 				local bump = 0
 				for i, v in pairs( weh ) do
@@ -672,7 +754,7 @@ table.insert(pages, {
 			footer:SetSize( f_w, f_h )
 			footer:SetPos( context.sw - f_w - s(24), context.sh - f_h - s(12) )
 			function footer:Paint( w, h )
-				C2_PaintBox( s, w, h )
+				C2_FullBox( 0, 0, w, h )
 
 				for i, line in ipairs( multiline ) do
 					-- TODO: If you can find out how to do this with Lua Patterns, that'd be nice.
@@ -701,112 +783,6 @@ table.insert(pages, {
 	end,
 })
 table.insert(pages, {
-	Name = "Terminal Effect",
-	Initialize = function( page, par, context )
-		local p_top = page:Add( "Panel" )
-		p_top:SetTall( par:GetTall() )
-		p_top:SetWide( par:GetWide() )
-		p_top:SetMouseInputEnabled( true )
-		p_top.Paint = rt
-		local gapper = s(24+64+24)--+32+24+24)
-		function p_top:Paint( w, h )
-			-- surface.SetDrawColor( 25, 0, 0, 32 )
-			-- surface.DrawRect( 0, 0, w, gapper )
-			return true
-		end
-		function p_top:Think()
-			p_top:SetY( page.SlidePer * (gapper or self:GetTall()) )
-		end
-		do
-			local header = p_top:Add( "Panel" )
-			header:SetSize( context.sw - s(48), s(64) )
-			header:SetPos( s(24), s(24) )
-
-			function header:Paint( w, h )
-				C2_PaintBox( s, w, h )
-				local wep = context.weapon
-
-				local panel_range = 1250
-				if TacRP.ConVars["metricunit"]:GetBool() then
-					panel_range = 125 / TacRP.HUToM
-				end
-
-				local exp = wep:GetValue("ExplosiveDamage")
-				local dmult = wep:GetConfigDamageMultiplier()
-				local dmg_max = (wep:GetValue("Damage_Max") + exp) * dmult
-				local dmg_min = (wep:GetValue("Damage_Min") + exp) * dmult
-				local range_min, range_max = wep:GetMinMaxRange()
-
-				-- panel range expands to fit the entire
-				panel_range = panel_range * math.ceil(range_max/panel_range)
-
-				local tall = h - s(4 + 10 + 4)
-				local y = h - tall
-
-				C2_DrawText(
-					"DAMAGE AT RANGE",
-					"TacRP_C2_10",
-					s(4), s(4),
-					color_white
-				)
-				C2_DrawText(
-					wep:RangeUnitize(panel_range),
-					"TacRP_C2_10",
-					w-s(4), s(4),
-					color_white,
-					TEXT_ALIGN_RIGHT
-				)
-
-				local p1_x = w * (range_min / panel_range)
-				surface.DrawRect( p1_x, y, 1, tall )
-				C2_DrawText(
-					wep:RangeUnitize(range_min),
-					"TacRP_C2_10",
-					p1_x + s(2), y,
-					color_white
-				)
-				C2_DrawText(
-					dmg_max .. TacRP:GetPhrase("unit.damage"),
-					"TacRP_C2_10",
-					p1_x + s(2), y + s(10),
-					color_white
-				)
-
-				local p2_x = w * (range_max / panel_range)
-				surface.DrawRect( p2_x, y, 1, tall )
-				C2_DrawText(
-					wep:RangeUnitize(range_max),
-					"TacRP_C2_10",
-					p2_x - s(2), y,
-					color_white,
-					TEXT_ALIGN_RIGHT
-				)
-				C2_DrawText(
-					dmg_min .. TacRP:GetPhrase("unit.damage"),
-					"TacRP_C2_10",
-					p2_x - s(2), y + s(10),
-					color_white,
-					TEXT_ALIGN_RIGHT
-				)
-
-				-- lines
-				local max_y = h - (math.min(wep:GetValue("Damage_Max")/100, 1) * tall)
-				local min_y = h - (math.min(wep:GetValue("Damage_Min")/100, 1) * tall)
-				surface.SetDrawColor(255, 255, 255)
-				for i = 0, 1 do
-					surface.DrawLine( 0, max_y + i, p1_x, max_y + i )
-					surface.DrawLine( p1_x, max_y + i, p2_x, min_y + i )
-					surface.DrawLine( p2_x, min_y + i, w, min_y + i )
-				end
-
-				return true
-			end
-		end
-	end,
-	Paint = function( page, w, h, context )
-	end,
-})
-table.insert(pages, {
 	Name = "Inspect",
 	Initialize = function( page, par, context )
 	end,
@@ -828,6 +804,7 @@ function SWEP:C2_Open()
 	c2:MakePopup()
 	c2:SetPopupStayAtBack( true )
 	c2:SetKeyboardInputEnabled( false )
+	c2.m_bDeleteOnClose = true
 
 	c2.TFrom = 0
 	c2.TTo = page_target
@@ -842,7 +819,7 @@ function SWEP:C2_Open()
 	end
 
 	function c2:OnRemove()
-		if IsValid( selecta ) then selecta:Remove() end
+		-- CloseAttachmentSelect()
 		if IsValid(w) and TacRP.ConVars["autosave"]:GetBool() and TacRP.ConVars["free_atts"]:GetBool() then
 			w:SavePreset()
 		end
@@ -878,37 +855,17 @@ function SWEP:C2_Open()
 		end
 	end
 
-	-- Close button
-	do
-		local cl = c2:Add("DButton")
-		cl:SetSize( s(12), s(12) )
-		cl:SetPos( sw - s(24+12), s(24/2 - 12/2) )
-		function cl:DoClick()
-			-- Customizing is a predicted bind.
-			-- Consider if you really want it to.
-			c2:Remove()
-		end
-		function cl:DoRightClick()
-			c2:Remove()
-		end
-		function cl:Paint( w, h )
-			C2_PaintBox( s, w, h )
-			C2_DrawText( "×", "TacRP_C2_12", w/2 - s(0.5), h/2 - s(1.5), color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			return true
-		end
-	end
-
 	-- Drop Weapon
 	do
 		local cl = c2:Add("DButton")
 		cl:SetSize( s(58), s(12) )
-		cl:SetPos( sw - s(24+12+4+58), s(24/2 - 12/2) )
+		cl:SetPos( sw - s(24+58), s(24/2 - 12/2) )
 		function cl:DoClick()
 			RunConsoleCommand("tacrp_drop")
 			c2:Remove()
 		end
 		function cl:Paint( w, h )
-			C2_PaintBox( s, w, h )
+			C2_FullBox( 0, 0, w, h )
 			C2_DrawText( "Drop Weapon", "TacRP_C2_10", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 			return true
 		end
@@ -925,7 +882,7 @@ function SWEP:C2_Open()
 			page_target = i
 		end
 		function mbutton:Paint( w, h )
-			C2_PaintBox( s, w, h )
+			C2_FullBox( 0, 0, w, h )
 			
 			C2_DrawText( i, "TacRP_C2_10", s(3), s(1), color_white )
 			C2_DrawText( v.Name, "TacRP_C2_12", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
@@ -1012,6 +969,8 @@ function SWEP:C2_Open()
 		end
 	end
 end
+
+-- reloading for development
 if IsValid( c2 ) then
 	c2:Remove()
 	c2 = nil
@@ -1064,8 +1023,7 @@ hook.Add("HUDShouldDraw", "TacRP_C2_HideHUD", function(name)
 
 	local player = LocalPlayer()
 	local weapon = player:GetActiveWeapon()
-	if IsValid( weapon ) and weapon.ArcticTacRP then
-	else
+	if not (IsValid( weapon ) and weapon.ArcticTacRP) then
 		weapon = false
 	end
 
@@ -1223,6 +1181,8 @@ hook.Add( "PopulateToolMenu", "CustomMenuSettings", function()
 		panel:NumSlider( "Accent Alpha", "tacrp_c2_2_a", 0, 1, 2 )
 	end )
 	spawnmenu.AddToolMenuOption( "Options", "Tactical RP Weapons", "TacRP_H2", "Beta: HUD 2", "", "", function( panel )
-		panel:CheckBox( "Enable HUD", "tacrp_h2" )
+		panel:CheckBox( "Enable HUD", "tacrp_h2_enable" )
+		panel:CheckBox( "Enable Health", "tacrp_h2_enable_health" )
+		panel:CheckBox( "Enable Ammo", "tacrp_h2_enabled_ammo" )
 	end )
 end )
