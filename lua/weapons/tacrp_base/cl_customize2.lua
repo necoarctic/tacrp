@@ -1,9 +1,11 @@
+-- TODO move convars to main convars file
 local c2_scale = CreateClientConVar( "tacrp_c2_scale", 1, true, false )
 function C2_ScreenScale( height )
 	return height * ( ScrH() / 480.0 ) * c2_scale:GetFloat()
 end
 local s = C2_ScreenScale
-local fn = "Myriad Pro"--"Bahnschrift"
+
+local fn = "Myriad Pro"
 local sizes = {36, 18, 16, 14, 12, 10, 8, 6}
 for i, v in ipairs(sizes) do
 	surface.CreateFont( "TacRP_C2_"..v, {
@@ -25,9 +27,9 @@ local dCol = Color( 200, 200, 200 )
 local COLOR_POSITIVE = Color( 120, 255, 120 )
 local COLOR_NEGATIVE = Color( 255, 200, 200 )
 
-local function genselecta( context, host, slotnum, slottab )
+local function GenerateAttachmentSelect( context, host, slotnum, slottab )
 	if IsValid(selecta) then selecta:Remove() end
-	selecta = vgui.Create( "DFrame" )
+	selecta = vgui.Create( "Panel" )
 	selecta:SetSize( s(180), s(380) )
 	selecta:Center()
 	selecta:MakePopup()
@@ -124,7 +126,7 @@ local weh = {
 	["Manufacturer"] = "Trivia_Manufacturer",
 	["Production Year"] = "Trivia_Year",
 	["Faction"] = function( w )
-		return (TacRP:GetPhrase(TacRP.FactionToPhrase[w:GetValue("Faction")]))
+		return TacRP:GetPhrase( TacRP.FactionToPhrase[ w:GetValue("Faction") ] )
 	end,
 }
 
@@ -137,25 +139,30 @@ end
 local grad = Material("vgui/gradient-d")
 local grad2 = Material("vgui/gradient-u")
 
-local GLEEDARKTH = HSVToColor( 0, 0, 0.25 )
-GLEEDARKTH.a = 0.50*255
-local GLEEDARKTX = HSVToColor( 0, 0, 0.25 )
-GLEEDARKTX.a = 0.25*255
+-- Text shadow upper
+local C2_COLOR_TextShadow = HSVToColor( 0, 0, 0.25 )
+C2_COLOR_TextShadow.a = 0.50*255
 
-local GLEEC1 = HSVToColor( 100, 0.2, 1 )
-GLEEC1.a = 4
-local GLEEC2 = HSVToColor( 100, 0.4, 1 )
-GLEEC2.a = 10
-local GLEEDARK2 = HSVToColor( 0, 0, 0.5 )
+-- Text shadow lower
+local C2_Color_TextShadowLoer = HSVToColor( 0, 0, 0.25 )
+C2_Color_TextShadowLoer.a = 0.25*255
 
-local GLEEDARK4 = HSVToColor( 0, 0, 0.9 )
-local GLEEDARK5 = HSVToColor( 0, 0, 1 )
+-- Main color
+local C2_COLOR_Main = HSVToColor( 100, 0.2, 1 )
+C2_COLOR_Main.a = 4
 
+-- Accent color
+local C2_COLOR_Accent = HSVToColor( 100, 0.4, 1 )
+C2_COLOR_Accent.a = 10
+
+-- TODO move convars to main convars file
+-- Main color convars
 local c_1_h = CreateClientConVar( "tacrp_c2_1_h", 20, true, false )
 local c_1_s = CreateClientConVar( "tacrp_c2_1_s", 0.4, true, false )
 local c_1_v = CreateClientConVar( "tacrp_c2_1_v", 1, true, false )
 local c_1_a = CreateClientConVar( "tacrp_c2_1_a", (1/32), true, false )
 
+-- Accent color convars
 local c_2_h = CreateClientConVar( "tacrp_c2_2_h", 20, true, false )
 local c_2_s = CreateClientConVar( "tacrp_c2_2_s", 0.6, true, false )
 local c_2_v = CreateClientConVar( "tacrp_c2_2_v", 1, true, false )
@@ -164,18 +171,13 @@ local c_2_a = CreateClientConVar( "tacrp_c2_2_a", (1/32), true, false )
 local c_2_gd = CreateClientConVar( "tacrp_c2_graddown", 0, true, false )
 
 function C2_UpdateColors()
-	GLEEC1 = HSVToColor( c_1_h:GetFloat(), c_1_s:GetFloat(), c_1_v:GetFloat() )
-	GLEEC1.a = c_1_a:GetFloat()*255
+	C2_COLOR_Main = HSVToColor( c_1_h:GetFloat(), c_1_s:GetFloat(), c_1_v:GetFloat() )
+	C2_COLOR_Main.a = c_1_a:GetFloat()*255
 	
-	GLEEC2 = HSVToColor( c_2_h:GetFloat(), c_2_s:GetFloat(), c_2_v:GetFloat() )
-	--GLEEC2 = HSVToColor( ((CurTime()*360)-180)%360, 1, 1 )
-	GLEEC2.a = c_2_a:GetFloat()*255
+	C2_COLOR_Accent = HSVToColor( c_2_h:GetFloat(), c_2_s:GetFloat(), c_2_v:GetFloat() )
+	--C2_COLOR_Accent = HSVToColor( ((CurTime()*360)-180)%360, 1, 1 )
+	C2_COLOR_Accent.a = c_2_a:GetFloat()*255
 end
-
-function C2_PaintBox( s, w, h )
-	GEM( s, 0, 0, w, h )
-end
-Gleemax = C2_PaintBox
 
 function C2_Outline( x, y, w, h )
 	surface.SetDrawColor( 255, 255, 255 )
@@ -185,40 +187,36 @@ function C2_Outline( x, y, w, h )
 	surface.DrawTexturedRect( x+w-1, y, 1, h )
 end
 
-function C2_FullBox( s, x, y, w, h )
-	surface.SetDrawColor( GLEEC1 )
+function C2_FullBox( x, y, w, h )
+	surface.SetDrawColor( C2_COLOR_Main )
 	surface.DrawRect( x, y, w, h )
-	surface.SetDrawColor( GLEEC2 )
+	surface.SetDrawColor( C2_COLOR_Accent )
 	surface.SetMaterial( (c_2_gd:GetBool() and grad2) or grad )
 	surface.DrawTexturedRect( x, y, w, h )
 
 	C2_Outline( x, y, w, h )
 end
-GEM = C2_FullBox
-
--- local cb = Color( 0, 0, 0, 127 )
--- function GEM( s, x, y, w, h )
---     surface.SetDrawColor( cb )
---     return TacRP.DrawCorneredBox( x, y, w, h, color_white )
--- end
+function C2_PaintBox( s, w, h )
+	C2_FullBox( 0, 0, w, h )
+end
 
 function C2_DrawText( t, f, x, y, c, ax, ay )
-	draw.SimpleText( t, f, x, y+1, GLEEDARKTH, ax, ay )
-	draw.SimpleText( t, f, x+1, y+1, GLEEDARKTH, ax, ay )
-	draw.SimpleText( t, f, x+1, y+2, GLEEDARKTH, ax, ay )
+	draw.SimpleText( t, f, x, y+1, C2_COLOR_TextShadow, ax, ay )
+	draw.SimpleText( t, f, x+1, y+1, C2_COLOR_TextShadow, ax, ay )
+	draw.SimpleText( t, f, x+1, y+2, C2_COLOR_TextShadow, ax, ay )
 
-	draw.SimpleText( t, f, x-1, y, GLEEDARKTX, ax, ay )
-	draw.SimpleText( t, f, x-1, y-1, GLEEDARKTX, ax, ay )
-	draw.SimpleText( t, f, x+1, y-1, GLEEDARKTX, ax, ay )
+	draw.SimpleText( t, f, x-1, y, C2_Color_TextShadowLoer, ax, ay )
+	draw.SimpleText( t, f, x-1, y-1, C2_Color_TextShadowLoer, ax, ay )
+	draw.SimpleText( t, f, x+1, y-1, C2_Color_TextShadowLoer, ax, ay )
 
-	draw.SimpleText( t, f, x+2, y+2, GLEEDARKTX, ax, ay )
-	draw.SimpleText( t, f, x+2, y, GLEEDARKTX, ax, ay )
+	draw.SimpleText( t, f, x+2, y+2, C2_Color_TextShadowLoer, ax, ay )
+	draw.SimpleText( t, f, x+2, y, C2_Color_TextShadowLoer, ax, ay )
 
 	draw.SimpleText( t, f, x, y, c, ax, ay )
 end
 
 function qRect( x, y, ax, ay, context )
-	surface.SetDrawColor( GLEEDARKTX )
+	surface.SetDrawColor( C2_Color_TextShadowLoer )
 	surface.DrawRect( x, y+1, ax, ay )
 	surface.DrawRect( x+1, y+1, ax, ay )
 	surface.DrawRect( x+1, y+2, ax, ay )
@@ -350,7 +348,7 @@ local pages = {}
 table.insert(pages, {
 	Name = "Customize",
 	Initialize = function( page, par, context )
-		local p_left = page:Add( "DPanel" )
+		local p_left = page:Add( "Panel" )
 		p_left:SetTall( par:GetTall() )
 		p_left:SetWide( par:GetWide() )
 		p_left:SetMouseInputEnabled( true )
@@ -408,7 +406,7 @@ table.insert(pages, {
 			end
 
 			function slot:DoClick()
-				genselecta( context, page, slotnum, slottab )
+				GenerateAttachmentSelect( context, page, slotnum, slottab )
 			end
 		end
 		function page:PerformLayout()
@@ -429,7 +427,7 @@ table.insert(pages, {
 			end
 		end
 
-		local p_right = page:Add( "DPanel" )
+		local p_right = page:Add( "Panel" )
 		p_right:SetTall( par:GetTall() )
 		p_right:SetWide( s(24+140+24) )
 		p_right:SetMouseInputEnabled( true )
@@ -467,7 +465,7 @@ table.insert(pages, {
 
 
 		function rside:Paint( w, h )
-			Gleemax( s, w, h )
+			C2_PaintBox( s, w, h )
 		end
 
 		context.weapon.MiscCache["statbox"] = {}
@@ -486,7 +484,7 @@ table.insert(pages, {
 			local cache = context.weapon.MiscCache["statbox"][_]
 			if !cache then continue end
 
-			local stat = rside:Add( "DPanel" )
+			local stat = rside:Add( "Panel" )
 			stat:Dock(TOP)
 			stat:SetTall(data.Spacer and s(18) or s(18))
 			stat.Floop = Floop
@@ -540,7 +538,7 @@ table.insert(pages, {
 table.insert(pages, {
 	Name = "Information",
 	Initialize = function( page, par, context )
-		local p_top = page:Add( "DPanel" )
+		local p_top = page:Add( "Panel" )
 		p_top:SetTall( par:GetTall() )
 		p_top:SetWide( par:GetWide() )
 		p_top:SetMouseInputEnabled( true )
@@ -555,7 +553,7 @@ table.insert(pages, {
 		end
 
 		
-		local p_bottom = page:Add( "DPanel" )
+		local p_bottom = page:Add( "Panel" )
 		p_bottom:SetTall( par:GetTall() )
 		p_bottom:SetWide( par:GetWide() )
 		p_bottom:SetMouseInputEnabled( true )
@@ -572,12 +570,12 @@ table.insert(pages, {
 		local Margin_3 = 12
 
 		do
-			local header = p_top:Add( "DPanel" )
+			local header = p_top:Add( "Panel" )
 			header:SetSize( context.sw - s(48), s(40) )
 			header:SetPos( s(24), s(24) )
 
 			function header:Paint( w, h )
-				Gleemax( s, w, h )
+				C2_PaintBox( s, w, h )
 
 				local type_txt = TacRP.FormatTierType(context.weapon.SubCatType, context.weapon.SubCatTier, TacRP.UseTiers())
 				C2_DrawText( context.weapon:GetPrintName(), "TacRP_C2_36", s(Margin_3), h/2, color_white, nil, TEXT_ALIGN_CENTER )
@@ -589,7 +587,7 @@ table.insert(pages, {
 		end
 
 		do
-			local footer = p_bottom:Add( "DPanel" )
+			local footer = p_bottom:Add( "Panel" )
 			local f_w, f_h = s(400), s(12+(12*1)+12)
 			footer:SetSize( f_w, f_h )
 			footer:SetPos( page:GetWide()/2 - f_w/2, f_h - s(12) )
@@ -606,7 +604,7 @@ table.insert(pages, {
 				tb:SetSize( s(48), s(12) )
 				tb:SetPos( page:GetWide()/2 - f_w/2 + math.ceil( s((index-1))*(48+1)), 0 )
 				function tb:Paint( w, h )
-					Gleemax( s, w, h )
+					C2_PaintBox( s, w, h )
 					C2_DrawText( Taby[1], "TacRP_C2_10", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 					return true
 				end
@@ -614,7 +612,7 @@ table.insert(pages, {
 			end
 
 			function footer:Paint( w, h )
-				Gleemax( s, w, h )
+				C2_PaintBox( s, w, h )
 
 				local desc = TacRP.MultiLineText( context.weapon.Description, w - s(12*2), "TacRP_C2_12" )
 
@@ -639,13 +637,13 @@ table.insert(pages, {
 		end
 
 		do
-			local footer = p_bottom:Add( "DPanel" )
+			local footer = p_bottom:Add( "Panel" )
 			footer:Hide()
 			local f_w, f_h = page:GetWide()/2 - s(400)/2 - s(24+12), s(4+(12*3)+4)
 			footer:SetSize( f_w, f_h )
 			footer:SetPos( s(24), context.sh - f_h - s(12) )
 			function footer:Paint( w, h )
-				Gleemax( s, w, h )
+				C2_PaintBox( s, w, h )
 
 				local bump = 0
 				for i, v in pairs( weh ) do
@@ -664,7 +662,7 @@ table.insert(pages, {
 		end
 
 		do
-			local footer = p_bottom:Add( "DPanel" )
+			local footer = p_bottom:Add( "Panel" )
 			footer:Hide()
 			local multiline = TacRP.MultiLineText( context.weapon.Credits, math.huge, "TacRP_C2_12" )
 			if multiline[#multiline] == " " then
@@ -674,7 +672,7 @@ table.insert(pages, {
 			footer:SetSize( f_w, f_h )
 			footer:SetPos( context.sw - f_w - s(24), context.sh - f_h - s(12) )
 			function footer:Paint( w, h )
-				Gleemax( s, w, h )
+				C2_PaintBox( s, w, h )
 
 				for i, line in ipairs( multiline ) do
 					-- TODO: If you can find out how to do this with Lua Patterns, that'd be nice.
@@ -705,7 +703,7 @@ table.insert(pages, {
 table.insert(pages, {
 	Name = "Terminal Effect",
 	Initialize = function( page, par, context )
-		local p_top = page:Add( "DPanel" )
+		local p_top = page:Add( "Panel" )
 		p_top:SetTall( par:GetTall() )
 		p_top:SetWide( par:GetWide() )
 		p_top:SetMouseInputEnabled( true )
@@ -720,12 +718,12 @@ table.insert(pages, {
 			p_top:SetY( page.SlidePer * (gapper or self:GetTall()) )
 		end
 		do
-			local header = p_top:Add( "DPanel" )
+			local header = p_top:Add( "Panel" )
 			header:SetSize( context.sw - s(48), s(64) )
 			header:SetPos( s(24), s(24) )
 
 			function header:Paint( w, h )
-				Gleemax( s, w, h )
+				C2_PaintBox( s, w, h )
 				local wep = context.weapon
 
 				local panel_range = 1250
@@ -824,16 +822,12 @@ local c2_Desire = 1
 function SWEP:C2_Open()
 	if IsValid( c2 ) then c2:Remove() end
 	local sw, sh = ScrW(), ScrH()
-	c2 = vgui.Create( "DFrame" )
+	c2 = vgui.Create( "Panel" )
 	c2:SetSize( sw, sh )
 	c2:Center()
 	c2:MakePopup()
 	c2:SetPopupStayAtBack( true )
 	c2:SetKeyboardInputEnabled( false )
-	c2:ShowCloseButton( false )
-	c2.btnMaxim:SetVisible( false )
-	c2.btnMinim:SetVisible( false )
-	c2.lblTitle:SetVisible( false )
 
 	c2.TFrom = 0
 	c2.TTo = c2_Desire
@@ -898,7 +892,7 @@ function SWEP:C2_Open()
 			c2:Remove()
 		end
 		function cl:Paint( w, h )
-			Gleemax( s, w, h )
+			C2_PaintBox( s, w, h )
 			C2_DrawText( "×", "TacRP_C2_12", w/2 - s(0.5), h/2 - s(1.5), color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 			return true
 		end
@@ -914,7 +908,7 @@ function SWEP:C2_Open()
 			c2:Remove()
 		end
 		function cl:Paint( w, h )
-			Gleemax( s, w, h )
+			C2_PaintBox( s, w, h )
 			C2_DrawText( "Drop Weapon", "TacRP_C2_10", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 			return true
 		end
@@ -931,16 +925,16 @@ function SWEP:C2_Open()
 			c2_Desire = i
 		end
 		function mbutton:Paint( w, h )
-			Gleemax( s, w, h )
+			C2_PaintBox( s, w, h )
 			
 			C2_DrawText( i, "TacRP_C2_10", s(3), s(1), color_white )
 			C2_DrawText( v.Name, "TacRP_C2_12", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
 			if i == c2.TTo then
-				local olda = GLEEC2.a
-				GLEEC2.a = 255
-				surface.SetDrawColor( GLEEC2 )
-				GLEEC2.a = olda
+				local olda = C2_COLOR_Accent.a
+				C2_COLOR_Accent.a = 255
+				surface.SetDrawColor( C2_COLOR_Accent )
+				C2_COLOR_Accent.a = olda
 				surface.SetMaterial( grad )
 				local cons = math.ceil(s(2))
 				surface.DrawTexturedRect( 0, h-cons, w, cons )
@@ -952,7 +946,7 @@ function SWEP:C2_Open()
 	-- Generate pages
 	c2.Pages = {}
 	for i, v in ipairs( pages ) do
-		local page = c2:Add( "DPanel" )
+		local page = c2:Add( "Panel" )
 		page:SetSize( sw, sh )
 		page:MoveToBack()
 

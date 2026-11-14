@@ -1,23 +1,27 @@
-
--- function SWEP:DrawHUD()
--- end
-local h2_enabled = CreateClientConVar( "tacrp_h2", 1, true, false )
+-- TODO move convars to main convars file
+local h2_enabled = CreateClientConVar( "tacrp_h2_enable", 1, true, false )
+local h2_enabled_health = CreateClientConVar( "tacrp_h2_enable_health", 1, true, false )
+local h2_enabled_ammo = CreateClientConVar( "tacrp_h2_enable_ammo", 1, true, false )
 local s = C2_ScreenScale
 
-
-local hide = {
+local hide_health = {
 	["CHudHealth"] = true,
 	["CHudBattery"] = true,
+}
+
+local hide_ammo = {
 	["CHudAmmo"] = true,
 	["CHudSecondaryAmmo"] = true,
 }
 
 hook.Add( "HUDShouldDraw", "TacRP_HUD2_HUDShouldDraw", function( name )
-	if h2_enabled:GetBool() and ( hide[ name ] ) then return false end
+	if h2_enabled:GetBool() then
+		if h2_enabled_health:GetBool() and hide_health[ name ] then return false end
+		if h2_enabled_ammo:GetBool() and hide_ammo[ name ] then return false end
+	end
 end )
 
-
-local fn = "Myriad Pro"--"Bahnschrift"
+local fn = "Myriad Pro"
 surface.CreateFont( "H2_General", {
 	font = fn,
 	size = s(36),
@@ -55,6 +59,7 @@ surface.CreateFont( "H2_DialogText", {
 	weight = 0,
 })
 
+-- Get text size, setting the font beforehand
 local function qtl( t, f )
 	surface.SetFont( f )
 	return surface.GetTextSize( t )
@@ -67,36 +72,13 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 	local self = p:GetActiveWeapon()
 	if !self:IsValid() then return end
 
-	if self.ArcticTacRP then
-		self:DoScope()
-		self:DrawCustomizeHUD()
-		if self:GetValue("TacticalDraw") and self:GetTactical() then
-			self:GetValue("TacticalDraw")(self)
-		end
-	end
+    if h2_enabled:GetBool() then
+    	C2_UpdateColors() -- TODO: EW WHY EVERY HUD DRAW!!
 
-    if !h2_enabled:GetBool() then return end
-    C2_UpdateColors()
-
-	if (self.ArcticTacRP and !self:GetCustomize()) or true then
-		if self.ArcticTacRP then
-			if self:GetValue("BlindFireCamera") then
-				self:DoCornershot()
-			end
-
-			if self:GetValue("Scope") or self:GetValue("PrimaryMelee") then
-				self:DrawBreathBar(ScrW() * 0.5, ScrH() * 0.65, s(64), s(4))
-			end
-
-			self:DrawGrenadeHUD()
-
-			self:DrawBlindFireHUD()
-		end
-
-		do -- Health
+		if h2_enabled_health:GetBool() then
 			local Hw, Hh = s(60), s(36)
 			local Hx, Hy = s(12), sh - Hh - s(12)
-			C2_FullBox( s, Hx, Hy, Hw, Hh )
+			C2_FullBox( Hx, Hy, Hw, Hh )
 
 			C2_DrawText( "HEALTH", "H2_Subtitle", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
 			C2_DrawText( p:Health(), "H2_General", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
@@ -104,17 +86,17 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 			do -- Health
 				local Hw, Hh = s(60), s(36)
 				local Hx, Hy = Hx + s(60) + s(12), sh - Hh - s(12)
-				GEM( s, Hx, Hy, Hw, Hh )
+				C2_FullBox( Hx, Hy, Hw, Hh )
 
 				C2_DrawText( "ARMOR", "H2_Subtitle", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
 				C2_DrawText( p:Armor(), "H2_General", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
 			end
 		end
 
-		do -- Ammo
+		if h2_enabled_ammo:GetBool() then
 			local Hw, Hh = s(140), s(19)
 			local Hx, Hy = sw - Hw - s(12), sh - Hh - s(12)
-			C2_FullBox( s, Hx, Hy, Hw, Hh )
+			C2_FullBox( Hx, Hy, Hw, Hh )
 
 			--C2_DrawText( "AMMO", "C2_4", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
 
@@ -260,30 +242,32 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 
 				local Nx, Ny = sw - s( 12 ), Hy - s(14+2) - s((8)*(i-1))
 
-				--GEM( s, Nx, Ny, s( 140 ), s( 14 ) )
 				C2_DrawText( strin, "C2_4", Nx - s(110), Ny + s(2), color_white, TEXT_ALIGN_LEFT )
 				C2_DrawText( strin2, "C2_4", Nx, Ny + s(2), color_white, TEXT_ALIGN_RIGHT )
 			end end
 		end
+	end
 
-		if false then -- Dialog
-			local Hw, Hh = s(160), s(30)
-			local Hx, Hy = sw/2 - Hw/2, (sh*.7) - Hh/2
+	do return end
 
-			C2_FullBox( s, Hx, Hy, Hw, Hh )
+	if not self.ArcticTacRP then
+		return
+	end
 
-			--C2_DrawText( "WARNING", "H2_DialogHeader", Hx + Hw/2, Hy + s(4), color_white, TEXT_ALIGN_CENTER )
-			--C2_DrawText( "Firemode switched to Full-auto", "H2_DialogText", Hx + Hw/2, Hy + s(12), color_white, TEXT_ALIGN_CENTER )
-			C2_DrawText( "3-burst", "H2_DialogText", Hx + Hw/2, Hy + Hh/2 - s(10), color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			C2_DrawText( "Full-auto", "H2_DialogText", Hx + Hw/2, Hy + Hh/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			C2_DrawText( "Single-fire", "H2_DialogText", Hx + Hw/2, Hy + Hh/2 + s(10), color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+	if self:GetValue("BlindFireCamera") then
+		self:DoCornershot()
+	end
 
-			local sp = qtl( "Full-auto", "H2_DialogText" )
-			C2_DrawText( ">", "H2_DialogText", Hx + (Hw/2) - (sp/2) - s(4), Hy + Hh/2, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
-			C2_DrawText( "<", "H2_DialogText", Hx + (Hw/2) + (sp/2) + s(4), Hy + Hh/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
-		end
+	if self:GetValue("Scope") or self:GetValue("PrimaryMelee") then
+		self:DrawBreathBar(ScrW() * 0.5, ScrH() * 0.65, s(64), s(4))
+	end
+
+	self:DrawGrenadeHUD()
+	self:DrawBlindFireHUD()
+
+	self:DoScope()
+	self:DrawCustomizeHUD()
+	if self:GetValue("TacticalDraw") and self:GetTactical() then
+		self:GetValue("TacticalDraw")(self)
 	end
 end)
--- function SWEP:DrawHUDBackground()
--- 	return true
--- end
