@@ -101,7 +101,7 @@ end
 function SWEP:IsInScope()
     local sightdelta = self:Curve(self:GetSightDelta())
 
-    return (SERVER or !self:GetPeeking()) and !self:GetSafe() and ((self:GetScopeLevel() > 0 and sightdelta > 0.5) or (sightdelta > 0.9))
+    return (SERVER or !self:GetPeeking()) and !self:GetSafe() and (self:GetScopeLevel() > 0 and sightdelta > 0.7)
 end
 
 function SWEP:DoScope()
