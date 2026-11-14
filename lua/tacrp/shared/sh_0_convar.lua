@@ -1454,8 +1454,8 @@ local function menu_client_ti(panel)
         label = "#tacrp.client.disablesuicide", -- Disable Suicide Mode
         command = "tacrp_idunwannadie"
     })
-    ]]
     panel:ControlHelp("#tacrp.client.disablesuicide.desc")
+    ]]
     panel:AddControl("checkbox", {
         label = "#tacrp.client.drawholstered", -- Draw Holstered Weapons
         command = "tacrp_drawholsters"
