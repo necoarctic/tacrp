@@ -148,6 +148,13 @@ end
 
 local grad = Material("vgui/gradient-d")
 local grad2 = Material("vgui/gradient-u")
+local gradr = Material("vgui/gradient-l")
+
+local MARGIN_XS = 2
+local MARGIN_S = 4
+local MARGIN_M = 8
+local MARGIN_L = 12
+local MARGIN_XL = 16
 
 -- Text shadow upper
 local C2_COLOR_TextShadow = HSVToColor( 0, 0, 0.25 )
@@ -201,6 +208,18 @@ function C2_GradientLine( x, y, h )
 	surface.SetDrawColor( 255, 255, 255 )
 	surface.SetMaterial( grad2 )
 	surface.DrawTexturedRect( x, y, 1, h )
+end
+
+function C2_GradientLineDown( x, y, h )
+	surface.SetDrawColor( 255, 255, 255 )
+	surface.SetMaterial( grad )
+	surface.DrawTexturedRect( x, y, 1, h )
+end
+
+function C2_GradientLineRight( x, y, w )
+	surface.SetDrawColor( 255, 255, 255 )
+	surface.SetMaterial( gradr )
+	surface.DrawTexturedRect( x, y, w, 1 )
 end
 
 function C2_Box( x, y, w, h )
@@ -361,7 +380,6 @@ local function updatestat(self, i, data)
 
 	self.MiscCache["statbox"][i] = {txt_base, txt_curr, goodorbad, good, diff}
 end
-
 
 local pages = {}
 
@@ -542,80 +560,6 @@ table.insert(pages, {
 		end
 
 		do
-			local header = p_right:Add( "Panel" )
-			-- header:SetSize( context.sw - s(48), s(64) )
-			-- header:SetPos( s(24), s(24) )
-			header:SetTall( s(80) )
-			header:DockMargin( 0, 0, 0, s(8) )
-			header:Dock( TOP )
-
-			function header:Paint( w, h )
-				C2_FullBox( 0, 0, w, h )
-				local wep = context.weapon
-
-				-- if TacRP.ConVars["metricunit"]:GetBool() then
-				-- 	panel_range = 75 / TacRP.HUToM
-				-- end
-
-				local exp = wep:GetValue("ExplosiveDamage")
-				local dmult = wep:GetConfigDamageMultiplier()
-				local dmg_max = (wep:GetValue("Damage_Max") + exp) * dmult
-				local dmg_min = (wep:GetValue("Damage_Min") + exp) * dmult
-				local range_min, range_max = wep:GetMinMaxRange()
-
-				-- panel range expands to fit the entire damage range (+ some extra margin)
-				-- panel_range = panel_range * math.ceil((range_max + 13)/panel_range)
-				local right_space = s(32)
-				local phys_to_pixel = range_max/w
-				local panel_range = range_max + right_space*phys_to_pixel
-
-				local tall = h
-				local y = 0
-
-				local p1_x = w * (range_min / panel_range)
-				C2_GradientLine( p1_x, y, tall )
-				C2_DrawText(
-					dmg_max .. TacRP:GetPhrase("unit.damage"),
-					"TacRP_C2_10",
-					p1_x + s(2), y + s(4),
-					color_white
-				)
-				C2_DrawText(
-					wep:RangeUnitize(range_min),
-					"TacRP_C2_10",
-					p1_x + s(2), y + s(4+10),
-					color_white
-				)
-
-				local p2_x = w * (range_max / panel_range)
-				C2_GradientLine( p2_x, y, tall )
-				C2_DrawText(
-					dmg_min .. TacRP:GetPhrase("unit.damage"),
-					"TacRP_C2_10",
-					p2_x - s(2), y + s(4),
-					color_white,
-					TEXT_ALIGN_RIGHT
-				)
-				C2_DrawText(
-					wep:RangeUnitize(range_max),
-					"TacRP_C2_10",
-					p2_x - s(2), y + s(4+10),
-					color_white,
-					TEXT_ALIGN_RIGHT
-				)
-
-				-- lines
-				local max_y = h - (math.min(wep:GetValue("Damage_Max")/100, 1) * tall)
-				local min_y = h - (math.min(wep:GetValue("Damage_Min")/100, 1) * tall)
-				surface.SetDrawColor(255, 255, 255)
-				for i = 0, 1 do
-					surface.DrawLine( 0, max_y + i, p1_x, max_y + i )
-					surface.DrawLine( p1_x, max_y + i, p2_x, min_y + i )
-					surface.DrawLine( p2_x, min_y + i, w, min_y + i )
-				end
-
-				return true
-			end
 		end
 	end,
 	Paint = function( self, w, h, context )
@@ -974,12 +918,6 @@ function SWEP:C2_Open()
 	end
 end
 
-local MARGIN_XS = 2
-local MARGIN_S = 4
-local MARGIN_M = 8
-local MARGIN_L = 12
-local MARGIN_XL = 16
-
 local BUTTON_HEIGHT_EMPTY = s(18)
 local BUTTON_HEIGHT = s(36)
 
@@ -1101,6 +1039,47 @@ do
 	end
 	vgui.Register("C2_AttachmentButton", button, "DButton")
 end
+do
+	local scroller = {}
+	local function scroll_paint() return true end
+	local function scroll_grip_paint( self, w, h )
+		local todo = DisableClipping( true )
+			surface.SetDrawColor( 255, 255, 255 )
+			surface.DrawRect( 0, 2, 2, h-4 )
+		DisableClipping( todo )
+		return true
+	end
+	function scroller:Init()
+		self.VBar:SetWide(4)
+		self.VBar:SetHideButtons(true)
+		self.VBar.Paint = scroll_paint
+		self.VBar.btnGrip.Paint = scroll_grip_paint
+	end
+	function scroller:PerformLayoutInternal()
+		local Tall = self.pnlCanvas:GetTall()
+		local Wide = self:GetWide()
+		local YPos = 0
+
+		self:Rebuild()
+
+		self.VBar:SetUp( self:GetTall(), self.pnlCanvas:GetTall() )
+		YPos = self.VBar:GetOffset()
+
+		-- don't like the added vbar width thing
+		-- if ( self.VBar.Enabled ) then Wide = Wide - self.VBar:GetWide() end
+
+		self.pnlCanvas:SetPos( 0, YPos )
+		self.pnlCanvas:SetWide( Wide )
+
+		self:Rebuild()
+
+		if ( Tall != self.pnlCanvas:GetTall() ) then
+			self.VBar:SetScroll( self.VBar:GetScroll() ) -- Make sure we are not too far down!
+		end
+	end
+
+	vgui.Register("C2_ScrollPanel", scroller, "DScrollPanel")
+end
 
 function SWEP:C2_Open()
 	if IsValid( c2 ) then c2:Remove() end
@@ -1206,7 +1185,7 @@ function SWEP:C2_Open()
 	local list_atts = {}
 	
 	local p_attlist = c2:Add("Panel")
-	p_attlist:SetWide( s(72) )
+	p_attlist:SetWide( s(96) )
 	p_attlist:Dock(LEFT)
 	p_attlist:DockMargin( s(MARGIN_S), s(MARGIN_S), 0, s(MARGIN_S) )
 	p_attlist.ActiveSlot = nil
@@ -1260,6 +1239,178 @@ function SWEP:C2_Open()
 	end ]]
 	p_slotlist:InvalidateLayout( true )
 	p_slotlist:SizeToChildren( false, true )
+
+	local p_align_right = c2:Add( "Panel" )
+	p_align_right:Dock(RIGHT)
+	p_align_right:SetWide( s(180) )
+	p_align_right:DockMargin( 0, s(MARGIN_S), 0, s(MARGIN_S) )
+
+	local p_align_dmgstats = p_align_right:Add( "Panel" )
+	p_align_dmgstats:Dock( TOP )
+	p_align_dmgstats:SetTall( s(80) )
+	p_align_dmgstats:DockMargin( 0, 0, 0, s(MARGIN_S) )
+
+	local p_dmgdoll = p_align_dmgstats:Add( "Panel" )
+	p_dmgdoll:SetWide( s(48) )
+	p_dmgdoll:Dock( LEFT )
+	p_dmgdoll:DockMargin( 0 ,0, s(MARGIN_S), 0 )
+	function p_dmgdoll:Paint( w, h )
+		C2_FullBox( 0, 0, w, h )
+		C2_DrawText( "DOLL", "TacRP_C2_8", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+		return true
+	end
+
+	local p_dmgrange = p_align_dmgstats:Add( "Panel" )
+	p_dmgrange:Dock( FILL )
+	-- p_dmgrange:SetTall( s(80) )
+	-- p_dmgrange:DockMargin( 0, 0, 0, s(8) )
+
+	function p_dmgrange:Paint( w, h )
+		C2_FullBox( 0, 0, w, h )
+		--[[ C2_DrawText(
+			"Damage At Range",
+			"TacRP_C2_16",
+			s(MARGIN_S), s(MARGIN_XS),
+			color_white
+		) ]]
+
+		-- if TacRP.ConVars["metricunit"]:GetBool() then
+		-- 	panel_range = 75 / TacRP.HUToM
+		-- end
+
+		local exp = wep:GetValue("ExplosiveDamage")
+		local dmult = wep:GetConfigDamageMultiplier()
+		local dmg_max = (wep:GetValue("Damage_Max") + exp) * dmult
+		local dmg_min = (wep:GetValue("Damage_Min") + exp) * dmult
+		local range_min, range_max = wep:GetMinMaxRange()
+
+		-- panel range expands to fit the entire damage range (+ some extra margin)
+		-- panel_range = panel_range * math.ceil((range_max + 13)/panel_range)
+		local right_space = s(32)
+		local phys_to_pixel = range_max/w
+		local panel_range = range_max + right_space*phys_to_pixel
+		phys_to_pixel = panel_range/w -- needs to be updated after a new panel range
+
+		local tall = h*.75
+		local y = h - tall
+
+		local p1_x = w * (range_min / panel_range)
+		local p2_x = w * (range_max / panel_range)
+
+		-- lines
+		local max_y = h - (math.min(wep:GetValue("Damage_Max")/100, 1) * tall)
+		local min_y = h - (math.min(wep:GetValue("Damage_Min")/100, 1) * tall)
+		surface.SetDrawColor(255, 255, 255)
+		for i = 0, 1 do
+			surface.DrawLine( 0, max_y + i, p1_x, max_y + i )
+			surface.DrawLine( p1_x, max_y + i, p2_x, min_y + i )
+			surface.DrawLine( p2_x, min_y + i, w, min_y + i )
+		end
+
+		local txt_dmg_max = dmg_max .. TacRP:GetPhrase("unit.damage")
+		local txt_dmg_min = dmg_min .. TacRP:GetPhrase("unit.damage")
+		local pellets = wep:GetValue("Num")
+		if pellets > 1 then
+			txt_dmg_max = dmg_max * pellets .. "-" .. txt_dmg_max
+			txt_dmg_min = dmg_min * pellets .. "-" .. txt_dmg_min
+		end
+
+		C2_GradientLineDown( p1_x, y, tall )
+		C2_DrawText(
+			txt_dmg_max,
+			"TacRP_C2_10",
+			p1_x, s(4),
+			color_white,
+			TEXT_ALIGN_CENTER
+		)
+		C2_DrawText(
+			wep:RangeUnitize(range_min),
+			"TacRP_C2_10",
+			p1_x, s(4+10),
+			color_white,
+			TEXT_ALIGN_CENTER
+		)
+
+		C2_GradientLineDown( p2_x, y, tall )
+		C2_DrawText(
+			txt_dmg_min,
+			"TacRP_C2_10",
+			p2_x, s(4),
+			color_white,
+			TEXT_ALIGN_CENTER
+		)
+		C2_DrawText(
+			wep:RangeUnitize(range_max),
+			"TacRP_C2_10",
+			p2_x, s(4+10),
+			color_white,
+			TEXT_ALIGN_CENTER
+		)
+
+		for i=0, panel_range, (TacRP.ConVars["metricunit"]:GetBool() and 25 / TacRP.HUToM or 1000) do
+			if i == 0 then continue end
+			-- surface.DrawRect( i / phys_to_pixel, h-2, 1, 1 )
+			local x = i/phys_to_pixel
+			C2_GradientLineDown( x, h - s(4), s(4) )
+			C2_DrawText(
+				wep:RangeUnitize(i),
+				"TacRP_C2_6",
+				x, h - s(1),
+				color_white,
+				TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM
+			)
+		end
+
+		return true
+	end
+
+	local p_align_breakdown = p_align_right:Add("Panel")
+	p_align_breakdown:Dock( FILL )
+
+	local p_breakdown = p_align_right:Add("C2_ScrollPanel")
+	p_breakdown:Dock( RIGHT )
+	p_breakdown:SetWide( s( (180 - 48) - MARGIN_S ) )
+	p_breakdown:GetCanvas():DockPadding( 0, s(4), 0, 0 )
+	p_breakdown.Paint = paint_box
+
+	for index, data in ipairs(wep.StatDisplay) do
+		if data.Spacer then
+			local item = p_breakdown:Add( "Panel" )
+			item:Dock( TOP )
+			item:SetTall( s(16) )
+			item:DockMargin( 0, 0, 0, s(3) )
+			function item:Paint( w, h )
+				C2_DrawText(
+					TacRP:TryTranslate(data.Name),
+					"TacRP_C2_14",
+					s(4), 0,
+					color_white
+				)
+				C2_GradientLineRight( 0, h-1, w )
+				return true
+			end
+		else
+			local item = p_breakdown:Add( "Panel" )
+			item:Dock( TOP )
+			item:SetTall( s(14+5) )
+			item:DockMargin( s(5+4), 0, 0, 0 )
+			function item:Paint( w, h )
+				C2_DrawText(
+					TacRP:TryTranslate(data.Name),
+					"TacRP_C2_8",
+					0, 0,
+					color_white
+				)
+				C2_DrawText(
+					100,
+					"TacRP_C2_14",
+					s(4), s(5),
+					color_white
+				)
+				return true
+			end
+		end
+	end
 end
 
 -- reloading for development
