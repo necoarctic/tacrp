@@ -41,6 +41,7 @@ SWEP.CanMeleeAttack = false
 
 SWEP.Firemode = 0
 
+SWEP.Primary.ClipSize = -1
 SWEP.Ammo = ""
 SWEP.PrimaryGrenade = ""
 
