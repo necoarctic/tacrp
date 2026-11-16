@@ -7,19 +7,22 @@ local s = C2_ScreenScale
 
 local fn = "Myriad Pro"
 local sizes = {36, 18, 16, 14, 12, 10, 8, 6}
-for i, v in ipairs(sizes) do
-	surface.CreateFont( "TacRP_C2_"..v, {
-		font = fn,
-		size = s(v),
-		weight = 0,
-	})
-	surface.CreateFont( "TacRP_C2_"..v.."I", {
-		font = fn,
-		size = s(v),
-		italic = true,
-		weight = 0,
-	})
+local function generate_fonts()
+	for i, v in ipairs(sizes) do
+		surface.CreateFont( "TacRP_C2_"..v, {
+			font = fn,
+			size = s(v),
+			weight = 0,
+		})
+		surface.CreateFont( "TacRP_C2_"..v.."I", {
+			font = fn,
+			size = s(v),
+			italic = true,
+			weight = 0,
+		})
+	end
 end
+generate_fonts()
 
 local cb = Color( 0, 0, 0, 127 )
 
@@ -131,15 +134,6 @@ local function rt( fu, w, h )
 	return true
 end
 
--- TODO rename variable
-local weh = {
-	["Manufacturer"] = "Trivia_Manufacturer",
-	["Production Year"] = "Trivia_Year",
-	["Faction"] = function( w )
-		return TacRP:GetPhrase( TacRP.FactionToPhrase[ w:GetValue("Faction") ] )
-	end,
-}
-
 -- "Draw Shadowed Text"
 local function DST( text, font, x, y, color, drop, xalign, yalign )
 	draw.SimpleText( text, font, x, y+drop, color_black, xalign, yalign )
@@ -229,6 +223,7 @@ function C2_Box( x, y, w, h )
 	surface.SetMaterial( (c_2_gd:GetBool() and grad2) or grad )
 	surface.DrawTexturedRect( x, y, w, h )
 end
+
 function C2_FullBox( x, y, w, h )
 	C2_Box( x, y, w, h )
 	C2_Outline( x, y, w, h )
@@ -281,542 +276,7 @@ function qRect( x, y, ax, ay, context )
 	surface.DrawRect( x, y, ax, ay )
 end
 
-local pages = {}
-
-table.insert(pages, {
-	Name = "Customize",
-	Initialize = function( page, par, context )
-		local p_left = page:Add( "Panel" )
-		p_left:SetTall( par:GetTall() )
-		p_left:SetWide( par:GetWide() )
-		p_left:SetMouseInputEnabled( true )
-		p_left.Paint = rt
-		local gapper = s(24+90+48+24)--+32+24+24)
-		function p_left:Paint( w, h )
-			-- surface.SetDrawColor( 25, 0, 0, 127 )
-			-- surface.DrawRect( 0, 0, gapper, h )
-			return true
-		end
-		function p_left:Think()
-			p_left:SetX( page.SlidePer * (gapper or self:GetWide()) )
-		end
-
-		local slotlist = {}
-		local slotlistt = {}
-		for slotnum, slottab in ipairs( context.weapon.Attachments ) do
-			local slot = p_left:Add( "DButton" )
-			slotlist[slotnum] = slot
-			slotlistt[slotnum] = slottab
-			slot:SetSize( s(90), 0 )
-			slot:SetPos( s(24), 0 )
-
-			function slot:Paint( w, h )
-				local ins = slottab.Installed
-				surface.SetDrawColor( cb )
-				surface.DrawRect( 0, 0, w, h )
-				surface.SetDrawColor( color_white )
-				surface.DrawOutlinedRect( 0, 0, w, h, s(1) )
-
-				draw.SimpleText( slottab.PrintName, "TacRP_C2_12I", s(10), s(ins and 4 or 2), color_white )
-				local tx = surface.GetTextSize( slottab.PrintName )
-				if ins then
-					surface.SetDrawColor( color_white )
-					surface.DrawRect( s(11), s(15), tx, s(1) )
-					local ati = TacRP.GetAttTable( ins )
-					local attname = "none"
-					if ati then
-						attname = TacRP:TryTranslate( ati.PrintName )
-					end
-					draw.SimpleText( attname, "TacRP_C2_16", s(10), s(4+(12-2)), color_white )
-
-					surface.SetMaterial( ati.Icon )
-					surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.DrawTexturedRect( w-h-s(4), 0, h, h )
-				end
-				return true
-			end
-
-			function slot:DoRightClick()
-				CloseAttachmentSelect()
-				if slottab.Installed then
-					context.weapon:Detach( slotnum )
-					page:InvalidateLayout()
-				end
-			end
-
-			function slot:DoClick()
-				GenerateAttachmentSelect( context, page, slotnum, slottab, p_left )
-			end
-		end
-		function page:PerformLayout()
-			local obump = 0
-			for i, v in ipairs( slotlist ) do
-				local ins = slotlistt[i].Installed
-				local tall = ins and s(4+(12-2)+16+2+4) or s(2+(12)+2)
-				obump = obump + tall + (i!=#slotlist and s(4) or 0)
-			end
-			local bump = self:GetTall()/2 - obump/2
-			for i, v in ipairs( slotlist ) do
-				local ins = slotlistt[i].Installed
-				local tall = ins and s(4+(12-2)+16+2+4) or s(2+(12)+2)
-				v:SetTall( tall )
-				v:SetY( bump )
-				v:SetWide( ins and s(90+4+4)+tall+s(4) or s(90) )
-				bump = bump + tall + s(4)
-			end
-		end
-
-		local p_right = page:Add( "Panel" )
-		-- p_right:SetTall( par:GetTall() )
-		p_right:Dock(RIGHT)
-		local PADDING = s(24)
-		p_right:DockPadding( PADDING, PADDING, PADDING, PADDING )
-		p_right:SetWide( s(24+140+24) )
-		p_right:SetMouseInputEnabled( true )
-		p_right.Paint = rt
-		local gapper = s(24+140+24)--+32+24+24)
-		function p_right:Paint( w, h )
-			--surface.SetDrawColor( 25, 0, 0, 127 )
-			--surface.DrawRect( 0, 0, gapper, h )
-
-			return true
-		end
-		function p_right:Think()
-			p_right:SetX( ( (1-page.SlidePer) * (gapper or self:GetWide()) ) + (page:GetWide()-gapper-gapper) )
-		end
-
-		do
-			local p_statbox = p_right:Add( "DScrollPanel" )
-			p_statbox:Dock( FILL )
-
-			p_statbox.VBar:SetWide(4)
-			p_statbox.VBar:SetHideButtons(true)
-
-			function p_statbox.VBar:Paint(w, h)
-			end
-			function p_statbox.VBar.btnGrip:Paint(w, h)
-				local todo = DisableClipping( true )
-					surface.SetDrawColor( 255, 255, 255 )
-					surface.DrawRect( 0, 2, 2, h-4 )
-				DisableClipping( todo )
-			end
-			p_statbox.Paint = paint_box
-
-			context.weapon.MiscCache["statbox"] = {}
-			context.weapon.StatRows = {}
-
-			for index, data in ipairs(context.weapon.StatDisplay) do
-				-- updatestat( context.weapon, index, data )
-			end
-			
-			--if !context.weapon.MiscCache["statbox"] then
-			--		populate_stats(layout)
-			--end
-
-			for index, data in ipairs(context.weapon.StatDisplay) do
-				local cache = context.weapon.MiscCache["statbox"][index]
-				if !cache then continue end
-
-				local stat = p_statbox:Add( "Panel" )
-				stat:Dock(TOP)
-				stat:DockMargin( 0, data.Spacer and s(4) or 0, 0, 0 )
-				stat:SetTall( s(18) )
-
-				function stat:Paint(w, h)
-					local tn = TacRP:TryTranslate(data.Name)
-					if data.Spacer then
-						surface.SetFont("TacRP_C2_16")
-						local tns = surface.GetTextSize(tn)
-						-- qRect( s(4), s(15), tns+s(4), s(1), color_white )
-						C2_DrawText( tn, data.Spacer and "TacRP_C2_16", data.Spacer and s(4), 0, color_white )
-					else
-						-- Base Value
-						C2_DrawText( tn, "TacRP_C2_8", s(4+4), 0, color_white )
-						local DifferentValue = cache[2] != cache[1]
-						local col = cache[4] and COLOR_POSITIVE or COLOR_NEGATIVE -- positive Change
-						if DifferentValue then -- Current Value
-							C2_DrawText( cache[2], "TacRP_C2_14", s(4+4+8), s(4), col )
-							
-							if cache[3] then -- positive Or Bad Change
-								if cache[5] then
-									surface.SetFont("TacRP_C2_14")
-									local tns = surface.GetTextSize(cache[2])
-									C2_DrawText( "(" .. cache[5] .. ")", "TacRP_C2_10", s(4+4+8+2)+tns, s(6.5), col )
-									local bleh = s(4+4+8+2)+tns
-									local tns = surface.GetTextSize("(" .. cache[5] .. ")")
-									C2_DrawText( cache[1], "TacRP_C2_10", bleh+s(2)+tns, s(6.5), COLOR_OLD )
-								else
-									surface.SetFont("TacRP_C2_14")
-									local tns = surface.GetTextSize(cache[2])
-									C2_DrawText( cache[1], "TacRP_C2_10", s(4+4+8+2)+tns, s(6.5), COLOR_OLD )
-								end
-							end
-						else
-							C2_DrawText( cache[1], "TacRP_C2_14", s(4+4+8), s(4), color_white )
-						end
-					end
-				end
-			end
-		end
-
-		do
-		end
-	end,
-	Paint = function( self, w, h, context )
-	end,
-})
-table.insert(pages, {
-	Name = "Information",
-	Initialize = function( page, par, context )
-		local p_top = page:Add( "Panel" )
-		p_top:SetTall( par:GetTall() )
-		p_top:SetWide( par:GetWide() )
-		p_top:SetMouseInputEnabled( true )
-		local gapper = s(48+24+24)
-		function p_top:Paint( w, h )
-			-- surface.SetDrawColor( 25, 0, 0, 127 )
-			-- surface.DrawRect( 0, 0, w, gapper )
-			return true
-		end
-		function p_top:Think()
-			p_top:SetY( page.SlidePer * (gapper or self:GetTall()) )
-		end
-
-		
-		local p_bottom = page:Add( "Panel" )
-		p_bottom:SetTall( par:GetTall() )
-		p_bottom:SetWide( par:GetWide() )
-		p_bottom:SetMouseInputEnabled( true )
-		local gapper = s(48+24+24)
-		function p_bottom:Paint( w, h )
-			--surface.SetDrawColor( 25, 0, 0, 127 )
-			--surface.DrawRect( 0, 0, w, gapper )
-			return true
-		end
-		function p_bottom:Think()
-			p_bottom:SetY( ( (1-page.SlidePer) * (gapper or self:GetTall()) ) + (page:GetTall()-gapper-gapper) )
-		end
-
-		local Margin_3 = 12
-
-		do
-			local header = p_top:Add( "Panel" )
-			header:SetSize( context.sw - s(48), s(40) )
-			header:SetPos( s(24), s(24) )
-
-			function header:Paint( w, h )
-				C2_FullBox( 0, 0, w, h )
-
-				local type_txt = TacRP.FormatTierType(context.weapon.SubCatType, context.weapon.SubCatTier, TacRP.UseTiers())
-				C2_DrawText( context.weapon:GetPrintName(), "TacRP_C2_36", s(Margin_3), h/2, color_white, nil, TEXT_ALIGN_CENTER )
-				C2_DrawText( type_txt, "TacRP_C2_12", w - s(Margin_3), h/2 - s(6), color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
-				C2_DrawText( context.weapon:GetValue("Trivia_Caliber"), "TacRP_C2_12", w - s(Margin_3), h/2 + s(6), color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
-
-				return true
-			end
-		end
-
-		do
-			local footer = p_bottom:Add( "Panel" )
-			local f_w, f_h = s(400), s(12+(12*1)+12)
-			footer:SetSize( f_w, f_h )
-			footer:SetPos( page:GetWide()/2 - f_w/2, f_h - s(12) )
-
-			local tabz = {
-				{ "Description" },
-				{ "Trivia" },
-				{ "Credits" },
-			}
-
-			for index, Taby in ipairs( tabz ) do
-				tb = p_bottom:Add( "DButton" )
-				Taby.Panel = tb
-				tb:SetSize( s(48), s(12) )
-				tb:SetPos( page:GetWide()/2 - f_w/2 + math.ceil( s((index-1))*(48+1)), 0 )
-				function tb:Paint( w, h )
-					C2_FullBox( 0, 0, w, h )
-					C2_DrawText( Taby[1], "TacRP_C2_10", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-					return true
-				end
-
-			end
-
-			function footer:Paint( w, h )
-				C2_FullBox( 0, 0, w, h )
-
-				local desc = TacRP.MultiLineText( context.weapon.Description, w - s(12*2), "TacRP_C2_12" )
-
-				local lines = 0
-				for i, v in ipairs( desc ) do
-					C2_DrawText( v, "TacRP_C2_12", s(12), s(6+(12*(i-1))), color_white )
-					lines = i
-				end
-				C2_DrawText( context.weapon.Description_Quote, "TacRP_C2_12I", s(12), s(6+(12*(lines+1))), color_white )
-			end
-
-			function footer:PerformLayout( w, h )
-				local desc = TacRP.MultiLineText( context.weapon.Description, w - s(12*2), "TacRP_C2_12" )
-				local lines = #desc
-				if context.weapon.Description_Quote then lines = lines + 2 end
-				f_h = s(6+(12*lines)+6)
-
-				self:SetSize( f_w, f_h )
-				self:SetPos( page:GetWide()/2 - f_w/2, s(1+12) )
-				gapper = f_h+s(1+12+6)
-			end
-		end
-
-		do
-			local footer = p_bottom:Add( "Panel" )
-			footer:Hide()
-			local f_w, f_h = page:GetWide()/2 - s(400)/2 - s(24+12), s(4+(12*3)+4)
-			footer:SetSize( f_w, f_h )
-			footer:SetPos( s(24), context.sh - f_h - s(12) )
-			function footer:Paint( w, h )
-				C2_FullBox( 0, 0, w, h )
-
-				local bump = 0
-				for i, v in pairs( weh ) do
-					C2_DrawText( i, "TacRP_C2_10", s(8), s(12+4)+bump, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM )
-					local txt = isfunction(v) and v(context.weapon) or context.weapon:GetValue(v) or "?"
-					local ftu = "TacRP_C2_12"
-					surface.SetFont(ftu)
-					local tx = surface.GetTextSize(txt)
-					if tx > s(180-8-8-64) then
-						ftu = "TacRP_C2_10"
-					end
-					C2_DrawText( txt, ftu, w-s(8), s(12+4)+bump, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM )
-					bump = bump + s(12)
-				end
-			end
-		end
-
-		do
-			local footer = p_bottom:Add( "Panel" )
-			footer:Hide()
-			local multiline = TacRP.MultiLineText( context.weapon.Credits, math.huge, "TacRP_C2_12" )
-			if multiline[#multiline] == " " then
-				multiline[#multiline] = nil
-			end
-			local f_w, f_h = page:GetWide()/2 - s(400)/2 - s(24+12), s(4+(12*(#multiline))+4)
-			footer:SetSize( f_w, f_h )
-			footer:SetPos( context.sw - f_w - s(24), context.sh - f_h - s(12) )
-			function footer:Paint( w, h )
-				C2_FullBox( 0, 0, w, h )
-
-				for i, line in ipairs( multiline ) do
-					-- TODO: If you can find out how to do this with Lua Patterns, that'd be nice.
-					local mweh = string.Explode( ": ", line )
-					local reassemble = ""
-					for i, v in ipairs( mweh ) do
-						if i==1 then continue end
-						if i!=2 then
-							reassemble = reassemble .. ": "
-						end
-						reassemble = reassemble .. v
-					end
-					local ftu = "TacRP_C2_12"
-					surface.SetFont(ftu)
-					local tx = surface.GetTextSize(reassemble)
-					if tx > (w-s(4+4+32)) then
-						ftu = "TacRP_C2_10"
-					end
-					C2_DrawText( mweh[1], "TacRP_C2_10", s(4), s(4+(i)*12), color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM )
-					C2_DrawText( reassemble, ftu, w-s(4), s(4+(i)*12), color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM )
-				end
-			end
-		end
-	end,
-	Paint = function( self, w, h, context )
-	end,
-})
-table.insert(pages, {
-	Name = "Inspect",
-	Initialize = function( page, par, context )
-	end,
-	Paint = function( page, w, h, context )
-	end,
-})
-
 local uio = Material( "uio/shadow.png", "" )
-
-local page_interpolated = 1
-local page_target = 1
-
-function SWEP:C2_Open_old()
-	if IsValid( c2 ) then c2:Remove() end
-	local sw, sh = ScrW(), ScrH()
-	c2 = vgui.Create( "Panel" )
-	c2:SetSize( sw, sh )
-	c2:Center()
-	c2:MakePopup()
-	c2:SetPopupStayAtBack( true )
-	c2:SetKeyboardInputEnabled( false )
-	c2.m_bDeleteOnClose = true
-
-	c2.TFrom = 0
-	c2.TTo = page_target
-	c2.Prog = 0
-	c2.Lastdesire = page_target
-
-	local p = LocalPlayer()
-	local w = self
-
-	function c2:Paint( w, h )
-		return
-	end
-
-	function c2:OnRemove()
-		-- CloseAttachmentSelect()
-		if IsValid(w) and TacRP.ConVars["autosave"]:GetBool() and TacRP.ConVars["free_atts"]:GetBool() then
-			w:SavePreset()
-		end
-	end
-	if !IsValid(p) then
-		print("TACRP C2: the LocalPlayer is invalid")
-		c2:Remove()
-		return
-	end
-	if !IsValid(w) then
-		print("TACRP C2: the weapon is invalid")
-		c2:Remove()
-		return
-	end
-
-	-- Back and forth
-	for i=1, 2 do
-		local mbutton = c2:Add("DButton")
-		mbutton:SetSize( s(20), sh*(0.7) )
-		mbutton:SetPos( i==2 and math.ceil( sw-s(20) ), sh*(1-0.7)/2 )
-		mbutton:SetText( "MEOW" )
-		function mbutton:DoClick()
-			page_target = math.Clamp( page_target+(i==1 and -1 or 1), 1, #pages )
-		end
-		mbutton.Glow = 0
-		function mbutton:Paint( w, h )
-			surface.SetDrawColor( 255, 255, 255, self.Glow*127 )
-			surface.DrawRect( 0, 0, w, h )
-			return true
-		end
-		function mbutton:Think()
-			self.Glow = math.Approach( self.Glow, self:IsHovered() and 1 or 0, FrameTime()/0.1 )
-		end
-	end
-
-	-- Drop Weapon
-	do
-		local cl = c2:Add("DButton")
-		cl:SetSize( s(58), s(12) )
-		cl:SetPos( sw - s(24+58), s(24/2 - 12/2) )
-		function cl:DoClick()
-			RunConsoleCommand("tacrp_drop")
-			c2:Remove()
-		end
-		function cl:Paint( w, h )
-			C2_FullBox( 0, 0, w, h )
-			C2_DrawText( "Drop Weapon", "TacRP_C2_10", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			return true
-		end
-	end
-	-- Tabs row
-	local totallength = s((#pages*80)+(#pages-1)*4)
-	for i, v in ipairs( pages ) do
-		local mbutton = c2:Add("DButton")
-		mbutton:SetSize( s(80), s(16) )
-		--mbutton:SetPos( sw/2 - totallength/2 + s((i-1)*(72+4)), s(24/2 - 18/2) )
-		mbutton:SetPos( s(24) + s((i-1)*(80+4)), s(24/2 - 16/2) )
-		mbutton:SetText( v.Name )
-		function mbutton:DoClick()
-			page_target = i
-		end
-		function mbutton:Paint( w, h )
-			C2_FullBox( 0, 0, w, h )
-			
-			C2_DrawText( i, "TacRP_C2_10", s(3), s(1), color_white )
-			C2_DrawText( v.Name, "TacRP_C2_12", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-
-			if i == c2.TTo then
-				local olda = C2_COLOR_Accent.a
-				C2_COLOR_Accent.a = 255
-				surface.SetDrawColor( C2_COLOR_Accent )
-				C2_COLOR_Accent.a = olda
-				surface.SetMaterial( grad )
-				local cons = math.ceil(s(2))
-				surface.DrawTexturedRect( 0, h-cons, w, cons )
-			end
-			return true
-		end
-	end
-
-	-- Generate pages
-	c2.Pages = {}
-	for i, v in ipairs( pages ) do
-		local page = c2:Add( "Panel" )
-		page:SetSize( sw, sh )
-		page:MoveToBack()
-
-		page.Num = i
-		c2.Pages[i] = page
-
-		v.Initialize( page, c2, { weapon=w, sw=sw, sh=sh } )
-
-		function page:Paint( w, h )
-			--surface.SetDrawColor( 0, 0, 0, 255 )
-			--surface.SetMaterial( uio )
-			--surface.DrawTexturedRect( 0, 0, w, h )
-
-			v.Paint( page, w, h, { weapon=w, sw=sw, sh=sh } )
-			return
-		end
-	end
-
-	function c2:Think()
-		-- checking if the weapon isn't equipped or exists
-		if !IsValid(w) then
-			print("TACRP C2: the weapon is invalid")
-			c2:Remove()
-			return
-		end
-		if p:GetActiveWeapon() != w then
-			print("TACRP C2: the weapon isn't equipped")
-			c2:Remove()
-			return
-		end
-
-		C2_UpdateColors()
-	
-		if c2.Lastdesire != page_target then
-			c2.Prog = 0
-			c2.TFrom = c2.Lastdesire
-			c2.TTo = page_target
-			c2.Lastdesire = page_target
-		end
-		c2.Prog = math.Approach( c2.Prog, 1, FrameTime() / 0.3 )
-		local sake = math.ease.OutExpo( c2.Prog )
-
-		for i, v in ipairs( self.Pages ) do
-			if i != c2.TFrom and i!= c2.TTo then
-				v:Hide()
-			end
-			if i == c2.TFrom then
-				if sake == 1 then
-					v:Hide()
-				else
-					v:Show()
-					v.SlidePer = math.Remap( sake, 0, 0.5, 0, 1 )---sake
-					v.SlidePer = math.Clamp( v.SlidePer, 0, 1 )
-					v.SlidePer = -v.SlidePer
-				end
-			end
-			if i == c2.TTo then
-				v:Show()
-				v.SlidePer = math.Remap( sake, 0.5, 1, 0, 1 )--sake-1
-				v.SlidePer = math.Clamp( v.SlidePer, 0, 1 )
-				v.SlidePer = v.SlidePer-1
-			end
-		end
-	end
-end
 
 local BUTTON_HEIGHT_EMPTY = s(18)
 local BUTTON_HEIGHT = s(36)
@@ -1154,7 +614,19 @@ function SWEP:C2_Open()
 	c2.m_bDeleteOnClose = true
 	local margin = s(MARGIN_XL)
 	c2:DockPadding( margin, margin, margin, margin )
-	-- c2.Paint = paint_box
+
+	local cl = c2:Add("DButton")
+	cl:SetSize( s(58), s(12) )
+	cl:SetPos( 0, 0 )
+	function cl:DoClick()
+		RunConsoleCommand("tacrp_drop")
+		c2:Remove()
+	end
+	function cl:Paint( w, h )
+		C2_FullBox( 0, 0, w, h )
+		C2_DrawText( "Drop Weapon", "TacRP_C2_10", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+		return true
+	end
 
 	c2.Interp = 0
 	local align_top = c2:Add("Panel")
