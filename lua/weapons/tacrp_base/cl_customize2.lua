@@ -616,32 +616,45 @@ function SWEP:C2_Open()
 		C2_DrawText(
 			txt_dmg_max,
 			"TacRP_C2_10",
-			p1_x, s(4),
-			color_white,
-			TEXT_ALIGN_CENTER
+			math.max( s(MARGIN_S), p1_x - surface.GetTextSize(txt_dmg_min)/2 ),
+			s(4),
+			color_white
 		)
+		
+		local txt_range_min = wep:RangeUnitize(range_min)
 		C2_DrawText(
-			wep:RangeUnitize(range_min),
+			txt_range_min,
 			"TacRP_C2_10",
-			p1_x, s(4+10),
-			color_white,
-			TEXT_ALIGN_CENTER
+			math.max( s(MARGIN_S), p1_x - surface.GetTextSize(txt_range_min)/2 ),
+			s(4+10),
+			color_white
 		)
 
 		C2_GradientLineDown( p2_x, y, tall )
+
+		local width_dmg_min = surface.GetTextSize(txt_dmg_min)
 		C2_DrawText(
 			txt_dmg_min,
 			"TacRP_C2_10",
-			p2_x, s(4),
-			color_white,
-			TEXT_ALIGN_CENTER
+			math.min(
+				w - width_dmg_min - s(MARGIN_S),
+				p2_x - width_dmg_min/2
+			),
+			s(4),
+			color_white
 		)
+
+		local txt_range_max = wep:RangeUnitize(range_max)
+		local width_range_max = surface.GetTextSize(txt_range_max)
 		C2_DrawText(
-			wep:RangeUnitize(range_max),
+			txt_range_max,
 			"TacRP_C2_10",
-			p2_x, s(4+10),
-			color_white,
-			TEXT_ALIGN_CENTER
+			math.min(
+				w - width_range_max - s(MARGIN_S),
+				p2_x - width_range_max/2
+			),
+			s(4+10),
+			color_white
 		)
 
 		for i=0, panel_range, (TacRP.ConVars["metricunit"]:GetBool() and 25 / TacRP.HUToM or 1000) do
