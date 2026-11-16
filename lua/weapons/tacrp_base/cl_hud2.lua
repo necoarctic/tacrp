@@ -3,6 +3,7 @@ local h2_enabled = CreateClientConVar( "tacrp_h2_enable", 1, true, false )
 local h2_enabled_health = CreateClientConVar( "tacrp_h2_enable_health", 1, true, false )
 local h2_enabled_ammo = CreateClientConVar( "tacrp_h2_enable_ammo", 1, true, false )
 local s = TacRP.SS
+local MARGIN_XL = TacRP.C2.MARGIN_XL
 
 local hide_health = {
 	["CHudHealth"] = true,
@@ -12,37 +13,6 @@ local hide_health = {
 local hide_ammo = {
 	["CHudAmmo"] = true,
 	["CHudSecondaryAmmo"] = true,
-}
-
-local hints = {
-	{
-		"[E] + [R]",
-		"Change Firemode",
-	},
-	{
-		"[T]",
-		"Quickthrow",
-	},
-	{
-		"[J]",
-		"Quickthrow Menu",
-	},
-	{
-		"[E] + [M1]",
-		"Melee Attack",
-	},
-	{
-		"[E] + [M2]",
-		"Toggle Safety",
-	},
-	{
-		"[X]",
-		"Blindfire Menu",
-	},
-	{
-		"[CTRL]",
-		"Toggle Peek",
-	},
 }
 
 hook.Add( "HUDShouldDraw", "TacRP_HUD2_HUDShouldDraw", function( name )
@@ -75,8 +45,10 @@ end
 
 local function H2_DrawAmmo( ply, wep )
 	local sw, sh = ScrW(), ScrH()
-	local Hw, Hh = s(140), s(19)
-	local Hx, Hy = sw - Hw - s(12), sh - Hh - s(12)
+	local Hw = s(140)
+	local Hh = s(19)
+	local Hx = sw - Hw - s(MARGIN_XL)
+	local Hy = sh - Hh - s(MARGIN_XL)
 	C2_FullBox( Hx, Hy, Hw, Hh )
 
 	C2_DrawText( wep:GetPrintName(), "TacRP_STD_12I", Hx + s(4), Hy + s(3), color_white, TEXT_ALIGN_LEFT )
@@ -218,20 +190,52 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 		C2_UpdateColors() -- TODO: EW WHY EVERY HUD DRAW!!
 
 		if h2_enabled_health:GetBool() then
-			local Hw, Hh = s(60), s(36)
-			local Hx, Hy = s(12), sh - Hh - s(12)
+			local Hw = s(60)
+			local Hh = s(36)
+			local Hx = s(MARGIN_XL)
+			local Hy = sh - Hh - s(MARGIN_XL)
 			C2_FullBox( Hx, Hy, Hw, Hh )
 
-			C2_DrawText( "HEALTH", "TacRP_STD_10", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
-			C2_DrawText( ply:Health(), "TacRP_STD_36", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
+			C2_DrawText(
+				"HEALTH",
+				"TacRP_STD_10",
+				Hx + s(4),
+				Hy + s(2),
+				color_white,
+				TEXT_ALIGN_LEFT
+			)
+			C2_DrawText(
+				ply:Health(),
+				"TacRP_STD_36",
+				Hx + Hw - s(4),
+				Hy + s(3),
+				color_white,
+				TEXT_ALIGN_RIGHT
+			)
 			
-			do -- Health
-				local Hw, Hh = s(60), s(36)
-				local Hx, Hy = Hx + s(60) + s(12), sh - Hh - s(12)
+			if ply:Armor() > 0 then -- Armor
+				local Hx = Hx + Hw + s(MARGIN_XL)
+				local Hy = sh - Hh - s(MARGIN_XL)
+				local Hw = s(60)
+				local Hh = s(36)
 				C2_FullBox( Hx, Hy, Hw, Hh )
 
-				C2_DrawText( "ARMOR", "TacRP_STD_10", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
-				C2_DrawText( ply:Armor(), "TacRP_STD_36", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
+				C2_DrawText(
+					"ARMOR",
+					"TacRP_STD_10",
+					Hx + s(4),
+					Hy + s(2),
+					color_white,
+					TEXT_ALIGN_LEFT
+				)
+				C2_DrawText(
+					ply:Armor(),
+					"TacRP_STD_36",
+					Hx + Hw - s(4),
+					Hy + s(3),
+					color_white,
+					TEXT_ALIGN_RIGHT
+				)
 			end
 		end
 
@@ -246,27 +250,44 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 
 	if h2_enabled:GetBool() then
 		local push_y = 0
-		for i, hint_data in ipairs(hints) do
-			i = i - 1
-			local strin, strin2 = hint_data[1], hint_data[2]
+		local caps = wep:GetHintCapabilities()
 
-			local Nx = s(12)
-			local Ny = sh/2 + s(8 * i)
+		for i, v in pairs(caps) do
+			push_y = push_y - s(4)
+		end
 
+		for control, data in SortedPairsByMemberValue(caps, "so") do
+			local x = s(MARGIN_XL)
+			local y = sh/2
+
+			local keys = string.Explode("/", control, false)
+			local total = ""
+			for i, v in ipairs(keys) do
+				if i ~= 1 then
+					total = total .. " + "
+				end
+				total = total .. "[" .. TacRP.GetBindKey(v) .. "]"
+			end
 			C2_DrawText(
-				strin,
+				total,
 				"TacRP_STD_8",
-				Nx, Ny + s(2),
+				x,
+				y + s(2) + push_y,
 				color_white,
-				TEXT_ALIGN_LEFT
+				TEXT_ALIGN_LEFT,
+				TEXT_ALIGN_CENTER
 			)
+			
 			C2_DrawText(
-				strin2,
+				TacRP:TryTranslate(data.str),
 				"TacRP_STD_8",
-				Nx + s(110), Ny + s(2),
+				x + s(110),
+				y + s(2) + push_y,
 				color_white,
-				TEXT_ALIGN_RIGHT
+				TEXT_ALIGN_RIGHT,
+				TEXT_ALIGN_CENTER
 			)
+			push_y = push_y + s(8)
 		end
 	end
 
