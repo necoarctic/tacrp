@@ -12,6 +12,35 @@ local MARGIN_M = TacRP.C2.MARGIN_M
 local MARGIN_L = TacRP.C2.MARGIN_L
 local MARGIN_XL = TacRP.C2.MARGIN_XL
 
+function PANEL:SetupTarget()
+	self.TargetID = "attachment_" .. self.AttachmentName
+	local adata = self.AttachmentData
+	local tdata = {
+		{
+			Text = TacRP:TryTranslate(adata.PrintName),
+			Big = true,
+		},
+		{
+			Text = TacRP:TryTranslate(adata.Description),
+		}
+	}
+	if adata.Pros then
+		for _, text in ipairs(adata.Pros) do
+			table.insert( tdata, {
+				Text = "+ " .. TacRP:TryTranslate( text ),
+			})
+		end
+	end
+	if adata.Cons then
+		for _, text in ipairs(adata.Cons) do
+			table.insert( tdata, {
+				Text = "- " .. TacRP:TryTranslate( text ),
+			})
+		end
+	end
+	self.TargetData = tdata
+end
+
 function PANEL:Paint( w, h )
 	C2_Box( 0, 0, w, h )
 

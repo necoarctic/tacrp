@@ -249,7 +249,6 @@ local function compute_stat( wep, stat_cache, index, data )
 	local varying = false
 	local positive = false
 	if data.BetterFunction then
-		print( data.Name, stat_base, stat_curr )
 		varying, positive = data.BetterFunction( wep, raw_base, raw_curr )
 	elseif stat_base ~= stat_curr then
 		if isnumber(stat_curr) then
@@ -335,13 +334,13 @@ function SWEP:C2_Open()
 	end
 
 	local p_helphover = c2:Add("Panel")
-	p_helphover.TargetDraw = nil
-	p_helphover.TargetDrawData = nil
-	p_helphover.CurrentDraw = nil
-	p_helphover:SetWide( s(140) )
+	p_helphover.CurrentID = nil
+	local wide = 200
+	p_helphover:SetWide( s(wide) )
 	p_helphover:DockPadding( s(MARGIN_S), s(MARGIN_S), s(MARGIN_S), s(MARGIN_S) )
 	p_helphover:Center()
 	p_helphover:SetDrawOnTop(true)
+
 	function p_helphover:Paint( w, h )
 		surface.SetDrawColor( COLOR_BACKGROUND )
 		surface.DrawRect( 0, 0, w, h )
@@ -353,56 +352,83 @@ function SWEP:C2_Open()
 	function p_helphover:Think()
 		local w, h = self:GetSize()
 		local x, y = input.GetCursorPos()
-		x = math.min( x + s(20), sw - w - s(MARGIN_XL) )
+
+		if (x > sw/2) then
+			x = x - w - s(20)
+		else
+			x = x + s(20)
+		end
+		if (y > sh/2) then
+			y = y - h - s(20)
+		else
+			y = y + s(20)
+		end
+
+		x = math.Clamp( x, s(MARGIN_XL), sw - w - s(MARGIN_XL) )
 		y = math.min( y + s(20), sh - h - s(MARGIN_XL) )
 		self:SetPos( x, y )
-
-		if not self.TargetDraw then
-			-- p_helphover:Hide()
-			return
-		end
-
-		if self.TargetDraw ~= self.CurrentDraw then
-			-- 
-
-			self.CurrentDraw = self.TargetDraw
-		end
-
-
 	end
 
-	local detail = p_helphover:Add("Panel")
-	detail:Dock( TOP )
-	detail:SetTall( s(14) )
-	function detail:Paint( w, h )
-		C2_DrawText(
-			"Attachment Name",
-			"TacRP_STD_14",
-			0, 0,
-			color_white
-		)
-	end
-	
-	local detail = p_helphover:Add("Panel")
-	detail:Dock( TOP )
-	detail:SetTall( s(2) )
-	detail:DockMargin( s(-4), s(2), s(-4), s(2) )
-	function detail:Paint( w, h )
-		surface.SetDrawColor( COLOR_OUTLINE )
-		C2_Gradient_Left( 0, 0, w, 1 )
-	end
+	function c2:Think()
+		local target = vgui.GetHoveredPanel()
+		if target and target.TargetID and target.TargetData then
 
-	for i, v in ipairs({ "hi", "hello", "This is a long ass string! Lol!" }) do
-		local detail = p_helphover:Add("Panel")
-		detail:Dock( TOP )
-		detail:SetTall( s(10) )
-		function detail:Paint( w, h )
-			C2_DrawText(
-				v,
-				"TacRP_STD_10",
-				0, 0,
-				color_white
-			)
+			if target.TargetID ~= p_helphover.CurrentID then
+				for _, panel in ipairs( p_helphover:GetChildren() ) do
+					panel:Remove()
+				end
+
+				if target.TargetID then
+					for _, data in ipairs( target.TargetData ) do
+						local size = data.Big and 12 or 8
+						if data.Right then
+							local detail = p_helphover:Add("Panel")
+							detail:SetSize( w, s(8+2+2) )
+							function detail:Paint( w, h )
+								C2_DrawText(
+									data.Text,
+									"TacRP_STD_8",
+									w - s(2), s(2),
+									color_white,
+									TEXT_ALIGN_RIGHT
+								)
+							end
+						elseif data.Separator then
+							local detail = p_helphover:Add("Panel")
+							detail:Dock( TOP )
+							detail:SetTall( s(2) )
+							detail:DockMargin( s(-4), s(4), s(-4), s(4) )
+							function detail:Paint( w, h )
+								surface.SetDrawColor( COLOR_OUTLINE )
+								C2_Gradient_Left( 0, 0, w, 1 )
+							end
+						else
+							local detail = p_helphover:Add("Panel")
+							detail:Dock( TOP )
+							local lines = TacRP.MultiLineText(data.Text, s(wide - 4 - 4), "TacRP_STD_"..size )
+							detail:SetTall( s(#lines * size) )
+							function detail:Paint( w, h )
+								for i, line in ipairs(lines) do
+									i = i - 1
+									C2_DrawText(
+										line,
+										"TacRP_STD_"..size,
+										0, s(i * size),
+										color_white
+									)
+								end
+							end
+
+						end
+					end
+					p_helphover:InvalidateLayout()
+				end
+				p_helphover.CurrentID = target.TargetID
+			end
+
+			p_helphover:Show()
+		else
+			p_helphover:Hide()
 		end
 	end
 	
@@ -544,6 +570,7 @@ function SWEP:C2_Open()
 			button.AttachmentData = TacRP.Attachments[att]
 			button.Weapon = wep
 			button.SlotIndex = slotindex
+			button:SetupTarget()
 
 			table.insert(list_atts, button)
 		end
@@ -710,11 +737,30 @@ function SWEP:C2_Open()
 
 	for index, data in ipairs(wep.StatDisplay) do
 		compute_stat( wep, stat_cache, index, data )
+
+
+		local TargetData = {
+			-- {
+			-- 	Text = TacRP:GetPhrase("rating.score", {score = math.Round(1, 1), max = 100}),
+			-- 	Right = true,
+			-- },
+			{
+				Text = TacRP:TryTranslate(data.Name),
+				Big = true,
+			},
+			{
+				Text = TacRP:TryTranslate(data.Description),
+			}
+		}
+		local TargetID = "breakdown_" .. data.Name
+
 		if data.Spacer and stat_cache[index] then
 			local top = index == 1
 			local item = p_breakdown:Add( "Panel" )
 			item:Dock( TOP )
 			item:SetTall( s(18) )
+			item.TargetID = TargetID
+			item.TargetData = TargetData
 			function item:Paint( w, h )
 				if not top then
 					surface.SetDrawColor( COLOR_OUTLINE )
@@ -736,6 +782,8 @@ function SWEP:C2_Open()
 			local item = p_breakdown:Add( "Panel" )
 			item:Dock( TOP )
 			item:SetTall( s(14+5) )
+			item.TargetID = TargetID
+			item.TargetData = TargetData
 			function item:Paint( w, h )
 				if self:IsHovered() then
 					surface.SetDrawColor( COLOR_HOVER )
