@@ -95,6 +95,15 @@ local filtergroups = {
 			"tacrp_pa_"
 		},
 	},
+	["oneoffs"] = {
+		Name = "One-offs",
+		SortOrder = 11,
+		Filters = {
+			"tacrp_sp_",
+			"tacrp_ump_",
+			"tacrp_bl_",
+		},
+	},
 }
 
 local filtergrades = {
