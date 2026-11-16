@@ -302,6 +302,12 @@ function SWEP:C2_Open()
 	local margin = s(MARGIN_XL)
 	c2:DockPadding( margin, margin, margin, margin )
 
+	function c2:OnRemove()
+		if TacRP.ConVars["autosave"]:GetBool() and TacRP.ConVars["free_atts"]:GetBool() then
+			wep:SavePreset()
+		end
+	end
+
 	local cl = c2:Add("DButton")
 	cl:SetSize( s(58), s(12) )
 	cl:AlignBottom( s(MARGIN_XL) )

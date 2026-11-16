@@ -3,6 +3,10 @@ local h2_enabled = CreateClientConVar( "tacrp_h2_enable", 1, true, false )
 local h2_enabled_health = CreateClientConVar( "tacrp_h2_enable_health", 1, true, false )
 local h2_enabled_ammo = CreateClientConVar( "tacrp_h2_enable_ammo", 1, true, false )
 local s = TacRP.SS
+local MARGIN_XS = TacRP.C2.MARGIN_XS
+local MARGIN_S = TacRP.C2.MARGIN_S
+local MARGIN_M = TacRP.C2.MARGIN_M
+local MARGIN_L = TacRP.C2.MARGIN_L
 local MARGIN_XL = TacRP.C2.MARGIN_XL
 
 local hide_health = {
@@ -219,6 +223,114 @@ local function H2_DrawAmmo( ply, wep )
 	end
 end
 
+local lasthealtime = -math.huge
+local lastdmgtime = -math.huge
+local faceindex = 0
+local lasthp = 0
+local lastarmor = 0
+
+local FACES_JUSTHURT = {
+	"#> <",
+	"(>Д<)",
+	"(@_@)",
+	"(ー;ー)",
+	"(・ロ・)",
+	"゛> <",
+	"(>_メ)",
+	"(*_*)",
+	"゜・+_+"
+}
+
+local FACES_JUSTHEALED1 = {
+	"(^ω~)",
+	"(>ω^)",
+	"(>3^)",
+	"(^.~)",
+	"(･ω<)",
+	"(^.~)",
+	"♥(ツ)♥"
+}
+
+local FACES_JUSTHEALED2 = {
+	"(^w^)",
+	"('3')",
+	"(♡3♡)",
+	"(ПωП)",
+	"(>3<)",
+	"('w')",
+	"TYSM!"
+}
+
+local function get_face( ply )
+	local face = "-_-"
+	local ct = CurTime()
+	local hp = ply:Health()
+	local armor = ply:Armor()
+	local hp_frac = hp / ply:GetMaxHealth()
+
+	if lastdmgtime + 1 > ct then
+		face = FACES_JUSTHURT[faceindex]
+	elseif lasthealtime + 1 > ct then
+		if hp_frac >= 1 then
+			face = FACES_JUSTHEALED1[faceindex]
+
+			if lasthp < ply:Health() then
+				lasthealtime = ct
+
+				faceindex = math.random(1, #FACES_JUSTHEALED1)
+			end
+		else
+			face = FACES_JUSTHEALED2[faceindex]
+		end
+	else
+		if math.sin(ct * 3) > 0.98 then
+			if hp_frac < 0.1 then
+				face = "(>_<)"
+			elseif hp_frac < 0.25 then
+				face = "(>_<)"
+			elseif hp_frac < 0.5 then
+				face = "(>_<)"
+			elseif hp_frac < 0.95 then
+				face = "(-_-)"
+			else
+				face = "(-_-)"
+			end
+		else
+			if hp_frac < 0.1 then
+				face = "(×_×)"
+			elseif hp_frac < 0.25 then
+				face = "(;_;)"
+			elseif hp_frac < 0.5 then
+				face = "(゜_゜)"
+			elseif hp_frac < 0.95 then
+				face = "('_')"
+			else
+				face = "(^_^)"
+			end
+		end
+
+		if lasthp > hp then
+			lastdmgtime = ct
+			faceindex = math.random(1, #FACES_JUSTHURT)
+		elseif lasthp < hp or lastarmor < armor then
+			lasthealtime = ct
+			faceindex = math.random(1, #FACES_JUSTHEALED1)
+		end
+	end
+
+	if hp_frac > 2.5 then
+		if math.sin(ct * 3) > 0.96 then
+			face = "(UwU)"
+		else
+			face = "(OwO)"
+		end
+	end
+
+	lasthp = hp
+	lastarmor = armor
+	return face
+end
+
 hook.Add("HUDPaint", "TacRP_HUD2", function()
 	local sw, sh = ScrW(), ScrH()
 	local ply = LocalPlayer()
@@ -251,10 +363,30 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 				color_white,
 				TEXT_ALIGN_RIGHT
 			)
+
+			do -- Kaomoji
+				local Hw = s(4+(8*5)+4)
+				local Hh = s(2+12+2)
+				local Hx = Hx
+				local Hy = Hy - Hh - s(MARGIN_S)
+				C2_FullBox( Hx, Hy, Hw, Hh )
+
+				local face = get_face(ply)
+				for i=1, utf8.len(face) do
+					local char = utf8.GetChar(face, i)
+					C2_DrawText(
+						char,
+						"TacRP_LCD_12",
+						Hx + s(4 + ((i-1) * 8)),
+						Hy + s(1),
+						color_white
+					)
+				end
+			end
 			
 			if ply:Armor() > 0 then -- Armor
-				local Hx = Hx + Hw + s(MARGIN_XL)
-				local Hy = sh - Hh - s(MARGIN_XL)
+				Hx = Hx + Hw + s(MARGIN_XL)
+				Hy = sh - Hh - s(MARGIN_XL)
 				local Hw = s(60)
 				local Hh = s(36)
 				C2_FullBox( Hx, Hy, Hw, Hh )

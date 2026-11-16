@@ -45,6 +45,7 @@ local fonts_to_make = {
         convar = "font2",
         default = "HD44780A00 5x8",
         sizes = {
+            12,
             -- C1
             10,
             8,
