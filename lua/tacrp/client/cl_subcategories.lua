@@ -1,20 +1,3 @@
-
-local fn = "Myriad Pro"--"Bahnschrift"
-local sizes = {32, 24, 20, 16, 12}
-for i, v in ipairs(sizes) do
-	surface.CreateFont( "TacRP_S2_"..v, {
-		font = fn,
-		size = v,
-		weight = 0,
-	})
-	surface.CreateFont( "TacRP_S2_"..v.."I", {
-		font = fn,
-		size = v,
-		italic = true,
-		weight = 0,
-	})
-end
-
 local function qt( text, font, w, h, alignx, aligny )
 	draw.SimpleText( text, font, w-1, h-1, color_black, alignx, aligny )
 	draw.SimpleText( text, font, w,   h-1, color_black, alignx, aligny )
@@ -459,13 +442,13 @@ hook.Add("PopulateWeapons", "zzz_TacRP_SubCategories", function(pnlContent, tree
 							surface.SetDrawColor( 0, 0, 0, 200 )
 							surface.DrawRect( 0, 2, 4+tns+4+4, 32 )
 			
-							qt( self.TypeName, "TacRP_S2_32I", 4, 2 )
+							qt( self.TypeName, "TacRP_S2_32_Italic", 4, 2 )
 
 							local additional = ""
 							if self.ItemCountFiltered and self.ItemCountFiltered > 0 and self.ItemCount != self.ItemCountFiltered then
 								additional = " -- " .. self.ItemCountFiltered .. " shown"
 							end
-							qt( self.ItemCount .. " total" .. additional, "TacRP_S2_20I", 4 + tns + 4 + 4 + 4, 2 + 16, nil, TEXT_ALIGN_CENTER )
+							qt( self.ItemCount .. " total" .. additional, "TacRP_S2_20_Italic", 4 + tns + 4 + 4 + 4, 2 + 16, nil, TEXT_ALIGN_CENTER )
 						end
 						grid = vgui.Create("DGrid", label)
 						grid:Dock( TOP )

@@ -1,4 +1,4 @@
-local s = TacRP.C2.SS
+local s = TacRP.SS
 
 local MARGIN_XS = TacRP.C2.MARGIN_XS
 local MARGIN_S = TacRP.C2.MARGIN_S
@@ -27,7 +27,7 @@ function PANEL:Paint( w, h )
 
 	C2_DrawText(
 		self.SlotData.PrintName,
-		"TacRP_C2_10",
+		"TacRP_Myriad_Pro_10",
 		s(MARGIN_S), s(MARGIN_S),
 		color_white
 	)
@@ -37,7 +37,7 @@ function PANEL:Paint( w, h )
 
 	C2_DrawText(
 		TacRP:TryTranslate(att_data.PrintName),
-		"TacRP_C2_12",
+		"TacRP_Myriad_Pro_12",
 		s(MARGIN_S), h/2,
 		color_white,
 		nil, TEXT_ALIGN_CENTER

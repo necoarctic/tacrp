@@ -1,4 +1,4 @@
-local s = TacRP.C2.SS
+local s = TacRP.SS
 
 local PANEL = {}
 PANEL.TopBottomPadding = true

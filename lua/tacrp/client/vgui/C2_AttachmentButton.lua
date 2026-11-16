@@ -1,4 +1,4 @@
-local s = TacRP.C2.SS
+local s = TacRP.SS
 
 local PANEL = {}
 PANEL.AttachmentName = nil
@@ -23,7 +23,7 @@ function PANEL:Paint( w, h )
 
 	C2_DrawText(
 		TacRP:TryTranslate(self.AttachmentData.PrintName),
-		"TacRP_C2_12",
+		"TacRP_Myriad_Pro_12",
 		margin + size + margin, h/2,
 		color_white,
 		nil, TEXT_ALIGN_CENTER

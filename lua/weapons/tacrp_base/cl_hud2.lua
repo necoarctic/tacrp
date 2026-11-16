@@ -2,7 +2,7 @@
 local h2_enabled = CreateClientConVar( "tacrp_h2_enable", 1, true, false )
 local h2_enabled_health = CreateClientConVar( "tacrp_h2_enable_health", 1, true, false )
 local h2_enabled_ammo = CreateClientConVar( "tacrp_h2_enable_ammo", 1, true, false )
-local s = TacRP.C2.SS
+local s = TacRP.SS
 
 local hide_health = {
 	["CHudHealth"] = true,
@@ -79,25 +79,25 @@ local function H2_DrawAmmo( ply, wep )
 	local Hx, Hy = sw - Hw - s(12), sh - Hh - s(12)
 	C2_FullBox( Hx, Hy, Hw, Hh )
 
-	C2_DrawText( wep:GetPrintName(), "TacRP_C2_12I", Hx + s(4), Hy + s(3), color_white, TEXT_ALIGN_LEFT )
+	C2_DrawText( wep:GetPrintName(), "TacRP_Myriad_Pro_12_Italic", Hx + s(4), Hy + s(3), color_white, TEXT_ALIGN_LEFT )
 
 	if wep.ArcticTacRP then
 		if wep:GetSafe() then
 			C2_DrawText(
 				"Safety",
-				"TacRP_C2_10",
+				"TacRP_Myriad_Pro_10",
 				Hx + Hw - s(4+1),
 				Hy + Hh/2 + s(-3.5),
 				color_white,
 				TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER
 			)
-			C2_DrawText( "[E] + [RMB] " .. get_firemode_text( wep, wep:GetCurrentFiremode() ), "TacRP_C2_8", Hx + Hw - s(4+1), Hy + s(2+7), color_white, TEXT_ALIGN_RIGHT )
+			C2_DrawText( "[E] + [RMB] " .. get_firemode_text( wep, wep:GetCurrentFiremode() ), "TacRP_Myriad_Pro_8", Hx + Hw - s(4+1), Hy + s(2+7), color_white, TEXT_ALIGN_RIGHT )
 		else
 			local fm_text = get_firemode_text( wep, wep:GetCurrentFiremode() )
 			local different = wep:GetCurrentFiremode() ~= wep:GetNextFiremode()
 			C2_DrawText(
 				fm_text,
-				"TacRP_C2_10",
+				"TacRP_Myriad_Pro_10",
 				Hx + Hw - s(4+1),
 				Hy + Hh/2 + (different and s(-3.5) or s(-0.5)),
 				color_white,
@@ -108,7 +108,7 @@ local function H2_DrawAmmo( ply, wep )
 				local fm_text = get_firemode_text( wep, wep:GetNextFiremode() )
 				C2_DrawText(
 					"[E] + [R] " .. fm_text,
-					"TacRP_C2_8",
+					"TacRP_Myriad_Pro_8",
 					Hx + Hw - s(4+1),
 					Hy + s(2+7),
 					color_white,
@@ -199,7 +199,7 @@ local function H2_DrawAmmo( ply, wep )
 	end
 	C2_DrawText(
 		ammo_text,
-		"TacRP_C2_10",
+		"TacRP_Myriad_Pro_10",
 		Hx + Hw + s(-2*Pass) - s(8),
 		Hy + Sy - s(17),
 		color_white,
@@ -222,16 +222,16 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 			local Hx, Hy = s(12), sh - Hh - s(12)
 			C2_FullBox( Hx, Hy, Hw, Hh )
 
-			C2_DrawText( "HEALTH", "TacRP_C2_10", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
-			C2_DrawText( ply:Health(), "TacRP_C2_36", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
+			C2_DrawText( "HEALTH", "TacRP_Myriad_Pro_10", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
+			C2_DrawText( ply:Health(), "TacRP_Myriad_Pro_36", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
 			
 			do -- Health
 				local Hw, Hh = s(60), s(36)
 				local Hx, Hy = Hx + s(60) + s(12), sh - Hh - s(12)
 				C2_FullBox( Hx, Hy, Hw, Hh )
 
-				C2_DrawText( "ARMOR", "TacRP_C2_10", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
-				C2_DrawText( ply:Armor(), "TacRP_C2_36", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
+				C2_DrawText( "ARMOR", "TacRP_Myriad_Pro_10", Hx + s(4), Hy + s(2), color_white, TEXT_ALIGN_LEFT )
+				C2_DrawText( ply:Armor(), "TacRP_Myriad_Pro_36", Hx + Hw - s(4), Hy + s(3), color_white, TEXT_ALIGN_RIGHT )
 			end
 		end
 
@@ -255,14 +255,14 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 
 			C2_DrawText(
 				strin,
-				"TacRP_C2_8",
+				"TacRP_Myriad_Pro_8",
 				Nx, Ny + s(2),
 				color_white,
 				TEXT_ALIGN_LEFT
 			)
 			C2_DrawText(
 				strin2,
-				"TacRP_C2_8",
+				"TacRP_Myriad_Pro_8",
 				Nx + s(110), Ny + s(2),
 				color_white,
 				TEXT_ALIGN_RIGHT

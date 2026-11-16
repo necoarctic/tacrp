@@ -1,6 +1,6 @@
 local hudscale = TacRP.ConVars["hudscale"]
 function TacRP.SS(i)
-    return ScrW() / 640 * i * hudscale:GetFloat()
+    return ScrH() / 480 * i * hudscale:GetFloat()
 end
 TacRP.HoloSS = (ScreenScaleH(1) / ScreenScale(1)) or 1
 
@@ -15,12 +15,14 @@ local sizes_to_make = {
     14,
     16,
     20,
-    32
+    32,
+    36,
 }
 
 local italic_sizes_to_make = {
     6,
     8,
+    12,
 }
 
 local unscaled_sizes_to_make = {
