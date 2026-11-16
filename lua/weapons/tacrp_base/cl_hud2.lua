@@ -225,6 +225,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 	if !ply:IsValid() then return end
 	local wep = ply:GetActiveWeapon()
 	if !wep:IsValid() then return end
+	local tacrp = wep.ArcticTacRP
 
 	if h2_enabled:GetBool() then
 		if h2_enabled_health:GetBool() then

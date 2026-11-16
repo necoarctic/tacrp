@@ -667,8 +667,8 @@ function SWEP:C2_Open()
 				surface.DrawLine( p2_x, min_y + i, w, min_y + i )
 			end
 
-			local txt_dmg_max = dmg_max .. TacRP:GetPhrase("unit.damage")
-			local txt_dmg_min = dmg_min .. TacRP:GetPhrase("unit.damage")
+			local txt_dmg_max = math.floor(dmg_max) .. TacRP:GetPhrase("unit.damage")
+			local txt_dmg_min = math.floor(dmg_min) .. TacRP:GetPhrase("unit.damage")
 			local pellets = wep:GetValue("Num")
 			if pellets > 1 then
 				txt_dmg_max = dmg_max * pellets .. "-" .. txt_dmg_max
