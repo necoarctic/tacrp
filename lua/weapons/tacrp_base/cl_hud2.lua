@@ -187,8 +187,6 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 	if !wep:IsValid() then return end
 
 	if h2_enabled:GetBool() then
-		C2_UpdateColors() -- TODO: EW WHY EVERY HUD DRAW!!
-
 		if h2_enabled_health:GetBool() then
 			local Hw = s(60)
 			local Hh = s(36)

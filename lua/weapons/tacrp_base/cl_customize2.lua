@@ -74,6 +74,7 @@ local c_2_v = CreateClientConVar( "tacrp_c2_2_v", 1, true, false )
 local c_2_a = CreateClientConVar( "tacrp_c2_2_a", (1/32), true, false )
 
 local c_2_gd = CreateClientConVar( "tacrp_c2_graddown", 0, true, false )
+local c_2_classic = CreateClientConVar( "tacrp_c2_classic", 0, true, false )
 
 function C2_UpdateColors()
 	C2_COLOR_Main = HSVToColor( c_1_h:GetFloat(), c_1_s:GetFloat(), c_1_v:GetFloat() )
@@ -83,7 +84,18 @@ function C2_UpdateColors()
 	--C2_COLOR_Accent = HSVToColor( ((CurTime()*360)-180)%360, 1, 1 )
 	C2_COLOR_Accent.a = c_2_a:GetFloat()*255
 end
+C2_UpdateColors()
 
+cvars.AddChangeCallback( "tacrp_c2_1_h", C2_UpdateColors, "TacRP_C2_Color" )
+cvars.AddChangeCallback( "tacrp_c2_1_s", C2_UpdateColors, "TacRP_C2_Color" )
+cvars.AddChangeCallback( "tacrp_c2_1_v", C2_UpdateColors, "TacRP_C2_Color" )
+cvars.AddChangeCallback( "tacrp_c2_1_a", C2_UpdateColors, "TacRP_C2_Color" )
+cvars.AddChangeCallback( "tacrp_c2_2_h", C2_UpdateColors, "TacRP_C2_Color" )
+cvars.AddChangeCallback( "tacrp_c2_2_s", C2_UpdateColors, "TacRP_C2_Color" )
+cvars.AddChangeCallback( "tacrp_c2_2_v", C2_UpdateColors, "TacRP_C2_Color" )
+cvars.AddChangeCallback( "tacrp_c2_2_a", C2_UpdateColors, "TacRP_C2_Color" )
+cvars.AddChangeCallback( "tacrp_c2_graddown", C2_UpdateColors, "TacRP_C2_Color" )
+cvars.AddChangeCallback( "tacrp_c2_classic", C2_UpdateColors, "TacRP_C2_Color" )
 
 local grad_d = Material("vgui/gradient-d")
 local grad_u = Material("vgui/gradient-u")
@@ -112,6 +124,12 @@ function C2_Gradient_Right( x, y, w, h )
 end
 
 function C2_Outline( x, y, w, h )
+	if c_2_classic:GetBool() then
+		surface.SetDrawColor( color_white )
+		TacRP.DrawCorners( x, y, w, h )
+		return
+	end
+
 	surface.SetDrawColor( COLOR_OUTLINE )
 	surface.DrawRect( x, y, w, 1 )
 	surface.SetMaterial( grad_u )
@@ -130,14 +148,6 @@ end
 function C2_FullBox( x, y, w, h )
 	C2_Box( x, y, w, h )
 	C2_Outline( x, y, w, h )
-end
-
-local CLASSIC = false
-if CLASSIC then
-	function C2_Outline( x, y, w, h )
-		surface.SetDrawColor( color_white )
-		TacRP.DrawCorners( x, y, w, h )
-	end
 end
 
 local function paint_box( _, w, h )
@@ -880,6 +890,7 @@ local pres = {
 		["tacrp_c2_2_v"]	= 1,
 		["tacrp_c2_2_a"]	= 0.10,
 		["tacrp_c2_graddown"]	= true,
+		["tacrp_c2_classic"]	= false,
 	},
 	["Hot Red"] = {
 		["tacrp_c2_1_h"]	= 0,
@@ -891,6 +902,7 @@ local pres = {
 		["tacrp_c2_2_v"]	= 1,
 		["tacrp_c2_2_a"]	= 0.25,
 		["tacrp_c2_graddown"]	= true,
+		["tacrp_c2_classic"]	= false,
 	},
 	["Pretty Fish"] = {
 		["tacrp_c2_1_h"]	= 40,
@@ -902,6 +914,7 @@ local pres = {
 		["tacrp_c2_2_v"]	= 1,
 		["tacrp_c2_2_a"]	= 0.25,
 		["tacrp_c2_graddown"]	= false,
+		["tacrp_c2_classic"]	= false,
 	},
 	["Fresh Vapor"] = {
 		["tacrp_c2_1_h"]	= 285,
@@ -913,6 +926,7 @@ local pres = {
 		["tacrp_c2_2_v"]	= 0.85,
 		["tacrp_c2_2_a"]	= 0.2,
 		["tacrp_c2_graddown"]	= true,
+		["tacrp_c2_classic"]	= false,
 	},
 	["Baby Blue"] = {
 		["tacrp_c2_1_h"]	= 180,
@@ -924,6 +938,7 @@ local pres = {
 		["tacrp_c2_2_v"]	= 1,
 		["tacrp_c2_2_a"]	= 0.1,
 		["tacrp_c2_graddown"]	= false,
+		["tacrp_c2_classic"]	= false,
 	},
 	["Dark Dashboard"] = {
 		["tacrp_c2_1_h"]	= 180,
@@ -935,6 +950,7 @@ local pres = {
 		["tacrp_c2_2_v"]	= 1,
 		["tacrp_c2_2_a"]	= 0.1,
 		["tacrp_c2_graddown"]	= false,
+		["tacrp_c2_classic"]	= false,
 	},
 	["Dew Green"] = {
 		["tacrp_c2_1_h"]	= 200,
@@ -946,6 +962,7 @@ local pres = {
 		["tacrp_c2_2_v"]	= 0.5,
 		["tacrp_c2_2_a"]	= 0.2,
 		["tacrp_c2_graddown"]	= false,
+		["tacrp_c2_classic"]	= false,
 	},
 	["Grass Blade"] = {
 		["tacrp_c2_1_h"]	= 98,
@@ -957,6 +974,7 @@ local pres = {
 		["tacrp_c2_2_v"]	= 1,
 		["tacrp_c2_2_a"]	= 0.05,
 		["tacrp_c2_graddown"]	= false,
+		["tacrp_c2_classic"]	= false,
 	},
 	["Soft Pink"] = {
 		["tacrp_c2_1_h"]	= 360,
@@ -968,6 +986,7 @@ local pres = {
 		["tacrp_c2_2_v"]	= 1,
 		["tacrp_c2_2_a"]	= 0.07,
 		["tacrp_c2_graddown"]	= false,
+		["tacrp_c2_classic"]	= false,
 	},
 	["Cookie Cream"] = {
 		["tacrp_c2_1_h"]	= 0,
@@ -979,6 +998,19 @@ local pres = {
 		["tacrp_c2_2_v"]	= 1,
 		["tacrp_c2_2_a"]	= 0.0,
 		["tacrp_c2_graddown"]	= true,
+		["tacrp_c2_classic"]	= false,
+	},
+	["Cult Classic"] = {
+		["tacrp_c2_1_h"]	= 0,
+		["tacrp_c2_1_s"]	= 0,
+		["tacrp_c2_1_v"]	= 0,
+		["tacrp_c2_1_a"]	= 0.75,
+		["tacrp_c2_2_h"]	= 0,
+		["tacrp_c2_2_s"]	= 0,
+		["tacrp_c2_2_v"]	= 0,
+		["tacrp_c2_2_a"]	= 0,
+		["tacrp_c2_graddown"]	= false,
+		["tacrp_c2_classic"]	= true,
 	},
 }
 
@@ -1003,6 +1035,8 @@ hook.Add( "PopulateToolMenu", "CustomMenuSettings", function()
 				end
 			end
 		end
+		
+		panel:CheckBox( "Classic Corners", "tacrp_c2_classic" )
 
 		panel:Help("Main Color")
 		panel:NumSlider( "Main Hue", "tacrp_c2_1_h", 0, 360, 0 )
