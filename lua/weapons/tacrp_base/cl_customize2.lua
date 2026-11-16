@@ -1,10 +1,11 @@
 local s = TacRP.SS
 
-local cb = Color( 0, 0, 0, 127 )
-
+local COLOR_BACKGROUND = Color( 0, 0, 0, 220 )
+local COLOR_HOVER = Color( 255, 255, 255, 100 )
 local COLOR_OLD = Color( 200, 200, 200 )
 local COLOR_POSITIVE = Color( 120, 255, 120 )
 local COLOR_NEGATIVE = Color( 255, 200, 200 )
+local COLOR_OUTLINE = color_white
 
 local function sort_atts(a, b)
 	a = a or ""
@@ -35,15 +36,13 @@ local function rt( fu, w, h )
 	return true
 end
 
-local grad = Material("vgui/gradient-d")
-local grad2 = Material("vgui/gradient-u")
-local gradr = Material("vgui/gradient-l")
 
 local MARGIN_XS = TacRP.C2.MARGIN_XS
 local MARGIN_S = TacRP.C2.MARGIN_S
 local MARGIN_M = TacRP.C2.MARGIN_M
 local MARGIN_L = TacRP.C2.MARGIN_L
 local MARGIN_XL = TacRP.C2.MARGIN_XL
+local BUTTON_HEIGHT = TacRP.C2.BUTTON_HEIGHT
 
 -- Text shadow upper
 local C2_COLOR_TextShadow = HSVToColor( 0, 0, 0.25 )
@@ -85,37 +84,46 @@ function C2_UpdateColors()
 	C2_COLOR_Accent.a = c_2_a:GetFloat()*255
 end
 
-function C2_GradientLine( x, y, h )
-	surface.SetDrawColor( 255, 255, 255 )
-	surface.SetMaterial( grad2 )
-	surface.DrawTexturedRect( x, y, 1, h )
-end
 
-function C2_GradientLineDown( x, y, h )
-	surface.SetDrawColor( 255, 255, 255 )
-	surface.SetMaterial( grad )
-	surface.DrawTexturedRect( x, y, 1, h )
-end
+local grad_d = Material("vgui/gradient-d")
+local grad_u = Material("vgui/gradient-u")
+local grad_l = Material("vgui/gradient-l")
+local grad_r = Material("vgui/gradient-r")
 
-function C2_GradientLineRight( x, y, w )
-	surface.SetDrawColor( 255, 255, 255 )
-	surface.SetMaterial( gradr )
-	surface.DrawTexturedRect( x, y, w, 1 )
+C2_GradientLine = nil
+C2_GradientLineDown = nil
+C2_GradientLineRight = nil
+
+function C2_Gradient_Up( x, y, w, h )
+	surface.SetMaterial( grad_u )
+	surface.DrawTexturedRect( x, y, w, h )
+end
+function C2_Gradient_Down( x, y, w, h )
+	surface.SetMaterial( grad_d )
+	surface.DrawTexturedRect( x, y, w, h )
+end
+function C2_Gradient_Left( x, y, w, h )
+	surface.SetMaterial( grad_l )
+	surface.DrawTexturedRect( x, y, w, h )
+end
+function C2_Gradient_Right( x, y, w, h )
+	surface.SetMaterial( grad_r )
+	surface.DrawTexturedRect( x, y, w, h )
 end
 
 function C2_Outline( x, y, w, h )
-	surface.SetDrawColor( 255, 255, 255 )
+	surface.SetDrawColor( COLOR_OUTLINE )
 	surface.DrawRect( x, y, w, 1 )
-	surface.SetMaterial( grad2 )
-	surface.DrawTexturedRect( x, y, 1, h )
-	surface.DrawTexturedRect( x+w-1, y, 1, h )
+	surface.SetMaterial( grad_u )
+	surface.DrawTexturedRect( x, y+1, 1, h-1 )
+	surface.DrawTexturedRect( x+w-1, y+1, 1, h-1 )
 end
 
 function C2_Box( x, y, w, h )
 	surface.SetDrawColor( C2_COLOR_Main )
 	surface.DrawRect( x, y, w, h )
 	surface.SetDrawColor( C2_COLOR_Accent )
-	surface.SetMaterial( (c_2_gd:GetBool() and grad2) or grad )
+	surface.SetMaterial( (c_2_gd:GetBool() and grad_u) or grad_d )
 	surface.DrawTexturedRect( x, y, w, h )
 end
 
@@ -126,12 +134,10 @@ end
 
 local CLASSIC = false
 if CLASSIC then
-	function C2_Outline() return end
-	function C2_Box( x, y, w, h )
-		surface.SetDrawColor( cb )
-		TacRP.DrawCorneredBox( x, y, w, h )
+	function C2_Outline( x, y, w, h )
+		surface.SetDrawColor( color_white )
+		TacRP.DrawCorners( x, y, w, h )
 	end
-	C2_FullBox = C2_Box
 end
 
 local function paint_box( _, w, h )
@@ -171,9 +177,6 @@ local function C2_ShadowedRect( x, y, ax, ay, color )
 	surface.DrawRect( x, y, ax, ay )
 end
 
-local BUTTON_HEIGHT_EMPTY = 18
-local BUTTON_HEIGHT = 36
-
 local function compute_stat( wep, stat_cache, index, data )
 	if data.ConVarCheck then
 		if !data.ConVar then data.ConVar = GetConVar(data.ConVarCheck) end
@@ -184,8 +187,11 @@ local function compute_stat( wep, stat_cache, index, data )
 		return
 	end
 
-	local stat_base = wep:GetBaseValue( data.Value )
-	local stat_curr = wep:GetValue( data.Value )
+	local raw_base = wep:GetBaseValue( data.Value )
+	local raw_curr = wep:GetValue( data.Value )
+
+	local stat_base = raw_base
+	local stat_curr = raw_curr
 
 	if data.HideIfSame and stat_base == stat_curr then
 		return
@@ -207,7 +213,7 @@ local function compute_stat( wep, stat_cache, index, data )
 
 	local diff = nil
 	if data.DifferenceFunction then
-		diff = data.DifferenceFunction( wep, stat_base, stat_curr )
+		diff = data.DifferenceFunction( wep, raw_base, raw_curr )
 	elseif isnumber(stat_base) and isnumber(stat_curr) then
 		if stat_curr == stat_base then
 			diff = ""
@@ -224,8 +230,8 @@ local function compute_stat( wep, stat_cache, index, data )
 	local text_curr
 	local text_base
 	if data.DisplayFunction then
-		text_base = data.DisplayFunction( wep, true, stat_base )
-		text_curr = data.DisplayFunction( wep, false, stat_curr )
+		text_base = data.DisplayFunction( wep, true, raw_base )
+		text_curr = data.DisplayFunction( wep, false, raw_curr )
 	elseif isbool(stat_base) then
 		text_base = stat_base and "YES" or "NO"
 		text_curr = stat_curr and "YES" or "NO"
@@ -243,7 +249,8 @@ local function compute_stat( wep, stat_cache, index, data )
 	local varying = false
 	local positive = false
 	if data.BetterFunction then
-		-- varying, positive = data.BetterFunction( wep, stat_base, stat_curr )
+		print( data.Name, stat_base, stat_curr )
+		varying, positive = data.BetterFunction( wep, raw_base, raw_curr )
 	elseif stat_base ~= stat_curr then
 		if isnumber(stat_curr) then
 			varying = true
@@ -285,14 +292,23 @@ function SWEP:C2_Open()
 
 	local cl = c2:Add("DButton")
 	cl:SetSize( s(58), s(12) )
-	cl:SetPos( 0, 0 )
+	cl:AlignBottom( s(MARGIN_XL) )
+	cl:AlignLeft( s(MARGIN_XL) )
 	function cl:DoClick()
 		RunConsoleCommand("tacrp_drop")
 		c2:Remove()
 	end
 	function cl:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
-		C2_DrawText( "Drop Weapon", "TacRP_STD_10", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+		C2_DrawText(
+			"Drop Weapon",
+			"TacRP_STD_10",
+			w/2,
+			h/2,
+			color_white,
+			TEXT_ALIGN_CENTER,
+			TEXT_ALIGN_CENTER
+		)
 		return true
 	end
 
@@ -325,8 +341,9 @@ function SWEP:C2_Open()
 	p_helphover:SetWide( s(140) )
 	p_helphover:DockPadding( s(MARGIN_S), s(MARGIN_S), s(MARGIN_S), s(MARGIN_S) )
 	p_helphover:Center()
+	p_helphover:SetDrawOnTop(true)
 	function p_helphover:Paint( w, h )
-		surface.SetDrawColor( cb )
+		surface.SetDrawColor( COLOR_BACKGROUND )
 		surface.DrawRect( 0, 0, w, h )
 		C2_Outline( 0, 0, w, h )
 	end
@@ -334,10 +351,17 @@ function SWEP:C2_Open()
 		self:SizeToChildren( false, true )
 	end
 	function p_helphover:Think()
+		local w, h = self:GetSize()
+		local x, y = input.GetCursorPos()
+		x = math.min( x + s(20), sw - w - s(MARGIN_XL) )
+		y = math.min( y + s(20), sh - h - s(MARGIN_XL) )
+		self:SetPos( x, y )
+
 		if not self.TargetDraw then
-			p_helphover:Hide()
+			-- p_helphover:Hide()
 			return
 		end
+
 		if self.TargetDraw ~= self.CurrentDraw then
 			-- 
 
@@ -364,11 +388,8 @@ function SWEP:C2_Open()
 	detail:SetTall( s(2) )
 	detail:DockMargin( s(-4), s(2), s(-4), s(2) )
 	function detail:Paint( w, h )
-		C2_GradientLineRight( 0, 0, w )
-		-- surface.SetDrawColor( cb )
-		-- surface.DrawRect( 0, 0, w, h )
-		-- surface.SetDrawColor( color_white )
-		-- surface.DrawRect( 1, 1, w-2, h-2 )
+		surface.SetDrawColor( COLOR_OUTLINE )
+		C2_Gradient_Left( 0, 0, w, 1 )
 	end
 
 	for i, v in ipairs({ "hi", "hello", "This is a long ass string! Lol!" }) do
@@ -390,8 +411,7 @@ function SWEP:C2_Open()
 	p_header:SetTall( s(48) )
 	function p_header:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
-		local type_txt = TacRP.FormatTierType(wep.SubCatType, wep.SubCatTier, TacRP.UseTiers())
-		C2_FullBox( 0, 0, w, h )
+
 		C2_DrawText(
 			wep.PrintName,
 			"TacRP_STD_36",
@@ -400,22 +420,35 @@ function SWEP:C2_Open()
 			nil,
 			TEXT_ALIGN_CENTER
 		)
+		local type_txt = TacRP.FormatTierType(wep.SubCatType, wep.SubCatTier, TacRP.UseTiers())
+
+		local ammotype = wep:GetAmmoType()
+		local ammoid = game.GetAmmoID(ammotype)
+		ammotype = game.GetAmmoName(ammoid)
+
+		local y = 0
+		if ammotype ~= "" and ammoid != -1 then
+			local txt_ammo = language.GetPhrase(ammotype .. "_ammo")
+			C2_DrawText(
+				txt_ammo,
+				"TacRP_STD_12",
+				w - s(MARGIN_L), h/2 + s(6),
+				color_white,
+				TEXT_ALIGN_RIGHT,
+				TEXT_ALIGN_CENTER
+			)
+			y = s(6)
+		end
+
 		C2_DrawText(
 			type_txt,
 			"TacRP_STD_12",
-			w - s(MARGIN_L), h/2 - s(6),
+			w - s(MARGIN_L), h/2 - y,
 			color_white,
 			TEXT_ALIGN_RIGHT,
 			TEXT_ALIGN_CENTER
 		)
-		C2_DrawText(
-			wep:GetValue("Trivia_Caliber"),
-			"TacRP_STD_12",
-			w - s(MARGIN_L), h/2 + s(6),
-			color_white,
-			TEXT_ALIGN_RIGHT,
-			TEXT_ALIGN_CENTER
-		)
+
 		return true
 	end
 
@@ -430,27 +463,40 @@ function SWEP:C2_Open()
 	function p_footer:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
 		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_STD_12" )
-		local lines = #desc
-		for i, v in ipairs( desc ) do
+		local line_index = 0
+		for _, line in ipairs( desc ) do
 			C2_DrawText(
-				v,
+				line,
 				"TacRP_STD_12",
-				s(12), s( 6+(12*(i-1)) ),
+				s(12),
+				s( 6 + ( 12 * line_index ) ),
 				color_white
 			)
+			line_index = line_index + 1
 		end
-		C2_DrawText(
-			wep.Description_Quote,
-			"TacRP_STD_12I",
-			s(12), s( 6+(12*(lines+1)) ),
-			color_white
-		)
+
+		if not wep.Description_Quote then return end
+
+		line_index = line_index + 1
+
+		local quot = TacRP.MultiLineText( wep.Description_Quote, w - s(12*2), "TacRP_STD_12" )
+		for _, line in ipairs( quot ) do
+			C2_DrawText(
+				line,
+				"TacRP_STD_12I",
+				s(12),
+				s( 6 + ( 12 * line_index ) ),
+				color_white
+			)
+			line_index = line_index + 1
+		end
 	end
 
 	function p_footer:PerformLayout( w, h )
-		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_STD_12" )
-		local lines = #desc
-		if wep.Description_Quote then lines = lines + 2 end
+		local lines = #TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_STD_12" )
+		if wep.Description_Quote then
+			lines = lines + 1 + #TacRP.MultiLineText( wep.Description_Quote, w - s(12*2), "TacRP_STD_12" )
+		end
 		self:SetTall( s(6+(12*lines)+6) )
 		self:AlignBottom( s(MARGIN_XL) )
 		self:CenterHorizontal()
@@ -530,125 +576,124 @@ function SWEP:C2_Open()
 	p_align_right:Dock(RIGHT)
 	p_align_right:SetWide( s(180) )
 	p_align_right:DockMargin( 0, s(MARGIN_S), 0, s(MARGIN_S) )
+	
+	if not self:GetValue("NoRanger") then
+		local p_align_dmgstats = p_align_right:Add( "Panel" )
+		p_align_dmgstats:Dock( TOP )
+		p_align_dmgstats:SetTall( s(80) )
+		p_align_dmgstats:DockMargin( 0, 0, 0, s(MARGIN_S) )
 
-	local p_align_dmgstats = p_align_right:Add( "Panel" )
-	p_align_dmgstats:Dock( TOP )
-	p_align_dmgstats:SetTall( s(80) )
-	p_align_dmgstats:DockMargin( 0, 0, 0, s(MARGIN_S) )
-
-	local p_dmgdoll = p_align_dmgstats:Add( "Panel" )
-	p_dmgdoll:SetWide( s(48) )
-	p_dmgdoll:Dock( LEFT )
-	p_dmgdoll:DockMargin( 0 ,0, s(MARGIN_S), 0 )
-	function p_dmgdoll:Paint( w, h )
-		C2_FullBox( 0, 0, w, h )
-		C2_DrawText( "DOLL", "TacRP_STD_8", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-		return true
-	end
-
-	local p_dmgrange = p_align_dmgstats:Add( "Panel" )
-	p_dmgrange:Dock( FILL )
-
-	function p_dmgrange:Paint( w, h )
-		C2_FullBox( 0, 0, w, h )
-
-		local exp = wep:GetValue("ExplosiveDamage")
-		local dmult = wep:GetConfigDamageMultiplier()
-		local dmg_max = (wep:GetValue("Damage_Max") + exp) * dmult
-		local dmg_min = (wep:GetValue("Damage_Min") + exp) * dmult
-		local range_min, range_max = wep:GetMinMaxRange()
-
-		-- panel range expands to fit the entire damage range (+ some extra margin)
-		-- panel_range = panel_range * math.ceil((range_max + 13)/panel_range)
-		local right_space = s(32)
-		local phys_to_pixel = range_max/w
-		local panel_range = range_max + right_space*phys_to_pixel
-		phys_to_pixel = panel_range/w -- needs to be updated after a new panel range
-
-		local tall = h*.75
-		local y = h - tall
-
-		local p1_x = w * (range_min / panel_range)
-		local p2_x = w * (range_max / panel_range)
-
-		-- lines
-		local max_y = h - (math.min(wep:GetValue("Damage_Max")/100, 1) * tall)
-		local min_y = h - (math.min(wep:GetValue("Damage_Min")/100, 1) * tall)
-		surface.SetDrawColor(255, 255, 255)
-		for i = 0, 1 do
-			surface.DrawLine( 0, max_y + i, p1_x, max_y + i )
-			surface.DrawLine( p1_x, max_y + i, p2_x, min_y + i )
-			surface.DrawLine( p2_x, min_y + i, w, min_y + i )
+		local p_dmgdoll = p_align_dmgstats:Add( "Panel" )
+		p_dmgdoll:SetWide( s(48) )
+		p_dmgdoll:Dock( LEFT )
+		p_dmgdoll:DockMargin( 0 ,0, s(MARGIN_S), 0 )
+		function p_dmgdoll:Paint( w, h )
+			C2_FullBox( 0, 0, w, h )
+			C2_DrawText( "DOLL", "TacRP_STD_8", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			return true
 		end
 
-		local txt_dmg_max = dmg_max .. TacRP:GetPhrase("unit.damage")
-		local txt_dmg_min = dmg_min .. TacRP:GetPhrase("unit.damage")
-		local pellets = wep:GetValue("Num")
-		if pellets > 1 then
-			txt_dmg_max = dmg_max * pellets .. "-" .. txt_dmg_max
-			txt_dmg_min = dmg_min * pellets .. "-" .. txt_dmg_min
-		end
+		local p_dmgrange = p_align_dmgstats:Add( "Panel" )
+		p_dmgrange:Dock( FILL )
 
-		C2_GradientLineDown( p1_x, y, tall )
-		C2_DrawText(
-			txt_dmg_max,
-			"TacRP_STD_10",
-			math.max( s(MARGIN_S), p1_x - surface.GetTextSize(txt_dmg_min)/2 ),
-			s(4),
-			color_white
-		)
-		
-		local txt_range_min = wep:RangeUnitize(range_min)
-		C2_DrawText(
-			txt_range_min,
-			"TacRP_STD_10",
-			math.max( s(MARGIN_S), p1_x - surface.GetTextSize(txt_range_min)/2 ),
-			s(4+10),
-			color_white
-		)
+		function p_dmgrange:Paint( w, h )
+			C2_FullBox( 0, 0, w, h )
 
-		C2_GradientLineDown( p2_x, y, tall )
+			local exp = wep:GetValue("ExplosiveDamage")
+			local dmult = wep:GetConfigDamageMultiplier()
+			local dmg_max = (wep:GetValue("Damage_Max") + exp) * dmult
+			local dmg_min = (wep:GetValue("Damage_Min") + exp) * dmult
+			local range_min, range_max = wep:GetMinMaxRange()
 
-		local width_dmg_min = surface.GetTextSize(txt_dmg_min)
-		C2_DrawText(
-			txt_dmg_min,
-			"TacRP_STD_10",
-			math.min(
-				w - width_dmg_min - s(MARGIN_S),
-				p2_x - width_dmg_min/2
-			),
-			s(4),
-			color_white
-		)
+			local phys_to_pixel = range_max/w
+			local panel_range = range_max + s(32) * phys_to_pixel
+			phys_to_pixel = panel_range/w
 
-		local txt_range_max = wep:RangeUnitize(range_max)
-		local width_range_max = surface.GetTextSize(txt_range_max)
-		C2_DrawText(
-			txt_range_max,
-			"TacRP_STD_10",
-			math.min(
-				w - width_range_max - s(MARGIN_S),
-				p2_x - width_range_max/2
-			),
-			s(4+10),
-			color_white
-		)
+			local tall = h * .75
+			local y = h - tall
 
-		for i=0, panel_range, (TacRP.ConVars["metricunit"]:GetBool() and 25 / TacRP.HUToM or 1000) do
-			if i == 0 then continue end
-			-- surface.DrawRect( i / phys_to_pixel, h-2, 1, 1 )
-			local x = i/phys_to_pixel
-			C2_GradientLineDown( x, h - s(4), s(4) )
+			local p1_x = w * (range_min / panel_range)
+			local p2_x = w * (range_max / panel_range)
+
+			-- lines
+			local max_y = h - (math.min(wep:GetValue("Damage_Max")/100, 1) * tall)
+			local min_y = h - (math.min(wep:GetValue("Damage_Min")/100, 1) * tall)
+			surface.SetDrawColor(255, 255, 255)
+			for i = 0, 1 do
+				surface.DrawLine( 0, max_y + i, p1_x, max_y + i )
+				surface.DrawLine( p1_x, max_y + i, p2_x, min_y + i )
+				surface.DrawLine( p2_x, min_y + i, w, min_y + i )
+			end
+
+			local txt_dmg_max = dmg_max .. TacRP:GetPhrase("unit.damage")
+			local txt_dmg_min = dmg_min .. TacRP:GetPhrase("unit.damage")
+			local pellets = wep:GetValue("Num")
+			if pellets > 1 then
+				txt_dmg_max = dmg_max * pellets .. "-" .. txt_dmg_max
+				txt_dmg_min = dmg_min * pellets .. "-" .. txt_dmg_min
+			end
+
+			surface.SetDrawColor( COLOR_OUTLINE )
+			C2_Gradient_Down( p1_x, y, 1, tall )
+			C2_Gradient_Down( p2_x, y, 1, tall )
+
+			surface.SetFont("TacRP_STD_10")
+			local txt_range_max = wep:RangeUnitize(range_max)
+			local txt_range_min = wep:RangeUnitize(range_min)
+			local width_dmg_max = surface.GetTextSize(txt_dmg_max)
+			local width_dmg_min = surface.GetTextSize(txt_dmg_min)
+			local width_range_max = surface.GetTextSize(txt_range_max)
+			local width_range_min = surface.GetTextSize(txt_range_min)
+
 			C2_DrawText(
-				wep:RangeUnitize(i),
-				"TacRP_STD_6",
-				x, h - s(1),
-				color_white,
-				TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM
+				txt_dmg_max,
+				"TacRP_STD_10",
+				math.max( s(MARGIN_S), p1_x - width_dmg_max/2 ),
+				s(4),
+				color_white
 			)
-		end
+			
+			C2_DrawText(
+				txt_range_min,
+				"TacRP_STD_10",
+				math.max( s(MARGIN_S), p1_x - width_range_min/2 ),
+				s(4+10),
+				color_white
+			)
 
-		return true
+			C2_DrawText(
+				txt_dmg_min,
+				"TacRP_STD_10",
+				math.min( w - width_dmg_min - s(MARGIN_S), p2_x - width_dmg_min/2 ),
+				s(4),
+				color_white
+			)
+
+			C2_DrawText(
+				txt_range_max,
+				"TacRP_STD_10",
+				math.min( w - width_range_max - s(MARGIN_S), p2_x - width_range_max/2 ),
+				s(4+10),
+				color_white
+			)
+
+			for i=0, panel_range, (TacRP.ConVars["metricunit"]:GetBool() and 25 / TacRP.HUToM or 1000) do
+				if i == 0 then continue end
+				-- surface.DrawRect( i / phys_to_pixel, h-2, 1, 1 )
+				local x = i/phys_to_pixel
+				surface.SetDrawColor( COLOR_OUTLINE )
+				C2_Gradient_Down( x, h - s(4), s(4), 1 )
+				C2_DrawText(
+					wep:RangeUnitize(i),
+					"TacRP_STD_6",
+					x, h - s(1),
+					color_white,
+					TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM
+				)
+			end
+
+			return true
+		end
 	end
 
 	local p_align_breakdown = p_align_right:Add("Panel")
@@ -672,7 +717,8 @@ function SWEP:C2_Open()
 			item:SetTall( s(18) )
 			function item:Paint( w, h )
 				if not top then
-					C2_GradientLineRight( 0, s(2), w )
+					surface.SetDrawColor( COLOR_OUTLINE )
+					C2_Gradient_Left( 0, s(2), w, 1 )
 				end
 				C2_DrawText(
 					TacRP:TryTranslate(data.Name),
@@ -690,12 +736,16 @@ function SWEP:C2_Open()
 			local item = p_breakdown:Add( "Panel" )
 			item:Dock( TOP )
 			item:SetTall( s(14+5) )
-			item:DockMargin( s(6), 0, 0, 0 )
 			function item:Paint( w, h )
+				if self:IsHovered() then
+					surface.SetDrawColor( COLOR_HOVER )
+					C2_Gradient_Left( 0, 0, w, h )
+				end
+
 				C2_DrawText(
 					TacRP:TryTranslate(data.Name),
 					"TacRP_STD_8",
-					0, 0,
+					s(6), 0,
 					color_white
 				)
 
@@ -704,7 +754,7 @@ function SWEP:C2_Open()
 				C2_DrawText(
 					cache.text_curr,
 					"TacRP_STD_14",
-					s(4), s(5),
+					s(6+4), s(5),
 					stat_color
 				)
 
@@ -715,7 +765,7 @@ function SWEP:C2_Open()
 					C2_DrawText(
 						text_diff,
 						"TacRP_STD_10",
-						s(4) + bump_x, s(5+3.5),
+						s(6+4) + bump_x, s(5+3.5),
 						stat_color
 					)
 					bump_x = bump_x + surface.GetTextSize(text_diff) + s(4)
@@ -725,7 +775,7 @@ function SWEP:C2_Open()
 					C2_DrawText(
 						cache.text_base,
 						"TacRP_STD_10",
-						s(4) + bump_x, s(5+3.5),
+						s(6+4) + bump_x, s(5+3.5),
 						COLOR_OLD
 					)
 				end
