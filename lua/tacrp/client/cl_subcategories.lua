@@ -31,12 +31,13 @@ local function qt( text, font, w, h, alignx, aligny )
 end
 
 local rtc = {
-	["Value"]			= Color( 109,		101,	101 ),
-	["Consumer"]		= Color( 99,		143,	188 ),
-	["Security"]		= Color( 144,		95,		223 ),
-	["Operator"]		= Color( 220,		107,	157 ),
-	["Elite"]			= Color( 255,		77,		77 ),
-	["Special"]			= Color( 155,		126,	110 ),
+	["Value"]			= Color( 109, 101, 101 ),
+	["Consumer"]		= Color( 99, 143, 188 ),
+	["Security"]		= Color( 144, 95, 223 ),
+	["Operator"]		= Color( 220, 107, 157 ),
+	["Elite"]			= Color( 255, 77, 77 ),
+	["Special"]			= Color( 155, 126, 110 ),
+	["Exotic"]			= Color( 202, 171, 5 ),
 }
 
 local filtergroups = {
@@ -105,7 +106,7 @@ local filtergroups = {
 		},
 	},
 	["postapocolypse"] = {
-		Name = "Post-apocolypse",
+		Name = "Scavenger's Spoils",
 		SortOrder = 10,
 		Filters = {
 			"tacrp_pa_"
@@ -114,6 +115,7 @@ local filtergroups = {
 }
 
 local filtergrades = {
+	["0Exotic"] = true,
 	["1Elite"] = true,
 	["2Operator"] = true,
 	["3Security"] = true,
