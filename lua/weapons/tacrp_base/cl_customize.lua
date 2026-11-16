@@ -823,7 +823,7 @@ function SWEP:CreateCustomizeHUD()
                 stat_curr = math.Round(value, 4)
             end
 
-            if stat_base == nil and stat_cur == nil then return end
+            if stat_base == nil and stat_curr == nil then return end
 
             if k.DifferenceFunction then
                 diff = k.DifferenceFunction(self, orig, value)
@@ -875,11 +875,15 @@ function SWEP:CreateCustomizeHUD()
                 goodorbad, good = k.BetterFunction(self, orig, value)
             elseif stat_base != stat_curr then
                 if isnumber(stat_curr) then
-                    good = stat_curr > stat_base
                     goodorbad = true
+                    if not stat_base then
+                        good = true
+                    else
+                        good = stat_curr > stat_base
+                    end
                 elseif isbool(stat_curr) then
-                    good = !stat_base and stat_curr
                     goodorbad = true
+                    good = !stat_base and stat_curr
                 end
             end
 

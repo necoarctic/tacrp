@@ -200,24 +200,23 @@ local function compute_stat( wep, stat_cache, index, data )
 	local raw_base = wep:GetBaseValue( data.Value )
 	local raw_curr = wep:GetValue( data.Value )
 
-	local stat_base = raw_base
-	local stat_curr = raw_curr
-
-	if data.HideIfSame and stat_base == stat_curr then
+	if data.HideIfSame and raw_base == raw_curr then
 		return
 	end
+	
 	if data.DefaultValue ~= nil and
-		stat_base == data.DefaultValue and
-		stat_curr == data.DefaultValue then
+		raw_base == data.DefaultValue and
+		raw_curr == data.DefaultValue then
 		return
 	end
 
+	local stat_base, stat_curr
 	if data.AggregateFunction then
-		stat_base = data.AggregateFunction( wep, true, wep:GetBaseValue(data.Value) )
-		stat_curr = data.AggregateFunction( wep, false, wep:GetValue(data.Value) )
+		stat_base = data.AggregateFunction( wep, true, raw_base )
+		stat_curr = data.AggregateFunction( wep, false, raw_curr )
 	else
-		stat_base = math.Round( stat_base, 4 )
-		stat_curr = math.Round( stat_curr, 4 )
+		stat_base = math.Round( raw_base, 4 )
+		stat_curr = math.Round( raw_curr, 4 )
 	end
 	if stat_base == nil and stat_curr == nil then return end
 
@@ -237,8 +236,7 @@ local function compute_stat( wep, stat_cache, index, data )
 		end
 	end
 
-	local text_curr
-	local text_base
+	local text_base, text_curr
 	if data.DisplayFunction then
 		text_base = data.DisplayFunction( wep, true, raw_base )
 		text_curr = data.DisplayFunction( wep, false, raw_curr )
@@ -263,7 +261,12 @@ local function compute_stat( wep, stat_cache, index, data )
 	elseif stat_base ~= stat_curr then
 		if isnumber(stat_curr) then
 			varying = true
-			positive = stat_curr > stat_base
+			-- -- TODO: M79 with Baseballs break the menu for some reason! Baseball: stat_base nil, stat_curr number
+			if not stat_base then
+				positive = true
+			else
+				positive = stat_curr > stat_base
+			end
 		elseif isbool(stat_curr) then
 			varying = true
 			positive = !stat_base and stat_curr
@@ -1011,6 +1014,18 @@ local pres = {
 		["tacrp_c2_2_a"]	= 0,
 		["tacrp_c2_graddown"]	= false,
 		["tacrp_c2_classic"]	= true,
+	},
+	["Sweet Potato"] = {
+		["tacrp_c2_1_h"]	= 304,
+		["tacrp_c2_1_s"]	= 0.50,
+		["tacrp_c2_1_v"]	= 0.47,
+		["tacrp_c2_1_a"]	= 0.46,
+		["tacrp_c2_2_h"]	= 43,
+		["tacrp_c2_2_s"]	= 0.23,
+		["tacrp_c2_2_v"]	= 1.00,
+		["tacrp_c2_2_a"]	= 0.33,
+		["tacrp_c2_graddown"]	= true,
+		["tacrp_c2_classic"]	= false,
 	},
 }
 
