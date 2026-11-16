@@ -1,28 +1,66 @@
+-- TODO: This must go!
 local mat_corner_ul = Material("TacRP/hud/800corner_nobg1.png", "mips smooth")
 local mat_corner_ur = Material("TacRP/hud/800corner_nobg2.png", "mips smooth")
 local mat_corner_br = Material("TacRP/hud/800corner_nobg3.png", "mips smooth")
 local mat_corner_bl = Material("TacRP/hud/800corner_nobg4.png", "mips smooth")
 
 function TacRP.DrawCorneredBox(x, y, w, h, col)
-    col = col or Color(255, 255, 255)
-
     surface.DrawRect(x, y, w, h)
+    surface.SetDrawColor(col or color_white)
+    TacRP.DrawCorners( x, y, w, h )
+end
 
-    surface.SetDrawColor(col)
+local space = 1
+local length = 4
+local height = 1
+function TacRP.DrawCorners( x, y, w, h )
+    -- top left
+    surface.DrawRect(
+        x + space,
+        y + space,
+        length, height
+    )
+    surface.DrawRect(
+        x + space,
+        y + space,
+        height, length
+    )
 
-    local s = 8
+    -- top right
+    surface.DrawRect(
+        x + w - space - length,
+        y + space,
+        length, height
+    )
+    surface.DrawRect(
+        x + w - space - height,
+        y + space,
+        height, length
+    )
 
-    surface.SetMaterial(mat_corner_ul)
-    surface.DrawTexturedRect(x, y, s, s)
+    -- bottom left
+    surface.DrawRect(
+        x + space,
+        y + h - space - height,
+        length, height
+    )
+    surface.DrawRect(
+        x + space,
+        y + h - space - length,
+        height, length
+    )
 
-    surface.SetMaterial(mat_corner_ur)
-    surface.DrawTexturedRect(x + w - s, y, s, s)
-
-    surface.SetMaterial(mat_corner_bl)
-    surface.DrawTexturedRect(x, y + h - s, s, s)
-
-    surface.SetMaterial(mat_corner_br)
-    surface.DrawTexturedRect(x + w - s, y + h - s, s, s)
+    -- bottom right
+    surface.DrawRect(
+        x + w - space - length,
+        y + h - space - height,
+        length, height
+    )
+    surface.DrawRect(
+        x + w - space - height,
+        y + h - space - length,
+        height, length
+    )
 end
 
 local hide = {
