@@ -43,17 +43,31 @@ local function get_firemode_text( wep, fm )
 	end
 end
 
+local ROTATION = 14
+local MATERIAL_BULLET = Material("tacrp/h2/bullet.png", "mips smooth")
+local COLOR_NEXT = Color( 255, 200, 60 )
+local COLOR_NEXTBURST = Color( 255, 180, 120 )
+local COLOR_REST = Color( 255, 255, 255 )
+local COLOR_LOWAMMO = Color( 255, 0, 0, 127 )
+local COLOR_EMPTY = Color( 32, 32, 32, 127 )
+local COLOR_SHADOW = Color( 32, 32, 32, 80 )
+
+local NEWLINE_AT = 30
+local LOW_AMMO_PERCENTAGE = 0.34
+
 local function H2_DrawAmmo( ply, wep )
 	local sw, sh = ScrW(), ScrH()
 	local Hw = s(140)
 	local Hh = s(19)
 	local Hx = sw - Hw - s(MARGIN_XL)
 	local Hy = sh - Hh - s(MARGIN_XL)
+	local tacrp = wep.ArcticTacRP
 	C2_FullBox( Hx, Hy, Hw, Hh )
 
 	C2_DrawText( wep:GetPrintName(), "TacRP_STD_12I", Hx + s(4), Hy + s(3), color_white, TEXT_ALIGN_LEFT )
 
-	if wep.ArcticTacRP then
+	-- firemode
+	if tacrp then
 		if wep:GetSafe() then
 			C2_DrawText(
 				"Safety",
@@ -90,93 +104,119 @@ local function H2_DrawAmmo( ply, wep )
 		end
 	end
 
-	local MC = wep:GetMaxClip1()
-	local Buw, Buh = math.ceil(s(12)), math.ceil(s(12))
-	local Sx, Sy = 0, 0
-	local Bobber = 0
-	local Pass = 0
+	local IW, IH = math.ceil(s(12)), math.ceil(s(12))
+	local shift_x, shift_y = 0, 0
+	local newline_counter = 0
+	local linecount = 0
 
 	local aps = 1
 	if wep.GetValue then
 		aps = wep:GetValue("AmmoPerShot")
 	end
 
-	surface.SetMaterial( Material("tacrp/h2/bullet.png", "mips smooth"))
-	local BANG = 14
-	for i=1, MC do
-		local Dx, Dy = Hx + Hw - s(4+4) + Sx, Hy - s(4+1) + Sy
-		if i<= wep:Clip1() then
-			surface.SetDrawColor( 32, 32, 32, 80 )
-			surface.DrawTexturedRectRotated( Dx + 2, Dy + 1, Buw, Buh, BANG )
-			surface.DrawTexturedRectRotated( Dx + 2, Dy + 2, Buw, Buh, BANG )
-			local c1 = wep:Clip1()
-			local bl
-			local bc
-			if wep.ArcticTacRP then
-				bl = wep:GetCurrentFiremode()
-				bc = wep:GetBurstCount()
-				if bl < 0 then
-					bl = -bl
-				else
-					bl = 1
-					bc = 0
-				end
-			else
-				bl = 1
-				bc = 0
-			end
-			if ((i+aps) > wep:Clip1()) then
-				surface.SetDrawColor( 255, 200, 60 )
-			elseif i > (c1-(bl*aps)+((bc)*aps)) then
-				surface.SetDrawColor( 255, 180, 120 )
-			else
-				surface.SetDrawColor( 255, 255, 255 )
-			end
-			surface.DrawTexturedRectRotated( Dx, Dy, Buw, Buh, BANG )
-		else
-			if wep:Clip1() == 0 and (CurTime()%0.4) > 0.3 then
-				surface.SetDrawColor( 255, 0, 0, 127 )
-			elseif (wep:Clip1() <= wep:GetMaxClip1()*0.5) and (CurTime()%0.4) < 0.1 then
-				surface.SetDrawColor( 255, 0, 0, 127 )
-			else
-				surface.SetDrawColor( 32, 32, 32, 127 )
-			end
-			surface.DrawTexturedRectRotated( Dx, Dy, Buw, Buh, BANG )
+	surface.SetMaterial( MATERIAL_BULLET )
+	for gun=1, (tacrp and wep.DualAkimbo) and 2 or 1 do
+		local max_clip = wep:GetMaxClip1()
+		local clip = wep:Clip1()
+		if gun == 2 then
+			max_clip = wep:GetMaxClip2()
+			clip = wep:Clip2()
+			-- shift and make new line
+			newline_counter = 0
+			linecount = linecount + 1
+			shift_x = math.ceil( s( -2 * linecount ) )
+			shift_y = shift_y - math.ceil( s(4) )
 		end
-		Sx = Sx - math.ceil(s(4))
+		local burst_length = 1
+		local burst_count = 0
 
-		Bobber = Bobber + 1
-		if i ~= MC and Bobber >= 30 then
-			Bobber = 0
-			Pass = Pass + 1
-			--Sx = (Pass%2 == 1) and math.ceil( s(-2) ) or 0
-			Sx = ( s(-2*Pass) )
-			Sy = Sy - math.ceil( s(4) )
+		if tacrp then
+			burst_count = gun == 2 and wep:GetBurstCount2() or wep:GetBurstCount()
+			local fm = wep:GetCurrentFiremode()
+			if fm < 0 then
+				burst_length = -fm
+			end
+		end
+
+		for i=1, max_clip do
+			local Dx = Hx + Hw - s(4+4) + shift_x
+			local Dy = Hy - s(4+1) + shift_y
+
+			shift_x = shift_x - math.ceil(s(4))
+			newline_counter = newline_counter + 1
+			if i ~= max_clip and newline_counter >= NEWLINE_AT then
+				newline_counter = 0
+				linecount = linecount + 1
+				shift_x = math.ceil( s( -2 * linecount ) )
+				shift_y = shift_y - math.ceil( s(4) )
+			end
+
+			if i<= clip then
+				surface.SetDrawColor( COLOR_SHADOW )
+				surface.DrawTexturedRectRotated( Dx + 2, Dy + 1, IW, IH, ROTATION )
+				surface.DrawTexturedRectRotated( Dx + 2, Dy + 2, IW, IH, ROTATION )
+				
+				if ( i + aps > clip ) then
+					surface.SetDrawColor( COLOR_NEXT )
+				elseif i > ( clip - ( burst_length * aps ) + ( burst_count * aps ) ) then
+					surface.SetDrawColor( COLOR_NEXTBURST )
+				else
+					surface.SetDrawColor( COLOR_REST )
+				end
+				surface.DrawTexturedRectRotated( Dx, Dy, IW, IH, ROTATION )
+			else
+				if clip == 0 then
+					if CurTime() % 0.25 < 0.2 then
+						surface.SetDrawColor( COLOR_LOWAMMO )
+					else
+						surface.SetDrawColor( COLOR_EMPTY )
+					end
+				elseif max_clip * LOW_AMMO_PERCENTAGE >= clip and CurTime() % 0.5 < 0.1 then
+					surface.SetDrawColor( COLOR_LOWAMMO )
+				else
+					surface.SetDrawColor( COLOR_EMPTY )
+				end
+				surface.DrawTexturedRectRotated( Dx, Dy, IW, IH, ROTATION )
+			end
 		end
 	end
+	local ammo_type = wep:GetPrimaryAmmoType()
+	local ammo_count = ply:GetAmmoCount(ammo_type)
 	local ammo_text
-	local has_ammotype = not (wep:GetPrimaryAmmoType() == -1)
+	local has_ammotype = ammo_type ~= -1
+	local clip = tostring( wep:Clip1() )
+	if wep:Clip2() ~= -1 then
+		clip = clip .. " + " .. tostring( wep:Clip2() )
+	end
 	if wep:Clip1() == -1 then
-		if wep:GetPrimaryAmmoType() == -1 then
+		if not has_ammotype then
 			return
 		else
-			ammo_text = ply:GetAmmoCount(wep:GetPrimaryAmmoType())
+			ammo_text = ammo_count
 		end
+		C2_DrawText(
+			ammo_text,
+			"TacRP_STD_10",
+			Hx + Hw + s(-2*-1) - s(8),
+			Hy - s(12),
+			color_white,
+			TEXT_ALIGN_RIGHT
+		)
 	else
-		if wep:GetPrimaryAmmoType() == -1 then
-			ammo_text = wep:Clip1()
+		if not has_ammotype then
+			ammo_text = clip
 		else
-			ammo_text = wep:Clip1() .. " / " .. ply:GetAmmoCount(wep:GetPrimaryAmmoType())
+			ammo_text = clip .. " / " .. ammo_count
 		end
+		C2_DrawText(
+			ammo_text,
+			"TacRP_STD_10",
+			Hx + Hw + s(-2*linecount) - s(8),
+			Hy + shift_y - s(17),
+			color_white,
+			TEXT_ALIGN_RIGHT
+		)
 	end
-	C2_DrawText(
-		ammo_text,
-		"TacRP_STD_10",
-		Hx + Hw + s(-2*Pass) - s(8),
-		Hy + Sy - s(17),
-		color_white,
-		TEXT_ALIGN_RIGHT
-	)
 end
 
 hook.Add("HUDPaint", "TacRP_HUD2", function()
@@ -242,7 +282,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 		end
 	end
 
-	if not wep.ArcticTacRP then
+	if not tacrp then
 		return
 	end
 
