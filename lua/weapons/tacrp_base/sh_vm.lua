@@ -105,7 +105,8 @@ function SWEP:GetViewModelPosition(pos, ang)
     -- Aiming & Peeking
     ---------------------------------------------
     local ads = self:GetAimDownSightsTime()
-    if self:GetScopeLevel() > 0 then
+    local scoped = self:GetScopeLevel() > 0
+    if scoped then
         if self:GetSprintLockTime() > CurTime() then
             ads = ads + self:GetSprintToFireTime()
         end
@@ -122,7 +123,10 @@ function SWEP:GetViewModelPosition(pos, ang)
         end
     -- end
 
-    local curvedsightdelta = self:Curve(sightdelta)
+    local worksightdelta = scoped and math.Remap( sightdelta, 0, 0.7, 0, 1 ) or sightdelta
+    worksightdelta = math.Clamp( worksightdelta, 0, 1 )
+
+    local curvedsightdelta = self:Curve(worksightdelta)
     local curvedpeekdelta = self:Curve(peekdelta)
 
     -- cor_val = Lerp(sightdelta, cor_val, 1)
@@ -313,7 +317,7 @@ function SWEP:GetViewModelPosition(pos, ang)
         extra_offsetang:Add(sprang)
     end
 
-    self.SwayScale = f_lerp(self:GetSightDelta(), 1, 0.1)
+    self.SwayScale = f_lerp(curvedsightdelta, 1, 0.1)
     self.BobScale = 0
 
     local speed = 15 * FT * (game.SinglePlayer() and 1 or 2)

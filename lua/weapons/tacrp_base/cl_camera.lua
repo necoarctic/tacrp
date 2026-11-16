@@ -15,7 +15,9 @@ function SWEP:CalcView(ply, pos, ang, fov)
         ang.r = ang.r + (math.sin(CurTime() * 70.151) * rec)
     end
 
-    local mag = Lerp(self:GetSightAmount() ^ 3, 1, self:GetMagnification())
+    local worksightdelta = math.Remap( self:GetSightAmount(), 0.4, 0.9, 0, 1 )
+    worksightdelta = math.Clamp( worksightdelta, 0, 1 )
+    local mag = Lerp(worksightdelta ^ 3, 1, self:GetMagnification())
 
     if self:GetHoldBreathAmount() > 0 then
         mag = mag * (1 + self:GetHoldBreathAmount() * 0.15)
@@ -23,7 +25,11 @@ function SWEP:CalcView(ply, pos, ang, fov)
 
     local diff = math.abs(self.SmoothedMagnification - mag)
 
-    self.SmoothedMagnification = math.Approach(self.SmoothedMagnification, mag, FrameTime() * diff * (self.SmoothedMagnification > mag and 10 or 5))
+    self.SmoothedMagnification = math.Approach(
+        self.SmoothedMagnification,
+        mag,
+        FrameTime() * diff * (self.SmoothedMagnification > mag and 40 or 30)
+    )
 
     fov = fov / self.SmoothedMagnification
 
