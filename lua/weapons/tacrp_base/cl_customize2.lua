@@ -354,18 +354,13 @@ function SWEP:C2_Open()
 		local x, y = input.GetCursorPos()
 
 		if (x > sw/2) then
-			x = x - w - s(20)
+			x = x - w - s(40)
 		else
-			x = x + s(20)
-		end
-		if (y > sh/2) then
-			y = y - h - s(20)
-		else
-			y = y + s(20)
+			x = x + s(40)
 		end
 
 		x = math.Clamp( x, s(MARGIN_XL), sw - w - s(MARGIN_XL) )
-		y = math.min( y + s(20), sh - h - s(MARGIN_XL) )
+		y = math.min( y + s(10), sh - h - s(MARGIN_XL) )
 		self:SetPos( x, y )
 	end
 
