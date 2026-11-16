@@ -22,8 +22,8 @@ for i, v in ipairs(sizes) do
 end
 
 local cb = Color( 0, 0, 0, 127 )
-local dCol = Color( 200, 200, 200 )
 
+local COLOR_OLD = Color( 200, 200, 200 )
 local COLOR_POSITIVE = Color( 120, 255, 120 )
 local COLOR_NEGATIVE = Color( 255, 200, 200 )
 
@@ -196,14 +196,6 @@ function C2_UpdateColors()
 	C2_COLOR_Accent.a = c_2_a:GetFloat()*255
 end
 
-function C2_Outline( x, y, w, h )
-	surface.SetDrawColor( 255, 255, 255 )
-	surface.DrawRect( x, y, w, 1 )
-	surface.SetMaterial( grad2 )
-	surface.DrawTexturedRect( x, y, 1, h )
-	surface.DrawTexturedRect( x+w-1, y, 1, h )
-end
-
 function C2_GradientLine( x, y, h )
 	surface.SetDrawColor( 255, 255, 255 )
 	surface.SetMaterial( grad2 )
@@ -222,6 +214,14 @@ function C2_GradientLineRight( x, y, w )
 	surface.DrawTexturedRect( x, y, w, 1 )
 end
 
+function C2_Outline( x, y, w, h )
+	surface.SetDrawColor( 255, 255, 255 )
+	surface.DrawRect( x, y, w, 1 )
+	surface.SetMaterial( grad2 )
+	surface.DrawTexturedRect( x, y, 1, h )
+	surface.DrawTexturedRect( x+w-1, y, 1, h )
+end
+
 function C2_Box( x, y, w, h )
 	surface.SetDrawColor( C2_COLOR_Main )
 	surface.DrawRect( x, y, w, h )
@@ -229,11 +229,21 @@ function C2_Box( x, y, w, h )
 	surface.SetMaterial( (c_2_gd:GetBool() and grad2) or grad )
 	surface.DrawTexturedRect( x, y, w, h )
 end
-
 function C2_FullBox( x, y, w, h )
 	C2_Box( x, y, w, h )
 	C2_Outline( x, y, w, h )
 end
+
+local CLASSIC = false
+if CLASSIC then
+	function C2_Outline() return end
+	function C2_Box( x, y, w, h )
+		surface.SetDrawColor( cb )
+		TacRP.DrawCorneredBox( x, y, w, h )
+	end
+	C2_FullBox = C2_Box
+end
+
 local function paint_box( _, w, h )
 	C2_FullBox( 0, 0, w, h )
 	return true
@@ -269,116 +279,6 @@ function qRect( x, y, ax, ay, context )
 
 	surface.SetDrawColor( context )
 	surface.DrawRect( x, y, ax, ay )
-end
-
-local function updatestat(self, i, data)
-	if data.ConVarCheck then
-		if !data.ConVar then
-			data.ConVar = GetConVar(data.ConVarCheck)
-		end
-		if data.ConVar:GetBool() == tobool(data.ConVarInvert) then
-			return
-		end
-	end
-
-	if data.Spacer then
-		self.MiscCache["statbox"][i] = {}
-		return
-	end
-	local value = self:GetValue(data.Value)
-	local orig = self:GetBaseValue(data.Value)
-	local diff = nil
-
-	if data.HideIfSame and orig == value then
-		return
-	end
-	if data.DefaultValue != nil and value == data.DefaultValue and orig == data.DefaultValue then
-		return
-	end
-
-	if data.ValueCheck and self:GetValue(data.ValueCheck) != !data.ValueInvert then
-		return
-	end
-
-	local stat_base = 0
-	local stat_curr = 0
-
-	if data.AggregateFunction then
-		stat_base = data.AggregateFunction(self, true, orig)
-		stat_curr = data.AggregateFunction(self, false, value)
-	else
-		stat_base = math.Round(orig, 4)
-		stat_curr = math.Round(value, 4)
-	end
-
-	if stat_base == nil and stat_cur == nil then
-		return
-	end
-
-	if data.DifferenceFunction then
-		diff = data.DifferenceFunction(self, orig, value)
-	elseif isnumber(stat_base) and isnumber(stat_curr) then
-		if stat_curr == stat_base then
-			diff = ""
-		else
-			diff = math.Round((stat_curr / stat_base - 1) * 100)
-			if diff > 0 then
-				diff = "+" .. tostring(diff) .. "%"
-			else
-				diff = tostring(diff) .. "%"
-			end
-		end
-	end
-
-	local txt_base = tostring(stat_base)
-	local txt_curr = tostring(stat_curr)
-
-	if isbool(stat_base) then
-		txt_base = stat_base and "YES" or "NO"
-		txt_curr = stat_curr and "YES" or "NO"
-	end
-
-	if data.DisplayFunction then
-		txt_base = data.DisplayFunction(self, true, orig)
-		txt_curr = data.DisplayFunction(self, false, value)
-	end
-
-	if data.Unit then
-		local unit = TacRP:TryTranslate(data.Unit)
-		txt_base = txt_base .. unit
-		txt_curr = txt_curr .. unit
-	end
-
-	local good = false
-	local goodorbad = false
-
-	if data.BetterFunction then
-		goodorbad, good = data.BetterFunction(self, orig, value)
-	elseif stat_base != stat_curr then
-		if isnumber(stat_curr) then
-			good = stat_curr > stat_base
-			goodorbad = true
-		elseif isbool(stat_curr) then
-			good = !stat_base and stat_curr
-			goodorbad = true
-		end
-	end
-
-	if data.LowerIsBetter then
-		good = !good
-	end
-
-	if goodorbad then
-		if good then
-			surface.SetTextColor(175, 255, 175)
-		else
-			surface.SetTextColor(255, 175, 175)
-		end
-	else
-		surface.SetTextColor(255, 255, 255)
-	end
-
-	self.MiscCache["statbox"][i] = {txt_base, txt_curr, goodorbad, good, diff}
 end
 
 local pages = {}
@@ -506,7 +406,7 @@ table.insert(pages, {
 			context.weapon.StatRows = {}
 
 			for index, data in ipairs(context.weapon.StatDisplay) do
-				updatestat( context.weapon, index, data )
+				-- updatestat( context.weapon, index, data )
 			end
 			
 			--if !context.weapon.MiscCache["statbox"] then
@@ -533,22 +433,22 @@ table.insert(pages, {
 						-- Base Value
 						C2_DrawText( tn, "TacRP_C2_8", s(4+4), 0, color_white )
 						local DifferentValue = cache[2] != cache[1]
-						local col = cache[4] and COLOR_POSITIVE or COLOR_NEGATIVE -- Good Change
+						local col = cache[4] and COLOR_POSITIVE or COLOR_NEGATIVE -- positive Change
 						if DifferentValue then -- Current Value
 							C2_DrawText( cache[2], "TacRP_C2_14", s(4+4+8), s(4), col )
 							
-							if cache[3] then -- Good Or Bad Change
+							if cache[3] then -- positive Or Bad Change
 								if cache[5] then
 									surface.SetFont("TacRP_C2_14")
 									local tns = surface.GetTextSize(cache[2])
 									C2_DrawText( "(" .. cache[5] .. ")", "TacRP_C2_10", s(4+4+8+2)+tns, s(6.5), col )
 									local bleh = s(4+4+8+2)+tns
 									local tns = surface.GetTextSize("(" .. cache[5] .. ")")
-									C2_DrawText( cache[1], "TacRP_C2_10", bleh+s(2)+tns, s(6.5), dCol )
+									C2_DrawText( cache[1], "TacRP_C2_10", bleh+s(2)+tns, s(6.5), COLOR_OLD )
 								else
 									surface.SetFont("TacRP_C2_14")
 									local tns = surface.GetTextSize(cache[2])
-									C2_DrawText( cache[1], "TacRP_C2_10", s(4+4+8+2)+tns, s(6.5), dCol )
+									C2_DrawText( cache[1], "TacRP_C2_10", s(4+4+8+2)+tns, s(6.5), COLOR_OLD )
 								end
 							end
 						else
@@ -743,7 +643,7 @@ local uio = Material( "uio/shadow.png", "" )
 local page_interpolated = 1
 local page_target = 1
 
-function SWEP:C2_Open()
+function SWEP:C2_Open_old()
 	if IsValid( c2 ) then c2:Remove() end
 	local sw, sh = ScrW(), ScrH()
 	c2 = vgui.Create( "Panel" )
@@ -1007,16 +907,18 @@ do
 	function button:Paint( w, h )
 		C2_Box( 0, 0, w, h )
 
+		local margin = s(MARGIN_S)
 		local size = h
 		surface.SetDrawColor( 255, 255, 255 )
 		surface.SetMaterial( self.AttachmentData.Icon )
-		surface.DrawTexturedRect( w - size, h/2 - size/2, size, size )
+		surface.DrawTexturedRect( margin, h/2 - size/2, size, size )
 
 		C2_DrawText(
 			TacRP:TryTranslate(self.AttachmentData.PrintName),
 			"TacRP_C2_12",
-			s(MARGIN_S), s(MARGIN_S),
-			color_white
+			margin + size + margin, h/2,
+			color_white,
+			nil, TEXT_ALIGN_CENTER
 		)
 
 		C2_Outline( 0, 0, w, h )
@@ -1037,20 +939,83 @@ do
 			self.Weapon:Detach( self.SlotIndex )
 		end
 	end
+
+	--[[ function button:PaintOver( w, h )
+		if not self:IsHovered() then return end
+
+		local todo = DisableClipping(true)
+		local rx, ry = self:CursorPos()
+		rx = rx + 20
+		ry = ry + 20
+
+		local SUPERGAP = 4
+		SUPERGAP = SUPERGAP + 20
+		SUPERGAP = SUPERGAP + 16
+		-- SUPERGAP = SUPERGAP + 14
+		SUPERGAP = SUPERGAP + 4
+
+		local drawbar = false
+		if true then
+			SUPERGAP = SUPERGAP + 9
+			SUPERGAP = SUPERGAP + 16
+			drawbar = true
+		end
+		if drawbar then
+			SUPERGAP = SUPERGAP + 2 + 4
+		end
+
+		surface.SetDrawColor( 0, 0, 0, 200 )
+		surface.DrawRect( rx, ry, 220, SUPERGAP )
+
+		local SUPERGAP = 4
+
+		C2_DrawText( "What Hi Hi", "TacRP_S2_24", rx+8, ry+SUPERGAP )
+		SUPERGAP = SUPERGAP + 20
+
+		C2_DrawText( "Subcat Type", "TacRP_S2_16", rx+8+4, ry+SUPERGAP )
+		SUPERGAP = SUPERGAP + 16
+
+		local SI = 8
+
+		if drawbar then
+			SUPERGAP = SUPERGAP + 2
+			surface.SetDrawColor( 0, 0, 0, 255 )
+			surface.DrawRect( rx+SI, ry+SUPERGAP, 220-SI-SI+1+1, 3 )
+
+			surface.SetDrawColor( 255, 255, 255, 255 )
+			surface.DrawRect( rx+SI+1, ry+SUPERGAP+1, 220-SI-SI, 1 )
+
+			SUPERGAP = SUPERGAP + 4
+		end
+
+		if true then
+			C2_DrawText( "Production Year", "TacRP_S2_12", rx+8, ry+SUPERGAP )
+			SUPERGAP = SUPERGAP + 9
+			C2_DrawText( "Hi", "TacRP_S2_16", rx+8+4, ry+SUPERGAP )
+			SUPERGAP = SUPERGAP + 16
+		end
+		DisableClipping(todo)
+	end ]]
+
 	vgui.Register("C2_AttachmentButton", button, "DButton")
 end
 do
 	local scroller = {}
+	scroller.TopBottomPadding = true
 	local function scroll_paint() return true end
 	local function scroll_grip_paint( self, w, h )
 		local todo = DisableClipping( true )
 			surface.SetDrawColor( 255, 255, 255 )
-			surface.DrawRect( 0, 2, 2, h-4 )
+			if self:GetParent():GetParent().TopBottomPadding then
+				surface.DrawRect( s(1), s(2), s(2), h - s(4) )
+			else
+				surface.DrawRect( s(1), 0, s(2), h )
+			end
 		DisableClipping( todo )
 		return true
 	end
 	function scroller:Init()
-		self.VBar:SetWide(4)
+		self.VBar:SetWide( s(4) )
 		self.VBar:SetHideButtons(true)
 		self.VBar.Paint = scroll_paint
 		self.VBar.btnGrip.Paint = scroll_grip_paint
@@ -1081,6 +1046,101 @@ do
 	vgui.Register("C2_ScrollPanel", scroller, "DScrollPanel")
 end
 
+local function compute_stat( wep, stat_cache, index, data )
+	if data.ConVarCheck then
+		if !data.ConVar then data.ConVar = GetConVar(data.ConVarCheck) end
+		if data.ConVar:GetBool() == tobool(data.ConVarInvert) then return end
+	end
+	if data.Spacer then
+		stat_cache[index] = true
+		return
+	end
+
+	local stat_base = wep:GetBaseValue( data.Value )
+	local stat_curr = wep:GetValue( data.Value )
+
+	if data.HideIfSame and stat_base == stat_curr then
+		return
+	end
+	if data.DefaultValue != nil and
+		stat_base == data.DefaultValue and
+		stat_curr == data.DefaultValue then
+		return
+	end
+
+	if data.AggregateFunction then
+		stat_base = data.AggregateFunction( wep, true, wep:GetBaseValue(data.Value) )
+		stat_curr = data.AggregateFunction( wep, false, wep:GetValue(data.Value) )
+	else
+		stat_base = math.Round( stat_base, 4 )
+		stat_curr = math.Round( stat_curr, 4 )
+	end
+	if stat_base == nil and stat_curr == nil then return end
+
+	local diff = nil
+	if data.DifferenceFunction then
+		diff = data.DifferenceFunction( wep, stat_base, stat_curr )
+	elseif isnumber(stat_base) and isnumber(stat_curr) then
+		if stat_curr == stat_base then
+			diff = ""
+		else
+			diff = math.Round( (stat_curr / stat_base - 1) * 100 )
+			if diff > 0 then
+				diff = "+" .. tostring(diff) .. "%"
+			else
+				diff = tostring(diff) .. "%"
+			end
+		end
+	end
+
+	local text_curr
+	local text_base
+	if data.DisplayFunction then
+		text_base = data.DisplayFunction( wep, true, stat_base )
+		text_curr = data.DisplayFunction( wep, false, stat_curr )
+	elseif isbool(stat_base) then
+		text_base = stat_base and "YES" or "NO"
+		text_curr = stat_curr and "YES" or "NO"
+	else
+		text_base = tostring(stat_base)
+		text_curr = tostring(stat_curr)
+	end
+
+	if data.Unit then
+		local unit = TacRP:TryTranslate(data.Unit)
+		text_base = text_base .. unit
+		text_curr = text_curr .. unit
+	end
+
+	local varying = false
+	local positive = false
+	if data.BetterFunction then
+		-- varying, positive = data.BetterFunction( wep, stat_base, stat_curr )
+	elseif stat_base != stat_curr then
+		if isnumber(stat_curr) then
+			varying = true
+			positive = stat_curr > stat_base
+		elseif isbool(stat_curr) then
+			varying = true
+			positive = !stat_base and stat_curr
+		end
+	end
+
+	if data.LowerIsBetter then
+		positive = !positive
+	end
+
+	stat_cache[index] = {
+		stat_base = stat_curr,
+		stat_curr = stat_curr,
+		diff = diff,
+		varying = varying,
+		positive = positive,
+		text_base = text_base,
+		text_curr = text_curr,
+	}
+end
+
 function SWEP:C2_Open()
 	if IsValid( c2 ) then c2:Remove() end
 	local sw, sh = ScrW(), ScrH()
@@ -1096,7 +1156,7 @@ function SWEP:C2_Open()
 	c2:DockPadding( margin, margin, margin, margin )
 	-- c2.Paint = paint_box
 
-	--[[ c2.Interp = 0
+	c2.Interp = 0
 	local align_top = c2:Add("Panel")
 	align_top:SetSize( sw, sh )
 	function align_top:Think()
@@ -1104,17 +1164,91 @@ function SWEP:C2_Open()
 		align_top:SetY( math.ease.InCirc( 1-c2.Interp ) * -sh/2 )
 	end
 
+	local align_bottom = c2:Add("Panel")
+	align_bottom:SetSize( sw, sh )
+	function align_top:Think()
+		c2.Interp = math.Approach(c2.Interp, 1, RealFrameTime() / .4 )
+		align_bottom:SetY( math.ease.InCirc( 1-c2.Interp ) * -sh/2 )
+	end
+
 	local align_left = c2:Add("Panel")
 	align_left:SetSize( sw, sh )
 	function align_left:Think()
 		c2.Interp = math.Approach(c2.Interp, 1, RealFrameTime() / .4 )
 		align_left:SetX( math.ease.InCirc( 1-c2.Interp ) * -sw/2 )
-	end ]]
+	end
+
+	local p_helphover = c2:Add("Panel")
+	p_helphover.TargetDraw = nil
+	p_helphover.TargetDrawData = nil
+	p_helphover.CurrentDraw = nil
+	p_helphover:SetWide( s(140) )
+	p_helphover:DockPadding( s(MARGIN_S), s(MARGIN_S), s(MARGIN_S), s(MARGIN_S) )
+	p_helphover:Center()
+	function p_helphover:Paint( w, h )
+		surface.SetDrawColor( cb )
+		surface.DrawRect( 0, 0, w, h )
+		C2_Outline( 0, 0, w, h )
+	end
+	function p_helphover:PerformLayout( w, h )
+		self:SizeToChildren( false, true )
+	end
+	function p_helphover:Think()
+		if not self.TargetDraw then
+			p_helphover:Hide()
+			return
+		end
+		if self.TargetDraw ~= self.CurrentDraw then
+			-- 
+
+			self.CurrentDraw = self.TargetDraw
+		end
+
+
+	end
+
+	local detail = p_helphover:Add("Panel")
+	detail:Dock( TOP )
+	detail:SetTall( s(14) )
+	function detail:Paint( w, h )
+		C2_DrawText(
+			"Attachment Name",
+			"TacRP_C2_14",
+			0, 0,
+			color_white
+		)
+	end
 	
-	local top_bar = c2:Add("C2_Panel")
-	top_bar:Dock(TOP)
-	top_bar:SetTall( s(48) )
-	function top_bar:Paint( w, h )
+	local detail = p_helphover:Add("Panel")
+	detail:Dock( TOP )
+	detail:SetTall( s(2) )
+	detail:DockMargin( s(-4), s(2), s(-4), s(2) )
+	function detail:Paint( w, h )
+		C2_GradientLineRight( 0, 0, w )
+		-- surface.SetDrawColor( cb )
+		-- surface.DrawRect( 0, 0, w, h )
+		-- surface.SetDrawColor( color_white )
+		-- surface.DrawRect( 1, 1, w-2, h-2 )
+	end
+
+	for i, v in ipairs({ "hi", "hello", "This is a long ass string! Lol!" }) do
+		local detail = p_helphover:Add("Panel")
+		detail:Dock( TOP )
+		detail:SetTall( s(10) )
+		function detail:Paint( w, h )
+			C2_DrawText(
+				v,
+				"TacRP_C2_10",
+				0, 0,
+				color_white
+			)
+		end
+	end
+	
+	local p_header = c2:Add("C2_Panel")
+	p_header:Dock(TOP)
+	p_header:SetTall( s(48) )
+	function p_header:Paint( w, h )
 		local type_txt = TacRP.FormatTierType(wep.SubCatType, wep.SubCatTier, TacRP.UseTiers())
 		C2_FullBox( 0, 0, w, h )
 		C2_DrawText(
@@ -1144,11 +1278,14 @@ function SWEP:C2_Open()
 		return true
 	end
 
-	local bottom_bar = c2:Add("C2_Panel")
-	bottom_bar:Dock(BOTTOM)
-	bottom_bar:SetTall( s(48) )
-	bottom_bar:DockMargin( s(240), 0, s(240), 0 )
-	function bottom_bar:Paint( w, h )
+	local p_footer = c2:Add("C2_Panel")
+	p_footer:Dock(BOTTOM)
+	p_footer:SetTall( s(48) )
+
+	local size = sw - s(360)
+
+	p_footer:DockMargin( size/2, 0, size/2, 0 )
+	function p_footer:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
 		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_C2_12" )
 		local lines = #desc
@@ -1168,24 +1305,29 @@ function SWEP:C2_Open()
 		)
 	end
 
-	function bottom_bar:PerformLayout( w, h )
+	function p_footer:PerformLayout( w, h )
 		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_C2_12" )
 		local lines = #desc
 		if wep.Description_Quote then lines = lines + 2 end
 		self:SetTall( s(6+(12*lines)+6) )
 	end
 	
-	local p_slotlist = c2:Add("Panel")
+	local p_slotlist = c2:Add("C2_ScrollPanel")
+	p_slotlist.TopBottomPadding = false
+	p_slotlist:GetCanvas():DockPadding( 0, 0, s(4), 0 )
 	p_slotlist:SetWide( s(96) )
 	p_slotlist:Dock(LEFT)
 	p_slotlist:DockMargin( 0, s(MARGIN_S), 0, s(MARGIN_S) )
+	p_slotlist:GetCanvas():DockMargin( 0, 0, s(4), 0 )
 	-- p_slotlist.Paint = paint_box
 
 	local list_slots = {}
 	local list_atts = {}
 	
-	local p_attlist = c2:Add("Panel")
-	p_attlist:SetWide( s(96) )
+	local p_attlist = c2:Add("C2_ScrollPanel")
+	p_attlist.TopBottomPadding = false
+	p_attlist:GetCanvas():DockPadding( 0, 0, s(4), 0 )
+	p_attlist:SetWide( s(128) )
 	p_attlist:Dock(LEFT)
 	p_attlist:DockMargin( s(MARGIN_S), s(MARGIN_S), 0, s(MARGIN_S) )
 	p_attlist.ActiveSlot = nil
@@ -1370,30 +1512,39 @@ function SWEP:C2_Open()
 	local p_breakdown = p_align_right:Add("C2_ScrollPanel")
 	p_breakdown:Dock( RIGHT )
 	p_breakdown:SetWide( s( (180 - 48) - MARGIN_S ) )
-	p_breakdown:GetCanvas():DockPadding( 0, s(4), 0, 0 )
+	p_breakdown:GetCanvas():DockPadding( 0, 0, 0, s(2) )
 	p_breakdown.Paint = paint_box
 
+	-- pregenerate stat display
+	local stat_cache = {}
+
 	for index, data in ipairs(wep.StatDisplay) do
-		if data.Spacer then
+		compute_stat( wep, stat_cache, index, data )
+		if data.Spacer and stat_cache[index] then
+			local top = index == 1
 			local item = p_breakdown:Add( "Panel" )
 			item:Dock( TOP )
-			item:SetTall( s(16) )
-			item:DockMargin( 0, 0, 0, s(3) )
+			item:SetTall( s(20) )
 			function item:Paint( w, h )
+				if not top then
+					C2_GradientLineRight( 0, s(2), w )
+				end
 				C2_DrawText(
 					TacRP:TryTranslate(data.Name),
 					"TacRP_C2_14",
-					s(4), 0,
+					s(4), s(4),
 					color_white
 				)
-				C2_GradientLineRight( 0, h-1, w )
 				return true
 			end
 		else
+			local cache = stat_cache[index]
+			if not cache then continue end
+
 			local item = p_breakdown:Add( "Panel" )
 			item:Dock( TOP )
 			item:SetTall( s(14+5) )
-			item:DockMargin( s(5+4), 0, 0, 0 )
+			item:DockMargin( s(6), 0, 0, 0 )
 			function item:Paint( w, h )
 				C2_DrawText(
 					TacRP:TryTranslate(data.Name),
@@ -1401,12 +1552,37 @@ function SWEP:C2_Open()
 					0, 0,
 					color_white
 				)
+
+				local stat_color = cache.varying and (cache.positive and COLOR_POSITIVE or COLOR_NEGATIVE) or color_white
+
 				C2_DrawText(
-					100,
+					cache.text_curr,
 					"TacRP_C2_14",
 					s(4), s(5),
-					color_white
+					stat_color
 				)
+
+				local bump_x = surface.GetTextSize(cache.text_curr) + s(2)
+
+				if cache.diff and cache.diff ~= "" then
+					local text_diff = "(" .. cache.diff .. ")"
+					C2_DrawText(
+						text_diff,
+						"TacRP_C2_10",
+						s(4) + bump_x, s(5+3.5),
+						stat_color
+					)
+					bump_x = bump_x + surface.GetTextSize(text_diff) + s(2)
+				end
+
+				if cache.text_curr == cache.text_base then return true end
+				C2_DrawText(
+					cache.text_base,
+					"TacRP_C2_10",
+					s(4) + bump_x, s(5+3.5),
+					COLOR_OLD
+				)
+				
 				return true
 			end
 		end
