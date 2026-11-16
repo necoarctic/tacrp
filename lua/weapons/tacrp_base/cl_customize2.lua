@@ -454,34 +454,41 @@ function SWEP:C2_Open()
 			nil,
 			TEXT_ALIGN_CENTER
 		)
-		local type_txt = TacRP.FormatTierType(wep.SubCatType, wep.SubCatTier, TacRP.UseTiers())
+		local txt_weptype = TacRP.FormatTierType(wep.SubCatType, wep.SubCatTier, TacRP.UseTiers())
 
+		local txt_ammo
 		local ammotype = wep:GetAmmoType()
 		local ammoid = game.GetAmmoID(ammotype)
 		ammotype = game.GetAmmoName(ammoid)
-
-		local y = 0
+		
+		local items = 1
 		if ammotype ~= "" and ammoid != -1 then
-			local txt_ammo = language.GetPhrase(ammotype .. "_ammo")
+			txt_ammo = language.GetPhrase(ammotype .. "_ammo")
+			items = items + 1
+		end
+
+		local shift = s(12)
+		local bump_y = -shift/2 * items
+
+		C2_DrawText(
+			txt_weptype,
+			"TacRP_STD_12",
+			w - s(MARGIN_L), (h/2) + bump_y,
+			color_white,
+			TEXT_ALIGN_RIGHT
+		)
+		bump_y = bump_y + shift
+
+		if txt_ammo then
 			C2_DrawText(
 				txt_ammo,
 				"TacRP_STD_12",
-				w - s(MARGIN_L), h/2 + s(6),
+				w - s(MARGIN_L), (h/2) + bump_y,
 				color_white,
-				TEXT_ALIGN_RIGHT,
-				TEXT_ALIGN_CENTER
+				TEXT_ALIGN_RIGHT
 			)
-			y = s(6)
+			bump_y = bump_y + shift
 		end
-
-		C2_DrawText(
-			type_txt,
-			"TacRP_STD_12",
-			w - s(MARGIN_L), h/2 - y,
-			color_white,
-			TEXT_ALIGN_RIGHT,
-			TEXT_ALIGN_CENTER
-		)
 
 		return true
 	end
