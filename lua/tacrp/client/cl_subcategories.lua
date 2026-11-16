@@ -442,13 +442,13 @@ hook.Add("PopulateWeapons", "zzz_TacRP_SubCategories", function(pnlContent, tree
 							surface.SetDrawColor( 0, 0, 0, 200 )
 							surface.DrawRect( 0, 2, 4+tns+4+4, 32 )
 			
-							qt( self.TypeName, "TacRP_S2_32_Italic", 4, 2 )
+							qt( self.TypeName, "TacRP_S2_32I", 4, 2 )
 
 							local additional = ""
 							if self.ItemCountFiltered and self.ItemCountFiltered > 0 and self.ItemCount != self.ItemCountFiltered then
 								additional = " -- " .. self.ItemCountFiltered .. " shown"
 							end
-							qt( self.ItemCount .. " total" .. additional, "TacRP_S2_20_Italic", 4 + tns + 4 + 4 + 4, 2 + 16, nil, TEXT_ALIGN_CENTER )
+							qt( self.ItemCount .. " total" .. additional, "TacRP_S2_20I", 4 + tns + 4 + 4 + 4, 2 + 16, nil, TEXT_ALIGN_CENTER )
 						end
 						grid = vgui.Create("DGrid", label)
 						grid:Dock( TOP )

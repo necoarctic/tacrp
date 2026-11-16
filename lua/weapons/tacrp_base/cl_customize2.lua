@@ -292,7 +292,7 @@ function SWEP:C2_Open()
 	end
 	function cl:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
-		C2_DrawText( "Drop Weapon", "TacRP_Myriad_Pro_10", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+		C2_DrawText( "Drop Weapon", "TacRP_STD_10", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 		return true
 	end
 
@@ -353,7 +353,7 @@ function SWEP:C2_Open()
 	function detail:Paint( w, h )
 		C2_DrawText(
 			"Attachment Name",
-			"TacRP_Myriad_Pro_14",
+			"TacRP_STD_14",
 			0, 0,
 			color_white
 		)
@@ -378,7 +378,7 @@ function SWEP:C2_Open()
 		function detail:Paint( w, h )
 			C2_DrawText(
 				v,
-				"TacRP_Myriad_Pro_10",
+				"TacRP_STD_10",
 				0, 0,
 				color_white
 			)
@@ -394,7 +394,7 @@ function SWEP:C2_Open()
 		C2_FullBox( 0, 0, w, h )
 		C2_DrawText(
 			wep.PrintName,
-			"TacRP_Myriad_Pro_36",
+			"TacRP_STD_36",
 			s(MARGIN_L), h/2,
 			color_white,
 			nil,
@@ -402,7 +402,7 @@ function SWEP:C2_Open()
 		)
 		C2_DrawText(
 			type_txt,
-			"TacRP_Myriad_Pro_12",
+			"TacRP_STD_12",
 			w - s(MARGIN_L), h/2 - s(6),
 			color_white,
 			TEXT_ALIGN_RIGHT,
@@ -410,7 +410,7 @@ function SWEP:C2_Open()
 		)
 		C2_DrawText(
 			wep:GetValue("Trivia_Caliber"),
-			"TacRP_Myriad_Pro_12",
+			"TacRP_STD_12",
 			w - s(MARGIN_L), h/2 + s(6),
 			color_white,
 			TEXT_ALIGN_RIGHT,
@@ -429,26 +429,26 @@ function SWEP:C2_Open()
 	-- p_footer:DockMargin( size/2, 0, size/2, 0 )
 	function p_footer:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
-		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_Myriad_Pro_12" )
+		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_STD_12" )
 		local lines = #desc
 		for i, v in ipairs( desc ) do
 			C2_DrawText(
 				v,
-				"TacRP_Myriad_Pro_12",
+				"TacRP_STD_12",
 				s(12), s( 6+(12*(i-1)) ),
 				color_white
 			)
 		end
 		C2_DrawText(
 			wep.Description_Quote,
-			"TacRP_Myriad_Pro_12_Italic",
+			"TacRP_STD_12I",
 			s(12), s( 6+(12*(lines+1)) ),
 			color_white
 		)
 	end
 
 	function p_footer:PerformLayout( w, h )
-		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_Myriad_Pro_12" )
+		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_STD_12" )
 		local lines = #desc
 		if wep.Description_Quote then lines = lines + 2 end
 		self:SetTall( s(6+(12*lines)+6) )
@@ -542,7 +542,7 @@ function SWEP:C2_Open()
 	p_dmgdoll:DockMargin( 0 ,0, s(MARGIN_S), 0 )
 	function p_dmgdoll:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
-		C2_DrawText( "DOLL", "TacRP_Myriad_Pro_8", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+		C2_DrawText( "DOLL", "TacRP_STD_8", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 		return true
 	end
 
@@ -592,7 +592,7 @@ function SWEP:C2_Open()
 		C2_GradientLineDown( p1_x, y, tall )
 		C2_DrawText(
 			txt_dmg_max,
-			"TacRP_Myriad_Pro_10",
+			"TacRP_STD_10",
 			math.max( s(MARGIN_S), p1_x - surface.GetTextSize(txt_dmg_min)/2 ),
 			s(4),
 			color_white
@@ -601,7 +601,7 @@ function SWEP:C2_Open()
 		local txt_range_min = wep:RangeUnitize(range_min)
 		C2_DrawText(
 			txt_range_min,
-			"TacRP_Myriad_Pro_10",
+			"TacRP_STD_10",
 			math.max( s(MARGIN_S), p1_x - surface.GetTextSize(txt_range_min)/2 ),
 			s(4+10),
 			color_white
@@ -612,7 +612,7 @@ function SWEP:C2_Open()
 		local width_dmg_min = surface.GetTextSize(txt_dmg_min)
 		C2_DrawText(
 			txt_dmg_min,
-			"TacRP_Myriad_Pro_10",
+			"TacRP_STD_10",
 			math.min(
 				w - width_dmg_min - s(MARGIN_S),
 				p2_x - width_dmg_min/2
@@ -625,7 +625,7 @@ function SWEP:C2_Open()
 		local width_range_max = surface.GetTextSize(txt_range_max)
 		C2_DrawText(
 			txt_range_max,
-			"TacRP_Myriad_Pro_10",
+			"TacRP_STD_10",
 			math.min(
 				w - width_range_max - s(MARGIN_S),
 				p2_x - width_range_max/2
@@ -641,7 +641,7 @@ function SWEP:C2_Open()
 			C2_GradientLineDown( x, h - s(4), s(4) )
 			C2_DrawText(
 				wep:RangeUnitize(i),
-				"TacRP_Myriad_Pro_6",
+				"TacRP_STD_6",
 				x, h - s(1),
 				color_white,
 				TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM
@@ -676,7 +676,7 @@ function SWEP:C2_Open()
 				end
 				C2_DrawText(
 					TacRP:TryTranslate(data.Name),
-					"TacRP_Myriad_Pro_14",
+					"TacRP_STD_14",
 					s(4), h,
 					color_white,
 					nil, TEXT_ALIGN_BOTTOM
@@ -694,7 +694,7 @@ function SWEP:C2_Open()
 			function item:Paint( w, h )
 				C2_DrawText(
 					TacRP:TryTranslate(data.Name),
-					"TacRP_Myriad_Pro_8",
+					"TacRP_STD_8",
 					0, 0,
 					color_white
 				)
@@ -703,7 +703,7 @@ function SWEP:C2_Open()
 
 				C2_DrawText(
 					cache.text_curr,
-					"TacRP_Myriad_Pro_14",
+					"TacRP_STD_14",
 					s(4), s(5),
 					stat_color
 				)
@@ -714,7 +714,7 @@ function SWEP:C2_Open()
 					local text_diff = "(" .. cache.diff .. ")"
 					C2_DrawText(
 						text_diff,
-						"TacRP_Myriad_Pro_10",
+						"TacRP_STD_10",
 						s(4) + bump_x, s(5+3.5),
 						stat_color
 					)
@@ -724,7 +724,7 @@ function SWEP:C2_Open()
 				if cache.text_curr ~= cache.text_base then
 					C2_DrawText(
 						cache.text_base,
-						"TacRP_Myriad_Pro_10",
+						"TacRP_STD_10",
 						s(4) + bump_x, s(5+3.5),
 						COLOR_OLD
 					)
@@ -762,7 +762,7 @@ local hide = {
     ["CHudGMod"] = true,
 }
 
-hook.Add("HUDShouldDraw", "TacRP_Myriad_Pro_HideHUD", function(name)
+hook.Add("HUDShouldDraw", "TacRP_STD_HideHUD", function(name)
     if !IsValid(LocalPlayer()) then return end
 
 	local player = LocalPlayer()

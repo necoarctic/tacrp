@@ -124,7 +124,7 @@ function SWEP:DoDrawCrosshair(x, y)
         local recoil_txt = "Recoil: " .. tostring(math.Round(self:GetRecoilAmount() or 0, 3))
         surface.DrawCircle(x2, y2, spread, 255, 255, 255, 75)
         surface.DrawCircle(x2, y2, spread + 1, 255, 255, 255, 75)
-        surface.SetFont("TacRP_Myriad_Pro_32_Unscaled")
+        surface.SetFont("TacRP_STD_32X")
         surface.SetTextColor(255, 255, 255, 255)
         surface.SetTextPos(x2 - 256, y2)
         surface.DrawText(recoil_txt)
@@ -222,7 +222,7 @@ function SWEP:DrawBottomBar(x, y, w, h)
         local nextfm = TacRP.GetBind("use") .. "+" .. TacRP.GetBind("reload")
 
         surface.SetTextColor(col)
-        surface.SetFont("TacRP_HD44780A00_5x8_4")
+        surface.SetFont("TacRP_LCD_4")
         local tw = surface.GetTextSize(nextfm)
         surface.SetTextPos(x + w - tw - TacRP.SS(2), y + h - TacRP.SS(14))
         surface.DrawText(nextfm)
@@ -262,11 +262,11 @@ function SWEP:DrawBottomBar(x, y, w, h)
         surface.SetTextColor(col)
         if qty then
             surface.SetTextPos(x + TacRP.SS(4) + sg, y + h - sg + TacRP.SS(8))
-            surface.SetFont("TacRP_HD44780A00_5x8_4")
+            surface.SetFont("TacRP_LCD_4")
             surface.DrawText("x" .. qty)
-            surface.SetFont("TacRP_HD44780A00_5x8_6")
+            surface.SetFont("TacRP_LCD_6")
         else
-            surface.SetFont("TacRP_HD44780A00_5x8_8")
+            surface.SetFont("TacRP_LCD_8")
         end
 
         local nadetext = TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".name") or nade.PrintName
@@ -292,7 +292,7 @@ function SWEP:DrawBottomBar(x, y, w, h)
         local nextnadetxt = TacRP.GetBind("+grenade2")
 
         surface.SetTextColor(col)
-        surface.SetFont("TacRP_HD44780A00_5x8_4")
+        surface.SetFont("TacRP_LCD_4")
         local tw = surface.GetTextSize(nextnadetxt)
         surface.SetTextPos(x + w - fmoffset - (tw / 2) - nsg, y + h - nsg - TacRP.SS(4))
         surface.DrawText(nextnadetxt)
@@ -369,7 +369,7 @@ function SWEP:DrawHUDBackground()
 
     if !self:GetCustomize() and !TacRP.ConVars["jam_autoclear"]:GetBool() and self:GetJammed() then
         local text = "[" .. TacRP.GetBindKey("+reload") .. "] " .. TacRP:GetPhrase("hint.unjam")
-        local font = "TacRP_HD44780A00_5x8_4"
+        local font = "TacRP_LCD_4"
         surface.SetFont(font)
         local w, h = surface.GetTextSize(text)
         w = w + TacRP.SS(8)
@@ -381,7 +381,7 @@ function SWEP:DrawHUDBackground()
         draw.SimpleText(text, font, ScrW() / 2, ScrH() / 2 + h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     elseif DarkRP and TacRP.ConVars["rp_biocode_cp"]:GetBool() and self:GetNWBool("TacRP_PoliceBiocode") then
         local text = TacRP:GetPhrase("hint.rp_biocode_cp")
-        local font = "TacRP_HD44780A00_5x8_4"
+        local font = "TacRP_LCD_4"
         surface.SetFont(font)
         local w, h = surface.GetTextSize(text)
         w = w + TacRP.SS(8)
@@ -411,11 +411,11 @@ function SWEP:DrawHUDBackground()
 
             local name_txt = TacRP:GetPhrase("wep." .. self:GetClass() .. ".name") or self:GetValue("PrintName")
 
-            surface.SetFont("TacRP_HD44780A00_5x8_8")
+            surface.SetFont("TacRP_LCD_8")
             local tw = surface.GetTextSize(name_txt)
             surface.SetTextPos(x + TacRP.SS(3), y + TacRP.SS(1))
             if tw > w then
-                surface.SetFont("TacRP_HD44780A00_5x8_6")
+                surface.SetFont("TacRP_LCD_6")
                 tw = surface.GetTextSize(name_txt)
             elseif tw > w - TacRP.SS(3) then
                 surface.SetTextPos(x + TacRP.SS(1.5), y + TacRP.SS(1))
@@ -441,10 +441,10 @@ function SWEP:DrawHUDBackground()
                     surface.DrawRect(x + (i * (bw + TacRP.SS(1))), y + TacRP.SS(12), bw, bh)
                 end
 
-                draw.SimpleText(self:Clip1(), "TacRP_HD44780A00_5x8_10", x + TacRP.SS(93), y + TacRP.SS(17), col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText(self:Clip1(), "TacRP_LCD_10", x + TacRP.SS(93), y + TacRP.SS(17), col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             elseif self.Primary.ClipSize > 0 then
                 if TacRP.ConVars["hud_ammo_number"]:GetBool() then
-                    surface.SetFont("TacRP_HD44780A00_5x8_10")
+                    surface.SetFont("TacRP_LCD_10")
                     local t = math.max(0, self:Clip1()) .. " /" .. self.Primary.ClipSize
                     local tw = surface.GetTextSize(t)
                     surface.SetTextColor(col)
@@ -704,7 +704,7 @@ function SWEP:DrawHUDBackground()
                 elseif self.Primary.ClipSize > 0 then
                     surface.SetTextColor(col)
                     surface.SetTextPos(x + w - TacRP.SS(31), y + TacRP.SS(16))
-                    surface.SetFont("TacRP_HD44780A00_5x8_6")
+                    surface.SetFont("TacRP_LCD_6")
                     surface.DrawText("+")
                     if (self:GetValue("PrimaryGrenade") and TacRP.IsGrenadeInfiniteAmmo(self:GetValue("PrimaryGrenade"))) or (!self:GetValue("PrimaryGrenade") and self:GetInfiniteAmmo()) then
                         clips = "INF"
@@ -713,7 +713,7 @@ function SWEP:DrawHUDBackground()
 
                 surface.SetTextColor(col)
                 surface.SetTextPos(x + w - TacRP.SS(25), y + TacRP.SS(12))
-                surface.SetFont("TacRP_HD44780A00_5x8_10")
+                surface.SetFont("TacRP_LCD_10")
                 surface.DrawText(clips)
             else
                 if ammotype == "" then
@@ -734,12 +734,12 @@ function SWEP:DrawHUDBackground()
 
                     surface.SetTextColor(col)
                     surface.SetTextPos(x + TacRP.SS(36), y + h - TacRP.SS(20))
-                    surface.SetFont("TacRP_HD44780A00_5x8_14")
+                    surface.SetFont("TacRP_LCD_14")
                     surface.DrawText("x" .. clips)
                 else
                     surface.SetTextColor(col)
                     surface.SetTextPos(x + TacRP.SS(36), y + TacRP.SS(12))
-                    surface.SetFont("TacRP_HD44780A00_5x8_10")
+                    surface.SetFont("TacRP_LCD_10")
                     surface.DrawText(clips)
                 end
             end
@@ -766,7 +766,7 @@ function SWEP:DrawHUDBackground()
             TacRP.DrawCorneredBox(l_x, l_y, l_w, l_h, col)
 
             surface.SetTextPos(l_x + TacRP.SS(4), l_y + TacRP.SS(1))
-            surface.SetFont("TacRP_HD44780A00_5x8_10")
+            surface.SetFont("TacRP_LCD_10")
 
             if perc <= 0.2 then
                 surface.SetTextColor(col_hi)
@@ -919,7 +919,7 @@ function SWEP:DrawHUDBackground()
             end
 
             surface.SetTextPos(l_x + TacRP.SS(4), l_y + TacRP.SS(22))
-            surface.SetFont("TacRP_HD44780A00_5x8_10")
+            surface.SetFont("TacRP_LCD_10")
             surface.SetTextColor(col)
             surface.DrawText(face)
 
@@ -952,7 +952,7 @@ function SWEP:DrawHUDBackground()
             local cy2 = cy1 + asq + 2
 
             surface.SetTextPos(cx1 - TacRP.SS(10), cy1 + TacRP.SS(3))
-            surface.SetFont("TacRP_HD44780A00_5x8_10")
+            surface.SetFont("TacRP_LCD_10")
             surface.SetTextColor(col)
             surface.DrawText("⌂")
 

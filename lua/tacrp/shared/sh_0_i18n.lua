@@ -135,7 +135,7 @@ if CLIENT then
 
     net.Receive("tacrp_reloadlangs", function(len, ply)
         TacRP:LoadLanguages()
-        TacRP.Regen(true)
+        TacRP.Regen()
     end)
 elseif SERVER then
     net.Receive("tacrp_reloadlangs", function(len, ply)

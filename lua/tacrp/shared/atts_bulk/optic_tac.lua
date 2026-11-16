@@ -775,7 +775,7 @@ function ATT.TacticalDraw(self)
     surface.SetDrawColor(255, 255, 255, 100)
     surface.DrawTexturedRect(x, y, w, h)
 
-    surface.SetFont("TacRP_HD44780A00_5x8_10")
+    surface.SetFont("TacRP_LCD_10")
     -- local tw = surface.GetTextSize(txt)
     surface.SetTextPos(x + TacRP.SS(3), y + TacRP.SS(12))
     surface.SetTextColor(0, 0, 0)
@@ -909,7 +909,7 @@ function ATT.TacticalDraw(self)
     local spread1 = math.floor(spread)
     local spread2 = math.floor((spread - spread1) * 10)
     local spread_txt1 = tostring(spread1)
-    surface.SetFont("TacRP_HD44780A00_5x8_6")
+    surface.SetFont("TacRP_LCD_6")
     surface.SetTextColor(0, 0, 0)
     surface.SetTextPos(x + TacRP.SS(22), y + TacRP.SS(2.5))
     if spread < 10 then
@@ -994,7 +994,7 @@ function ATT.TacticalDraw(self)
     local fov_mult2 = math.Round(fov_mult - math.floor(fov_mult), 1) * 10
     if fov_mult2 == 10 then fov_mult1 = fov_mult1 + 1 fov_mult2 = 0 end
 
-    surface.SetFont("TacRP_HD44780A00_5x8_6")
+    surface.SetFont("TacRP_LCD_6")
     surface.SetTextColor(0, 0, 0)
     surface.SetTextPos(x2 + TacRP.SS(17), y2 + TacRP.SS(2))
     surface.DrawText(fov_mult1 .. "." .. fov_mult2 .. "x")

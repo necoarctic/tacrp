@@ -27,7 +27,7 @@ function ENT:Initialize()
     table.insert(TacRP.Benches, self)
 end
 
-local font = "TacRP_Myriad_Pro_24_Unscaled"
+local font = "TacRP_STD_24X"
 
 function ENT:DrawTranslucent()
 

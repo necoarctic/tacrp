@@ -27,7 +27,7 @@ function PANEL:Paint( w, h )
 
 	C2_DrawText(
 		self.SlotData.PrintName,
-		"TacRP_Myriad_Pro_10",
+		"TacRP_STD_10",
 		s(MARGIN_S), s(MARGIN_S),
 		color_white
 	)
@@ -37,7 +37,7 @@ function PANEL:Paint( w, h )
 
 	C2_DrawText(
 		TacRP:TryTranslate(att_data.PrintName),
-		"TacRP_Myriad_Pro_12",
+		"TacRP_STD_12",
 		s(MARGIN_S), h/2,
 		color_white,
 		nil, TEXT_ALIGN_CENTER
