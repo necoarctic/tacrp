@@ -1231,20 +1231,21 @@ local flags = {
 for _, var in pairs(conVars) do
     local convar_name = prefix .. var.name
 
-    if var.client and CLIENT then
-        TacRP.ConVars[var.name] = CreateClientConVar(convar_name, var.default, !var.noarchive, var.userinfo)
-    elseif !var.client then
+    if var.client then
+        if CLIENT then
+            TacRP.ConVars[var.name] = CreateClientConVar(convar_name, var.default, !var.noarchive, var.userinfo)
+        end
+    else
         local flag = FCVAR_ARCHIVE
         for k, v in pairs(flags) do if var[k] then flag = flag + v end end
         TacRP.ConVars[var.name] = CreateConVar(convar_name, var.default, flag, var.help, var.min, var.max)
-    end
 
-    if var.callback then
-        cvars.AddChangeCallback(convar_name, var.callback, "tacrp")
-    end
-
-    if CLIENT then
-        cvars.AddChangeCallback(convar_name, TacRP.NetworkConvar, "tacrp_onchange")
+        if var.callback then
+            cvars.AddChangeCallback(convar_name, var.callback, "tacrp")
+        end
+        if CLIENT then
+            cvars.AddChangeCallback(convar_name, TacRP.NetworkConvar, "tacrp_onchange")
+        end
     end
 end
 
