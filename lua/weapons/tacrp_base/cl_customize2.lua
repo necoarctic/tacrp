@@ -1,9 +1,4 @@
--- TODO move convars to main convars file
-local c2_scale = CreateClientConVar( "tacrp_c2_scale", 1, true, false )
-function C2_ScreenScale( height )
-	return height * ( ScrH() / 480.0 ) * c2_scale:GetFloat()
-end
-local s = C2_ScreenScale
+local s = TacRP.C2.SS
 
 local fn = "Myriad Pro"
 local sizes = {36, 18, 16, 14, 12, 10, 8, 6}
@@ -24,15 +19,15 @@ local function generate_fonts()
 end
 generate_fonts()
 
+cvars.AddChangeCallback( "tacrp_c2_scale", function()
+	generate_fonts()
+end, "TacRP_C2_RegenerateFonts")
+
 local cb = Color( 0, 0, 0, 127 )
 
 local COLOR_OLD = Color( 200, 200, 200 )
 local COLOR_POSITIVE = Color( 120, 255, 120 )
 local COLOR_NEGATIVE = Color( 255, 200, 200 )
-
-local function CloseAttachmentSelect()
-	if IsValid(selecta) then selecta:Remove() end
-end
 
 local function sort_atts(a, b)
 	a = a or ""
@@ -56,77 +51,6 @@ local function sort_atts(a, b)
 	return order_a < order_b
 end
 
-local function GenerateAttachmentSelect( context, host, slotnum, slottab, parent )
-	CloseAttachmentSelect()
-	selecta = vgui.Create( "Panel", parent )
-	local PADDING = s(8)
-	selecta:SetSize( s(180+8+8), s(380+8+8) )
-	-- selecta:Center()
-	selecta:MakePopup()
-	selecta:SetKeyboardInputEnabled( false )
-	function selecta:Paint( w, h )
-		C2_FullBox( 0, 0, w, h )
-		return true
-	end
-	
-	local sp = selecta:Add("DScrollPanel")
-	sp:Dock( FILL )
-	sp:DockMargin( PADDING, PADDING, PADDING, PADDING )
-
-	local atts = TacRP.GetAttsForCats( slottab.Category or "", context.weapon )
-	table.sort(atts, sort_atts)
-
-	for _, att in pairs( atts ) do
-		local ati = TacRP.GetAttTable( att )
-		local button = sp:Add( "DButton" )
-		button:SetSize( 0, s(48) )
-		button:Dock( TOP )
-		button:DockMargin( 0, 0, 0, s(4) )
-		function button:Paint( w, h )
-			surface.SetDrawColor( cb )
-			surface.DrawRect( 0, 0, w, h )
-			surface.SetDrawColor( color_white )
-			surface.DrawOutlinedRect( 0, 0, w, h, s(1) )
-			draw.SimpleText( TacRP:TryTranslate( ati.PrintName ), "TacRP_C2_12", s(6), s(6), color_white )
-			if slottab.Installed == att then
-				draw.SimpleText( "installed", "TacRP_C2_10", s(6), s(2), color_white )
-			end
-
-			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.SetMaterial( ati.Icon )
-			surface.DrawRect( w-h-s(4), 0, h, h )
-			surface.DrawTexturedRect( w-h-s(4), 0, h, h )
-			return true
-		end
-
-		function button:DoClick()
-			if slottab.Installed then
-				if slottab.Installed == att then
-					context.weapon:Detach( slotnum )
-				else
-					context.weapon:Detach( slotnum, true, true )
-					context.weapon:Attach( slotnum, att )
-				end
-			else
-				context.weapon:Attach( slotnum, att )
-			end
-			host:InvalidateLayout()
-			CloseAttachmentSelect()
-		end
-
-		function button:DoRightClick()
-			if slottab.Installed == att then
-				context.weapon:Detach( slotnum )
-				host:InvalidateLayout()
-				CloseAttachmentSelect()
-			end
-		end
-
-	end
-
-	return selecta
-end
-
 -- Drop-in empty panel Paint
 local function rt( fu, w, h )
 	surface.SetDrawColor( 0, 0, 0, 63 )
@@ -134,21 +58,15 @@ local function rt( fu, w, h )
 	return true
 end
 
--- "Draw Shadowed Text"
-local function DST( text, font, x, y, color, drop, xalign, yalign )
-	draw.SimpleText( text, font, x, y+drop, color_black, xalign, yalign )
-	return draw.SimpleText( text, font, x, y, color, xalign, yalign )
-end
-
 local grad = Material("vgui/gradient-d")
 local grad2 = Material("vgui/gradient-u")
 local gradr = Material("vgui/gradient-l")
 
-local MARGIN_XS = 2
-local MARGIN_S = 4
-local MARGIN_M = 8
-local MARGIN_L = 12
-local MARGIN_XL = 16
+local MARGIN_XS = TacRP.C2.MARGIN_XS
+local MARGIN_S = TacRP.C2.MARGIN_S
+local MARGIN_M = TacRP.C2.MARGIN_M
+local MARGIN_L = TacRP.C2.MARGIN_L
+local MARGIN_XL = TacRP.C2.MARGIN_XL
 
 -- Text shadow upper
 local C2_COLOR_TextShadow = HSVToColor( 0, 0, 0.25 )
@@ -259,7 +177,7 @@ function C2_DrawText( t, f, x, y, c, ax, ay )
 	draw.SimpleText( t, f, x, y, c, ax, ay )
 end
 
-function qRect( x, y, ax, ay, context )
+local function C2_ShadowedRect( x, y, ax, ay, color )
 	surface.SetDrawColor( C2_Color_TextShadowLower )
 	surface.DrawRect( x, y+1, ax, ay )
 	surface.DrawRect( x+1, y+1, ax, ay )
@@ -272,239 +190,12 @@ function qRect( x, y, ax, ay, context )
 	surface.DrawRect( x+2, y+2, ax, ay )
 	surface.DrawRect( x+2, y, ax, ay )
 
-	surface.SetDrawColor( context )
+	surface.SetDrawColor( color )
 	surface.DrawRect( x, y, ax, ay )
 end
 
-local uio = Material( "uio/shadow.png", "" )
-
-local BUTTON_HEIGHT_EMPTY = s(18)
-local BUTTON_HEIGHT = s(36)
-
--- vgui registration
-do
-	local C2Panel = {}
-	function C2Panel:Paint( w, h )
-		C2_FullBox( 0, 0, w, h )
-	end
-	vgui.Register("C2_Panel", C2Panel, "Panel")
-end
-do
-	local button = {}
-	button.Weapon = nil
-	button.SlotIndex = nil
-	button.SlotData = nil
-	button.AttList = nil
-	
-	function button:GetAttachment()
-		if not self.SlotData.Installed then
-			return
-		end
-		return TacRP.Attachments[self.SlotData.Installed]
-	end
-
-	function button:Paint( w, h )
-		C2_Box( 0, 0, w, h )
-
-		C2_DrawText(
-			self.SlotData.PrintName,
-			"TacRP_C2_10",
-			s(MARGIN_S), s(MARGIN_S),
-			color_white
-		)
-
-		local att_data = self:GetAttachment()
-		if not att_data then C2_Outline( 0, 0, w, h ) return true end
-
-		C2_DrawText(
-			TacRP:TryTranslate(att_data.PrintName),
-			"TacRP_C2_12",
-			s(MARGIN_S), h/2,
-			color_white,
-			nil, TEXT_ALIGN_CENTER
-		)
-		
-		local size = h
-		surface.SetDrawColor( 255, 255, 255 )
-		surface.SetMaterial( att_data.Icon )
-		surface.DrawTexturedRect( w - size, h/2 - size/2, size, size )
-
-		C2_Outline( 0, 0, w, h )
-		return true
-	end
-
-	function button:EvaluateSize()
-		self:SetTall( self:GetAttachment() and BUTTON_HEIGHT or BUTTON_HEIGHT_EMPTY )
-	end
-
-	function button:DoClick()
-		if self.AttList.ActiveSlot == self.SlotIndex then
-			self.AttList:Clear()
-		else
-			self.AttList:Populate( self.SlotData.Category, self.Weapon, self.SlotIndex )
-		end
-	end
-
-	function button:DoRightClick()
-		if self.SlotData.Installed then
-			self.Weapon:Detach( self.SlotIndex )
-		end
-	end
-
-	function button:Think()
-		self:EvaluateSize()
-	end
-
-	vgui.Register("C2_SlotButton", button, "DButton")
-end
-do
-	local button = {}
-	button.AttachmentName = nil
-	button.AttachmentData = nil
-	button.Weapon = nil
-	button.SlotIndex = nil
-
-	function button:Paint( w, h )
-		C2_Box( 0, 0, w, h )
-
-		local margin = s(MARGIN_S)
-		local size = h
-		surface.SetDrawColor( 255, 255, 255 )
-		surface.SetMaterial( self.AttachmentData.Icon )
-		surface.DrawTexturedRect( margin, h/2 - size/2, size, size )
-
-		C2_DrawText(
-			TacRP:TryTranslate(self.AttachmentData.PrintName),
-			"TacRP_C2_12",
-			margin + size + margin, h/2,
-			color_white,
-			nil, TEXT_ALIGN_CENTER
-		)
-
-		C2_Outline( 0, 0, w, h )
-		return true
-	end
-
-	function button:DoClick()
-		if self.Weapon.Attachments[ self.SlotIndex ].Installed == self.AttachmentName then
-			self.Weapon:Detach( self.SlotIndex )
-			return
-		end
-		self.Weapon:Detach( self.SlotIndex )
-		self.Weapon:Attach( self.SlotIndex, self.AttachmentName )
-	end
-
-	function button:DoRightClick()
-		if self.Weapon.Attachments[ self.SlotIndex ].Installed == self.AttachmentName then
-			self.Weapon:Detach( self.SlotIndex )
-		end
-	end
-
-	--[[ function button:PaintOver( w, h )
-		if not self:IsHovered() then return end
-
-		local todo = DisableClipping(true)
-		local rx, ry = self:CursorPos()
-		rx = rx + 20
-		ry = ry + 20
-
-		local SUPERGAP = 4
-		SUPERGAP = SUPERGAP + 20
-		SUPERGAP = SUPERGAP + 16
-		-- SUPERGAP = SUPERGAP + 14
-		SUPERGAP = SUPERGAP + 4
-
-		local drawbar = false
-		if true then
-			SUPERGAP = SUPERGAP + 9
-			SUPERGAP = SUPERGAP + 16
-			drawbar = true
-		end
-		if drawbar then
-			SUPERGAP = SUPERGAP + 2 + 4
-		end
-
-		surface.SetDrawColor( 0, 0, 0, 200 )
-		surface.DrawRect( rx, ry, 220, SUPERGAP )
-
-		local SUPERGAP = 4
-
-		C2_DrawText( "What Hi Hi", "TacRP_S2_24", rx+8, ry+SUPERGAP )
-		SUPERGAP = SUPERGAP + 20
-
-		C2_DrawText( "Subcat Type", "TacRP_S2_16", rx+8+4, ry+SUPERGAP )
-		SUPERGAP = SUPERGAP + 16
-
-		local SI = 8
-
-		if drawbar then
-			SUPERGAP = SUPERGAP + 2
-			surface.SetDrawColor( 0, 0, 0, 255 )
-			surface.DrawRect( rx+SI, ry+SUPERGAP, 220-SI-SI+1+1, 3 )
-
-			surface.SetDrawColor( 255, 255, 255, 255 )
-			surface.DrawRect( rx+SI+1, ry+SUPERGAP+1, 220-SI-SI, 1 )
-
-			SUPERGAP = SUPERGAP + 4
-		end
-
-		if true then
-			C2_DrawText( "Production Year", "TacRP_S2_12", rx+8, ry+SUPERGAP )
-			SUPERGAP = SUPERGAP + 9
-			C2_DrawText( "Hi", "TacRP_S2_16", rx+8+4, ry+SUPERGAP )
-			SUPERGAP = SUPERGAP + 16
-		end
-		DisableClipping(todo)
-	end ]]
-
-	vgui.Register("C2_AttachmentButton", button, "DButton")
-end
-do
-	local scroller = {}
-	scroller.TopBottomPadding = true
-	local function scroll_paint() return true end
-	local function scroll_grip_paint( self, w, h )
-		local todo = DisableClipping( true )
-			surface.SetDrawColor( 255, 255, 255 )
-			if self:GetParent():GetParent().TopBottomPadding then
-				surface.DrawRect( s(1), s(2), s(2), h - s(4) )
-			else
-				surface.DrawRect( s(1), 0, s(2), h )
-			end
-		DisableClipping( todo )
-		return true
-	end
-	function scroller:Init()
-		self.VBar:SetWide( s(4) )
-		self.VBar:SetHideButtons(true)
-		self.VBar.Paint = scroll_paint
-		self.VBar.btnGrip.Paint = scroll_grip_paint
-	end
-	function scroller:PerformLayoutInternal()
-		local Tall = self.pnlCanvas:GetTall()
-		local Wide = self:GetWide()
-		local YPos = 0
-
-		self:Rebuild()
-
-		self.VBar:SetUp( self:GetTall(), self.pnlCanvas:GetTall() )
-		YPos = self.VBar:GetOffset()
-
-		-- don't like the added vbar width thing
-		-- if ( self.VBar.Enabled ) then Wide = Wide - self.VBar:GetWide() end
-
-		self.pnlCanvas:SetPos( 0, YPos )
-		self.pnlCanvas:SetWide( Wide )
-
-		self:Rebuild()
-
-		if ( Tall != self.pnlCanvas:GetTall() ) then
-			self.VBar:SetScroll( self.VBar:GetScroll() ) -- Make sure we are not too far down!
-		end
-	end
-
-	vgui.Register("C2_ScrollPanel", scroller, "DScrollPanel")
-end
+local BUTTON_HEIGHT_EMPTY = 18
+local BUTTON_HEIGHT = 36
 
 local function compute_stat( wep, stat_cache, index, data )
 	if data.ConVarCheck then
@@ -522,7 +213,7 @@ local function compute_stat( wep, stat_cache, index, data )
 	if data.HideIfSame and stat_base == stat_curr then
 		return
 	end
-	if data.DefaultValue != nil and
+	if data.DefaultValue ~= nil and
 		stat_base == data.DefaultValue and
 		stat_curr == data.DefaultValue then
 		return
@@ -576,7 +267,7 @@ local function compute_stat( wep, stat_cache, index, data )
 	local positive = false
 	if data.BetterFunction then
 		-- varying, positive = data.BetterFunction( wep, stat_base, stat_curr )
-	elseif stat_base != stat_curr then
+	elseif stat_base ~= stat_curr then
 		if isnumber(stat_curr) then
 			varying = true
 			positive = stat_curr > stat_base
@@ -611,7 +302,7 @@ function SWEP:C2_Open()
 	c2:MakePopup()
 	c2:SetPopupStayAtBack( true )
 	c2:SetKeyboardInputEnabled( false )
-	c2.m_bDeleteOnClose = true
+	-- c2.m_bDeleteOnClose = true
 	local margin = s(MARGIN_XL)
 	c2:DockPadding( margin, margin, margin, margin )
 
@@ -638,7 +329,7 @@ function SWEP:C2_Open()
 
 	local align_bottom = c2:Add("Panel")
 	align_bottom:SetSize( sw, sh )
-	function align_top:Think()
+	function align_bottom:Think()
 		c2.Interp = math.Approach(c2.Interp, 1, RealFrameTime() / .4 )
 		align_bottom:SetY( math.ease.InCirc( 1-c2.Interp ) * -sh/2 )
 	end
@@ -717,10 +408,11 @@ function SWEP:C2_Open()
 		end
 	end
 	
-	local p_header = c2:Add("C2_Panel")
+	local p_header = c2:Add("Panel")
 	p_header:Dock(TOP)
 	p_header:SetTall( s(48) )
 	function p_header:Paint( w, h )
+		C2_FullBox( 0, 0, w, h )
 		local type_txt = TacRP.FormatTierType(wep.SubCatType, wep.SubCatTier, TacRP.UseTiers())
 		C2_FullBox( 0, 0, w, h )
 		C2_DrawText(
@@ -750,13 +442,14 @@ function SWEP:C2_Open()
 		return true
 	end
 
-	local p_footer = c2:Add("C2_Panel")
-	p_footer:Dock(BOTTOM)
-	p_footer:SetTall( s(48) )
-
-	local size = sw - s(360)
-
-	p_footer:DockMargin( size/2, 0, size/2, 0 )
+	local p_footer = c2:Add("Panel")
+	-- p_footer:Dock(BOTTOM)
+	-- p_footer:SetTall( s(48) )
+	-- local size = sw - s(360)
+	p_footer:SetWide( s(360) )
+	p_footer:AlignBottom( s(MARGIN_XL) )
+	p_footer:CenterHorizontal()
+	-- p_footer:DockMargin( size/2, 0, size/2, 0 )
 	function p_footer:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
 		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_C2_12" )
@@ -782,6 +475,8 @@ function SWEP:C2_Open()
 		local lines = #desc
 		if wep.Description_Quote then lines = lines + 2 end
 		self:SetTall( s(6+(12*lines)+6) )
+		self:AlignBottom( s(MARGIN_XL) )
+		self:CenterHorizontal()
 	end
 	
 	local p_slotlist = c2:Add("C2_ScrollPanel")
@@ -819,7 +514,7 @@ function SWEP:C2_Open()
 
 		for _, att in ipairs(atts) do
 			local button = p_attlist:Add("C2_AttachmentButton")
-			button:SetTall( BUTTON_HEIGHT )
+			button:SetTall( s(BUTTON_HEIGHT) )
 			button:Dock(TOP)
 			button:DockMargin( 0, 0, 0, s(MARGIN_S) )
 			button.AttachmentName = att
@@ -836,7 +531,7 @@ function SWEP:C2_Open()
 	for i, slot_data in ipairs( self.Attachments ) do
 		local button = p_slotlist:Add("C2_SlotButton")
 		button:Dock(TOP)
-		button:SetTall( BUTTON_HEIGHT )
+		button:SetTall( s(BUTTON_HEIGHT) )
 		button:DockMargin( 0, 0, 0, s(MARGIN_S) )
 		button.Weapon = wep
 		button.SlotIndex = i
@@ -876,21 +571,9 @@ function SWEP:C2_Open()
 
 	local p_dmgrange = p_align_dmgstats:Add( "Panel" )
 	p_dmgrange:Dock( FILL )
-	-- p_dmgrange:SetTall( s(80) )
-	-- p_dmgrange:DockMargin( 0, 0, 0, s(8) )
 
 	function p_dmgrange:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
-		--[[ C2_DrawText(
-			"Damage At Range",
-			"TacRP_C2_16",
-			s(MARGIN_S), s(MARGIN_XS),
-			color_white
-		) ]]
-
-		-- if TacRP.ConVars["metricunit"]:GetBool() then
-		-- 	panel_range = 75 / TacRP.HUToM
-		-- end
 
 		local exp = wep:GetValue("ExplosiveDamage")
 		local dmult = wep:GetConfigDamageMultiplier()
@@ -984,7 +667,7 @@ function SWEP:C2_Open()
 	local p_breakdown = p_align_right:Add("C2_ScrollPanel")
 	p_breakdown:Dock( RIGHT )
 	p_breakdown:SetWide( s( (180 - 48) - MARGIN_S ) )
-	p_breakdown:GetCanvas():DockPadding( 0, 0, 0, s(2) )
+	p_breakdown:GetCanvas():DockPadding( 0, 0, 0, s(4) )
 	p_breakdown.Paint = paint_box
 
 	-- pregenerate stat display
@@ -996,7 +679,7 @@ function SWEP:C2_Open()
 			local top = index == 1
 			local item = p_breakdown:Add( "Panel" )
 			item:Dock( TOP )
-			item:SetTall( s(20) )
+			item:SetTall( s(18) )
 			function item:Paint( w, h )
 				if not top then
 					C2_GradientLineRight( 0, s(2), w )
@@ -1004,8 +687,9 @@ function SWEP:C2_Open()
 				C2_DrawText(
 					TacRP:TryTranslate(data.Name),
 					"TacRP_C2_14",
-					s(4), s(4),
-					color_white
+					s(4), h,
+					color_white,
+					nil, TEXT_ALIGN_BOTTOM
 				)
 				return true
 			end
@@ -1034,7 +718,7 @@ function SWEP:C2_Open()
 					stat_color
 				)
 
-				local bump_x = surface.GetTextSize(cache.text_curr) + s(2)
+				local bump_x = surface.GetTextSize(cache.text_curr) + s(4)
 
 				if cache.diff and cache.diff ~= "" then
 					local text_diff = "(" .. cache.diff .. ")"
@@ -1044,16 +728,17 @@ function SWEP:C2_Open()
 						s(4) + bump_x, s(5+3.5),
 						stat_color
 					)
-					bump_x = bump_x + surface.GetTextSize(text_diff) + s(2)
+					bump_x = bump_x + surface.GetTextSize(text_diff) + s(4)
 				end
 
-				if cache.text_curr == cache.text_base then return true end
-				C2_DrawText(
-					cache.text_base,
-					"TacRP_C2_10",
-					s(4) + bump_x, s(5+3.5),
-					COLOR_OLD
-				)
+				if cache.text_curr ~= cache.text_base then
+					C2_DrawText(
+						cache.text_base,
+						"TacRP_C2_10",
+						s(4) + bump_x, s(5+3.5),
+						COLOR_OLD
+					)
+				end
 				
 				return true
 			end
@@ -1078,28 +763,6 @@ end
 function SWEP:C2_Close()
 	if IsValid( c2 ) then c2:Remove() return end
 end
-
-local blocklist = {
-	["slot1"] = 1,
-	["slot2"] = 2,
-	["slot3"] = 3,
-	["slot4"] = 4,
-	["slot5"] = 5,
-	["slot6"] = 6,
-	["slot7"] = 7,
-	["slot8"] = 8,
-	["slot9"] = 9,
-	["slot0"] = 0,
-}
-
-hook.Add( "PlayerBindPress", "TacRP_C2_PlayerBindPress", function( ply, bind, pressed )
-	if IsValid( c2 ) and blocklist[bind] then
-		if pressed and blocklist[bind] >= 1 and blocklist[bind] <= #pages then
-			page_target = blocklist[bind]
-		end
-		return true
-	end
-end)
 
 local hide = {
     ["CHudHealth"] = true,

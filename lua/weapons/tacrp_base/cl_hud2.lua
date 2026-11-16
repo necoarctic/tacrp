@@ -2,7 +2,7 @@
 local h2_enabled = CreateClientConVar( "tacrp_h2_enable", 1, true, false )
 local h2_enabled_health = CreateClientConVar( "tacrp_h2_enable_health", 1, true, false )
 local h2_enabled_ammo = CreateClientConVar( "tacrp_h2_enable_ammo", 1, true, false )
-local s = C2_ScreenScale
+local s = TacRP.C2.SS
 
 local hide_health = {
 	["CHudHealth"] = true,
@@ -93,23 +93,33 @@ local function H2_DrawAmmo( ply, wep )
 			)
 			C2_DrawText( "[E] + [RMB] " .. get_firemode_text( wep, wep:GetCurrentFiremode() ), "TacRP_C2_8", Hx + Hw - s(4+1), Hy + s(2+7), color_white, TEXT_ALIGN_RIGHT )
 		else
-			local fm = get_firemode_text( wep, wep:GetCurrentFiremode() )
-			local samed = wep:GetCurrentFiremode() == wep:GetNextFiremode()
-			C2_DrawText( fm, "TacRP_C2_10", Hx + Hw - s(4+1), Hy + Hh/2 + (samed and s(-0.5) or s(-3.5)), color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
-			if !samed then
-				local fm = get_firemode_text( wep, wep:GetNextFiremode() )
-				C2_DrawText( "[E] + [R] " .. fm, "TacRP_C2_8", Hx + Hw - s(4+1), Hy + s(2+7), color_white, TEXT_ALIGN_RIGHT )
+			local fm_text = get_firemode_text( wep, wep:GetCurrentFiremode() )
+			local different = wep:GetCurrentFiremode() ~= wep:GetNextFiremode()
+			C2_DrawText(
+				fm_text,
+				"TacRP_C2_10",
+				Hx + Hw - s(4+1),
+				Hy + Hh/2 + (different and s(-3.5) or s(-0.5)),
+				color_white,
+				TEXT_ALIGN_RIGHT,
+				TEXT_ALIGN_CENTER
+			)
+			if different then
+				local fm_text = get_firemode_text( wep, wep:GetNextFiremode() )
+				C2_DrawText(
+					"[E] + [R] " .. fm_text,
+					"TacRP_C2_8",
+					Hx + Hw - s(4+1),
+					Hy + s(2+7),
+					color_white,
+					TEXT_ALIGN_RIGHT
+				)
 			end
 		end
 	end
 
 	local MC = wep:GetMaxClip1()
-	local Buw, Buh
-	--if MC > 40 then
-	--	Buw, Buh = math.ceil(s(8)), math.ceil(s(2))
-	--else
-		Buw, Buh = math.ceil(s(12)), math.ceil(s(12))
-	--end
+	local Buw, Buh = math.ceil(s(12)), math.ceil(s(12))
 	local Sx, Sy = 0, 0
 	local Bobber = 0
 	local Pass = 0
@@ -164,7 +174,7 @@ local function H2_DrawAmmo( ply, wep )
 		Sx = Sx - math.ceil(s(4))
 
 		Bobber = Bobber + 1
-		if i!=MC and Bobber >= 30 then
+		if i ~= MC and Bobber >= 30 then
 			Bobber = 0
 			Pass = Pass + 1
 			--Sx = (Pass%2 == 1) and math.ceil( s(-2) ) or 0
@@ -234,28 +244,30 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 		return
 	end
 
-	local push_y = 0
-	for i, hint_data in ipairs(hints) do
-		i = i - 1
-		local strin, strin2 = hint_data[1], hint_data[2]
+	if h2_enabled:GetBool() then
+		local push_y = 0
+		for i, hint_data in ipairs(hints) do
+			i = i - 1
+			local strin, strin2 = hint_data[1], hint_data[2]
 
-		local Nx = s(12)
-		local Ny = sh/2 + s(8 * i)
+			local Nx = s(12)
+			local Ny = sh/2 + s(8 * i)
 
-		C2_DrawText(
-			strin,
-			"TacRP_C2_8",
-			Nx, Ny + s(2),
-			color_white,
-			TEXT_ALIGN_LEFT
-		)
-		C2_DrawText(
-			strin2,
-			"TacRP_C2_8",
-			Nx + s(110), Ny + s(2),
-			color_white,
-			TEXT_ALIGN_RIGHT
-		)
+			C2_DrawText(
+				strin,
+				"TacRP_C2_8",
+				Nx, Ny + s(2),
+				color_white,
+				TEXT_ALIGN_LEFT
+			)
+			C2_DrawText(
+				strin2,
+				"TacRP_C2_8",
+				Nx + s(110), Ny + s(2),
+				color_white,
+				TEXT_ALIGN_RIGHT
+			)
+		end
 	end
 
 	do return end
