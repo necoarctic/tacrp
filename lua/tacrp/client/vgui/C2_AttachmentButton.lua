@@ -67,7 +67,7 @@ function PANEL:DoClick()
 		self.Weapon:Detach( self.SlotIndex )
 		return
 	end
-	self.Weapon:Detach( self.SlotIndex )
+	self.Weapon:Detach( self.SlotIndex, true )
 	self.Weapon:Attach( self.SlotIndex, self.AttachmentName )
 end
 
