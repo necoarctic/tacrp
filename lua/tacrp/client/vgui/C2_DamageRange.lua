@@ -21,7 +21,7 @@ function PANEL:Paint( w, h )
 	local range_min, range_max = wep:GetMinMaxRange()
 
 	local phys_to_pixel = range_max/w
-	local panel_range = 10000-- * phys_to_pixel
+	local panel_range = range_max + s(32) * phys_to_pixel
 	phys_to_pixel = panel_range/w
 
 	local tall = h * .75
