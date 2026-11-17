@@ -102,10 +102,6 @@ local grad_u = Material("vgui/gradient-u")
 local grad_l = Material("vgui/gradient-l")
 local grad_r = Material("vgui/gradient-r")
 
-C2_GradientLine = nil
-C2_GradientLineDown = nil
-C2_GradientLineRight = nil
-
 function C2_Gradient_Up( x, y, w, h )
 	surface.SetMaterial( grad_u )
 	surface.DrawTexturedRect( x, y, w, h )
@@ -330,7 +326,8 @@ function SWEP:C2_Open()
 		return true
 	end
 
-	c2.Interp = 0
+	--[[ c2.Interp = 0
+
 	local align_top = c2:Add("Panel")
 	align_top:SetSize( sw, sh )
 	function align_top:Think()
@@ -350,7 +347,7 @@ function SWEP:C2_Open()
 	function align_left:Think()
 		c2.Interp = math.Approach(c2.Interp, 1, RealFrameTime() / .4 )
 		align_left:SetX( math.ease.InCirc( 1-c2.Interp ) * -sw/2 )
-	end
+	end ]]
 
 	local p_helphover = c2:Add("Panel")
 	p_helphover.CurrentID = nil
@@ -612,136 +609,32 @@ function SWEP:C2_Open()
 
 		list_slots[i] = button
 	end
-
-	--[[ function align_left:PerformLayout( w, h )
-		p_slotlist:SizeToChildren( false, true )
-		p_slotlist:SetY( h/2 - p_slotlist:GetTall() / 2)
-	end ]]
 	p_slotlist:InvalidateLayout( true )
 	p_slotlist:SizeToChildren( false, true )
 
+	local doll_wide = 42
+	local want_wide = 128
+
 	local p_align_right = c2:Add( "Panel" )
 	p_align_right:Dock(RIGHT)
-	p_align_right:SetWide( s(180) )
-	p_align_right:DockMargin( 0, s(MARGIN_S), 0, s(MARGIN_S) )
+	p_align_right:SetWide( s(want_wide + doll_wide) )
+	p_align_right:DockMargin( 0, s(MARGIN_S), 0, 0 )
 	
 	if not self:GetValue("NoRanger") then
 		local p_align_dmgstats = p_align_right:Add( "Panel" )
 		p_align_dmgstats:Dock( TOP )
-		p_align_dmgstats:SetTall( s(80) )
+		p_align_dmgstats:SetTall( s(96) )
 		p_align_dmgstats:DockMargin( 0, 0, 0, s(MARGIN_S) )
 
-		local p_dmgdoll = p_align_dmgstats:Add( "Panel" )
-		p_dmgdoll:SetWide( s(48) )
+		local p_dmgdoll = p_align_dmgstats:Add( "C2_DamageDoll" )
+		p_dmgdoll:SetWide( s(doll_wide) )
 		p_dmgdoll:Dock( LEFT )
-		p_dmgdoll:DockMargin( 0 ,0, s(MARGIN_S), 0 )
-		function p_dmgdoll:Paint( w, h )
-			C2_FullBox( 0, 0, w, h )
-			C2_DrawText( "DOLL", "TacRP_STD_8", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			return true
-		end
+		p_dmgdoll:DockMargin( 0, 0, s(MARGIN_S), 0 )
+		p_dmgdoll.Weapon = wep
 
-		local p_dmgrange = p_align_dmgstats:Add( "Panel" )
+		local p_dmgrange = p_align_dmgstats:Add( "C2_DamageRange" )
 		p_dmgrange:Dock( FILL )
-
-		function p_dmgrange:Paint( w, h )
-			C2_FullBox( 0, 0, w, h )
-
-			local exp = wep:GetValue("ExplosiveDamage")
-			local dmult = wep:GetConfigDamageMultiplier()
-			local dmg_max = (wep:GetValue("Damage_Max") + exp) * dmult
-			local dmg_min = (wep:GetValue("Damage_Min") + exp) * dmult
-			local range_min, range_max = wep:GetMinMaxRange()
-
-			local phys_to_pixel = range_max/w
-			local panel_range = range_max + s(32) * phys_to_pixel
-			phys_to_pixel = panel_range/w
-
-			local tall = h * .75
-			local y = h - tall
-
-			local p1_x = w * (range_min / panel_range)
-			local p2_x = w * (range_max / panel_range)
-
-			-- lines
-			local max_y = h - (math.min(wep:GetValue("Damage_Max")/100, 1) * tall)
-			local min_y = h - (math.min(wep:GetValue("Damage_Min")/100, 1) * tall)
-			surface.SetDrawColor(255, 255, 255)
-			for i = 0, 1 do
-				surface.DrawLine( 0, max_y + i, p1_x, max_y + i )
-				surface.DrawLine( p1_x, max_y + i, p2_x, min_y + i )
-				surface.DrawLine( p2_x, min_y + i, w, min_y + i )
-			end
-
-			local txt_dmg_max = math.floor(dmg_max) .. TacRP:GetPhrase("unit.damage")
-			local txt_dmg_min = math.floor(dmg_min) .. TacRP:GetPhrase("unit.damage")
-			local pellets = wep:GetValue("Num")
-			if pellets > 1 then
-				txt_dmg_max = dmg_max * pellets .. "-" .. txt_dmg_max
-				txt_dmg_min = dmg_min * pellets .. "-" .. txt_dmg_min
-			end
-
-			surface.SetDrawColor( COLOR_OUTLINE )
-			C2_Gradient_Down( p1_x, y, 1, tall )
-			C2_Gradient_Down( p2_x, y, 1, tall )
-
-			surface.SetFont("TacRP_STD_10")
-			local txt_range_max = wep:RangeUnitize(range_max)
-			local txt_range_min = wep:RangeUnitize(range_min)
-			local width_dmg_max = surface.GetTextSize(txt_dmg_max)
-			local width_dmg_min = surface.GetTextSize(txt_dmg_min)
-			local width_range_max = surface.GetTextSize(txt_range_max)
-			local width_range_min = surface.GetTextSize(txt_range_min)
-
-			C2_DrawText(
-				txt_dmg_max,
-				"TacRP_STD_10",
-				math.max( s(MARGIN_S), p1_x - width_dmg_max/2 ),
-				s(4),
-				color_white
-			)
-			
-			C2_DrawText(
-				txt_range_min,
-				"TacRP_STD_10",
-				math.max( s(MARGIN_S), p1_x - width_range_min/2 ),
-				s(4+10),
-				color_white
-			)
-
-			C2_DrawText(
-				txt_dmg_min,
-				"TacRP_STD_10",
-				math.min( w - width_dmg_min - s(MARGIN_S), p2_x - width_dmg_min/2 ),
-				s(4),
-				color_white
-			)
-
-			C2_DrawText(
-				txt_range_max,
-				"TacRP_STD_10",
-				math.min( w - width_range_max - s(MARGIN_S), p2_x - width_range_max/2 ),
-				s(4+10),
-				color_white
-			)
-
-			for i=0, panel_range, (TacRP.ConVars["metricunit"]:GetBool() and 25 / TacRP.HUToM or 1000) do
-				if i == 0 then continue end
-				-- surface.DrawRect( i / phys_to_pixel, h-2, 1, 1 )
-				local x = i/phys_to_pixel
-				surface.SetDrawColor( COLOR_OUTLINE )
-				C2_Gradient_Down( x, h - s(4), s(4), 1 )
-				C2_DrawText(
-					wep:RangeUnitize(i),
-					"TacRP_STD_6",
-					x, h - s(1),
-					color_white,
-					TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM
-				)
-			end
-
-			return true
-		end
+		p_dmgrange.Weapon = wep
 	end
 
 	local p_align_breakdown = p_align_right:Add("Panel")
@@ -749,7 +642,7 @@ function SWEP:C2_Open()
 
 	local p_breakdown = p_align_right:Add("C2_ScrollPanel")
 	p_breakdown:Dock( RIGHT )
-	p_breakdown:SetWide( s( (180 - 48) - MARGIN_S ) )
+	p_breakdown:SetWide( s( want_wide - MARGIN_S ) )
 	p_breakdown:GetCanvas():DockPadding( 0, 0, 0, s(4) )
 	p_breakdown.Paint = paint_box
 

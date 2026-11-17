@@ -54,9 +54,9 @@ L["unit.meter"] = "м"
 L["unit.second"] = "сек"
 L["unit.persecond"] = "/сек"
 L["unit.mps"] = "м/сек" -- meters per second
-L["unit.damage"] = " УРОН"
-L["unit.stk"] = " STK" -- shots to kill
-L["unit.ptk"] = " PTK" -- pellets to kill
+L["unit.damage"] = "УРОН"
+L["unit.stk"] = "STK" -- shots to kill
+L["unit.ptk"] = "PTK" -- pellets to kill
 
 L["slot.default"] = "Слот"
 L["slot.optic"] = "Оптика"

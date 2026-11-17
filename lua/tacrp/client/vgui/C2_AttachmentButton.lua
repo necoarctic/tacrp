@@ -1,16 +1,15 @@
 local s = TacRP.SS
+local MARGIN_XS = TacRP.C2.MARGIN_XS
+local MARGIN_S = TacRP.C2.MARGIN_S
+local MARGIN_M = TacRP.C2.MARGIN_M
+local MARGIN_L = TacRP.C2.MARGIN_L
+local MARGIN_XL = TacRP.C2.MARGIN_XL
 
 local PANEL = {}
 PANEL.AttachmentName = nil
 PANEL.AttachmentData = nil
 PANEL.Weapon = nil
 PANEL.SlotIndex = nil
-
-local MARGIN_XS = TacRP.C2.MARGIN_XS
-local MARGIN_S = TacRP.C2.MARGIN_S
-local MARGIN_M = TacRP.C2.MARGIN_M
-local MARGIN_L = TacRP.C2.MARGIN_L
-local MARGIN_XL = TacRP.C2.MARGIN_XL
 
 function PANEL:SetupTarget()
 	self.TargetID = "attachment_" .. self.AttachmentName

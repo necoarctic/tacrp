@@ -162,17 +162,17 @@ function PropPanel_PaintOver(self, w, h)
 
     local SUPERGAP = 4
 
-    qt( ent.PrintName, "TacRP_S2_24", rx+8, ry+SUPERGAP )
+    qt( ent.PrintName, "TacRP_STD_24X", rx+8, ry+SUPERGAP )
     SUPERGAP = SUPERGAP + 20
 
     local translated_SubCatType = string.sub(TacRP:TryTranslate(ent.WepTable.SubCatType), 2)
     if TacRP.UseTiers() and ent.WepTable.SubCatTier and ent.WepTable.SubCatTier != "9Special" then
         translated_SubCatType = TacRP:GetPhrase("cust.type_tier", {tier = string.sub(TacRP:TryTranslate(ent.WepTable.SubCatTier), 2), type = translated_SubCatType})
     end
-    qt( translated_SubCatType, "TacRP_S2_16", rx+8+4, ry+SUPERGAP )
+    qt( translated_SubCatType, "TacRP_STD_16X", rx+8+4, ry+SUPERGAP )
     SUPERGAP = SUPERGAP + 16
 
-    -- qt( ent.ClassName, "TacRP_S2_12", rx+8+4, ry+SUPERGAP )
+    -- qt( ent.ClassName, "TacRP_STD_12X", rx+8+4, ry+SUPERGAP )
     -- SUPERGAP = SUPERGAP + 14
 
     local SI = 8
@@ -189,30 +189,30 @@ function PropPanel_PaintOver(self, w, h)
     end
 
     if ent.WepTable.ClipSize > 0 then
-        qt( "Capacity", "TacRP_S2_12", rx+8, ry+SUPERGAP )
+        qt( "Capacity", "TacRP_STD_12X", rx+8, ry+SUPERGAP )
         SUPERGAP = SUPERGAP + 9
-        qt( ent.WepTable.ClipSize .. (ent.WepTable.ClipSize==1 and " round" or " rounds"), "TacRP_S2_16", rx+8+4, ry+SUPERGAP )
+        qt( ent.WepTable.ClipSize .. (ent.WepTable.ClipSize==1 and " round" or " rounds"), "TacRP_STD_16X", rx+8+4, ry+SUPERGAP )
         SUPERGAP = SUPERGAP + 16
     end
 
     if ent.WepTable.Trivia_Caliber then
-        qt( "Caliber", "TacRP_S2_12", rx+8, ry+SUPERGAP )
+        qt( "Caliber", "TacRP_STD_12X", rx+8, ry+SUPERGAP )
         SUPERGAP = SUPERGAP + 9
-        qt( ent.WepTable.Trivia_Caliber, "TacRP_S2_16", rx+8+4, ry+SUPERGAP )
+        qt( ent.WepTable.Trivia_Caliber, "TacRP_STD_16X", rx+8+4, ry+SUPERGAP )
         SUPERGAP = SUPERGAP + 16
     end
 
     if ent.WepTable.Trivia_Manufacturer then
-        qt( "Manufacturer", "TacRP_S2_12", rx+8, ry+SUPERGAP )
+        qt( "Manufacturer", "TacRP_STD_12X", rx+8, ry+SUPERGAP )
         SUPERGAP = SUPERGAP + 9
-        qt( ent.WepTable.Trivia_Manufacturer, "TacRP_S2_16", rx+8+4, ry+SUPERGAP )
+        qt( ent.WepTable.Trivia_Manufacturer, "TacRP_STD_16X", rx+8+4, ry+SUPERGAP )
         SUPERGAP = SUPERGAP + 16
     end
 
     if ent.WepTable.Trivia_Year then
-        qt( "Production Year", "TacRP_S2_12", rx+8, ry+SUPERGAP )
+        qt( "Production Year", "TacRP_STD_12X", rx+8, ry+SUPERGAP )
         SUPERGAP = SUPERGAP + 9
-        qt( ent.WepTable.Trivia_Year, "TacRP_S2_16", rx+8+4, ry+SUPERGAP )
+        qt( ent.WepTable.Trivia_Year, "TacRP_STD_16X", rx+8+4, ry+SUPERGAP )
         SUPERGAP = SUPERGAP + 16
     end
     DisableClipping(todo)
@@ -446,18 +446,18 @@ hook.Add("PopulateWeapons", "zzz_TacRP_SubCategories", function(pnlContent, tree
 						table.insert( AllCategories, label )
 
 						function label:Paint(w, h)
-							surface.SetFont("TacRP_S2_32I")
+							surface.SetFont("TacRP_STD_32XI")
 							local tns = surface.GetTextSize( self.TypeName )
 							surface.SetDrawColor( 0, 0, 0, 200 )
 							surface.DrawRect( 0, 2, 4+tns+4+4, 32 )
 			
-							qt( self.TypeName, "TacRP_S2_32I", 4, 2 )
+							qt( self.TypeName, "TacRP_STD_32XI", 4, 2 )
 
 							local additional = ""
 							if self.ItemCountFiltered and self.ItemCountFiltered > 0 and self.ItemCount != self.ItemCountFiltered then
 								additional = " -- " .. self.ItemCountFiltered .. " shown"
 							end
-							qt( self.ItemCount .. " total" .. additional, "TacRP_S2_20I", 4 + tns + 4 + 4 + 4, 2 + 16, nil, TEXT_ALIGN_CENTER )
+							qt( self.ItemCount .. " total" .. additional, "TacRP_STD_20XI", 4 + tns + 4 + 4 + 4, 2 + 16, nil, TEXT_ALIGN_CENTER )
 						end
 						grid = vgui.Create("DGrid", label)
 						grid:Dock( TOP )
@@ -539,13 +539,13 @@ hook.Add("PopulateWeapons", "zzz_TacRP_SubCategories", function(pnlContent, tree
 							local blep = h*2
 							surface.DrawTexturedRect( w/2 - blep/2, h/2 - blep/2, blep, blep )
 		
-							surface.SetFont("TacRP_S2_16")
+							surface.SetFont("TacRP_STD_16X")
 							local tns = surface.GetTextSize(Text_Name)
 							surface.SetDrawColor( 0, 0, 0, filtered and 100 or 200 )
 							surface.DrawRect( 0, h - 20, 4+tns+4, 20 )
 						
 							-- name
-							qt( Text_Name, "TacRP_S2_16", 4, h-20+1 )
+							qt( Text_Name, "TacRP_STD_16X", 4, h-20+1 )
 		
 							return true
 						end

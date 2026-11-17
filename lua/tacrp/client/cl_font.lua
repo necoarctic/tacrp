@@ -3,7 +3,7 @@ function TacRP.SS(i)
     return ScrH() / 480 * i * hudscale:GetFloat()
 end
 local function real_holoss()
-    return (ScrH() / 360) / (ScrW() / 640)
+    return (ScrH() / 480) / 2
 end
 TacRP.HoloSS = real_holoss()
 
@@ -39,7 +39,17 @@ local fonts_to_make = {
             48,
             32,
             24,
+
+            -- spawnmenu
+            24,
+            16,
+            12,
         },
+        sizes_unscaled_italic = {
+            -- spawnmenu
+            32,
+            20,
+        }
     },
     ["LCD"] = {
         convar = "font2",
@@ -56,6 +66,7 @@ local fonts_to_make = {
         sizes_italic = {},
         sizes_glow = {},
         sizes_unscaled = {},
+        sizes_unscaled_italic = {},
     },
 }
 
@@ -101,6 +112,16 @@ local function generatefonts()
                 weight = 0,
                 antialias = true,
                 extended = true,
+            } )
+        end
+        for _, size in ipairs(def.sizes_unscaled_italic) do
+            surface.CreateFont("TacRP_" .. fontname .. "_" .. tostring(size) .. "XI", {
+                font = choice,
+                size = size,
+                weight = 0,
+                antialias = true,
+                extended = true,
+                italic = true,
             } )
         end
     end
