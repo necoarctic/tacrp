@@ -182,6 +182,10 @@ local function C2_ShadowedRect( x, y, ax, ay, color )
 	surface.DrawRect( x, y, ax, ay )
 end
 
+local function c2_tostr( str )
+	return (str == math.huge) and "∞" or tostring(str)
+end
+
 local function compute_stat( wep, stat_cache, index, data )
 	if data.ConVarCheck then
 		if !data.ConVar then data.ConVar = GetConVar(data.ConVarCheck) end
@@ -229,9 +233,9 @@ local function compute_stat( wep, stat_cache, index, data )
 		else
 			diff = math.Round( (stat_curr / stat_base - 1) * 100 )
 			if diff > 0 then
-				diff = "+" .. tostring(diff) .. "%"
+				diff = "+" .. c2_tostr(diff) .. "%"
 			else
-				diff = tostring(diff) .. "%"
+				diff = c2_tostr(diff) .. "%"
 			end
 		end
 	end
@@ -244,8 +248,8 @@ local function compute_stat( wep, stat_cache, index, data )
 		text_base = stat_base and "YES" or "NO"
 		text_curr = stat_curr and "YES" or "NO"
 	else
-		text_base = tostring(stat_base)
-		text_curr = tostring(stat_curr)
+		text_base = c2_tostr(stat_base)
+		text_curr = c2_tostr(stat_curr)
 	end
 
 	if data.Unit then
@@ -292,6 +296,7 @@ function SWEP:C2_Open()
 	if IsValid( c2 ) then c2:Remove() end
 	local sw, sh = ScrW(), ScrH()
 	local wep = self
+	local is_grenade = wep:GetValue("PrimaryGrenade")
 	c2 = vgui.Create( "EditablePanel" )
 	c2:SetSize( sw, sh )
 	c2:Center()
@@ -338,10 +343,9 @@ function SWEP:C2_Open()
 			end
 		end
 
-		local primarygrenade = self:GetValue("PrimaryGrenade")
 		if ( engine.ActiveGamemode() == "terrortown"
 			or TacRP.ConVars["allowdrop"]:GetBool()
-		) and TacRP.ConVars["cust_drop"]:GetBool() and ( !primarygrenade or !TacRP.IsGrenadeInfiniteAmmo(primarygrenade) ) then
+		) and TacRP.ConVars["cust_drop"]:GetBool() and ( !is_grenade or !TacRP.IsGrenadeInfiniteAmmo(is_grenade) ) then
 			local txt = TacRP:TryTranslate("cust.drop_wep")
 			surface.SetFont("TacRP_STD_6")
 			local width = surface.GetTextSize(txt)
@@ -558,11 +562,23 @@ function SWEP:C2_Open()
 		local LINE_HEIGHT = 10
 		local p_footer = c2:Add("Panel")
 		p_footer:SetWide( s(308) )
+
+		local txt_desc, txt_quote
+		if is_grenade then
+			local def = TacRP.QuickNades[is_grenade]
+			txt_desc = (TacRP:GetPhrase("quicknade." .. def.PrintName .. ".dettype") or def.DetType or "")
+			txt_desc = txt_desc .. "\n" .. (TacRP:GetPhrase("quicknade." .. def.PrintName .. ".desc") or def.Description)
+			-- txt_quote = "Grenade Quote"
+		else
+			txt_desc = wep.Description
+			txt_quote = wep.Description_Quote
+		end
+		
 		function p_footer:Paint( w, h )
 			C2_FullBox( 0, 0, w, h )
-			local desc = TacRP.MultiLineText( wep.Description, w - s(SPACING_W*2), "TacRP_STD_10" )
+			local lines_desc = TacRP.MultiLineText( txt_desc, w - s(SPACING_W*2), "TacRP_STD_10" )
 			local line_index = 0
-			for _, line in ipairs( desc ) do
+			for _, line in ipairs( lines_desc ) do
 				C2_DrawText(
 					line,
 					"TacRP_STD_10",
@@ -573,10 +589,10 @@ function SWEP:C2_Open()
 				line_index = line_index + 1
 			end
 
-			if not wep.Description_Quote then return end
+			if not txt_quote then return end
 			line_index = line_index + 1
-			local quot = TacRP.MultiLineText( wep.Description_Quote, w - s(SPACING_W*2), "TacRP_STD_10I" )
-			for _, line in ipairs( quot ) do
+			local lines_quote = TacRP.MultiLineText( txt_quote, w - s(SPACING_W*2), "TacRP_STD_10I" )
+			for _, line in ipairs( lines_quote ) do
 				C2_DrawText(
 					line,
 					"TacRP_STD_10I",
@@ -589,9 +605,9 @@ function SWEP:C2_Open()
 		end
 
 		function p_footer:PerformLayout( w, h )
-			local lines = #TacRP.MultiLineText( wep.Description, w - s(SPACING_W*2), "TacRP_STD_10" )
-			if wep.Description_Quote then
-				lines = lines + 1 + #TacRP.MultiLineText( wep.Description_Quote, w - s(SPACING_W*2), "TacRP_STD_10I" )
+			local lines = #TacRP.MultiLineText( txt_desc, w - s(SPACING_W*2), "TacRP_STD_10" )
+			if txt_quote then
+				lines = lines + 1 + #TacRP.MultiLineText( txt_quote, w - s(SPACING_W*2), "TacRP_STD_10I" )
 			end
 			self:SetTall( s( SPACING_H*2 + LINE_HEIGHT*lines ) )
 			self:AlignBottom( s( MARGIN_L ) )
@@ -623,8 +639,9 @@ function SWEP:C2_Open()
 		self.ActiveSlot = nil
 	end
 
-	function p_attlist:Populate( category, weapon, slotindex )
+	function p_attlist:Populate( category, weapon, slotindex, slotopener )
 		self:Clear()
+		self.SlotOpener = slotopener
 		
 		local atts = TacRP.GetAttsForCats( category, weapon )
 		table.sort(atts, sort_atts)
@@ -636,6 +653,7 @@ function SWEP:C2_Open()
 			button:DockMargin( 0, 0, 0, s(MARGIN_S) )
 			button.AttachmentName = att
 			button.AttachmentData = TacRP.Attachments[att]
+			button.AttList = p_attlist
 			button.Weapon = wep
 			button.SlotIndex = slotindex
 			button:SetupTarget()
@@ -655,6 +673,7 @@ function SWEP:C2_Open()
 		button.SlotIndex = i
 		button.SlotData = slot_data
 		button.AttList = p_attlist
+		button:SetupTarget()
 		button:EvaluateSize()
 	end
 
@@ -732,137 +751,139 @@ function SWEP:C2_Open()
 		end
 	end ]]
 
-	local p_breakdown = p_align_right:Add("C2_ScrollPanel")
-	p_breakdown:Dock( RIGHT )
-	p_breakdown:SetWide( s( want_wide - MARGIN_S ) )
-	p_breakdown:GetCanvas():DockPadding( 0, s(MARGIN_S), 0, s(MARGIN_S) )
-	p_breakdown.Paint = paint_box
-	p_breakdown.ChildPanels = {}
+	if not wep:GetValue("NoStatBox") then
+		local p_breakdown = p_align_right:Add("C2_ScrollPanel")
+		p_breakdown:Dock( RIGHT )
+		p_breakdown:SetWide( s( want_wide - MARGIN_S ) )
+		p_breakdown:GetCanvas():DockPadding( 0, s(MARGIN_S), 0, s(MARGIN_S) )
+		p_breakdown.Paint = paint_box
+		p_breakdown.ChildPanels = {}
 
-	function p_breakdown:Populate()
-		for _, v in pairs(self.ChildPanels) do
-			v:Remove()
-		end
+		function p_breakdown:Populate()
+			for _, v in pairs(self.ChildPanels) do
+				v:Remove()
+			end
 
-		local melee = wep:GetValue("PrimaryMelee")
-		local statgroup = melee and wep.StatGroupsMelee or wep.StatGroups
-		local statdisplay = melee and wep.StatDisplayMelee or wep.StatDisplay
+			local melee = wep:GetValue("PrimaryMelee")
+			local statgroup = melee and wep.StatGroupsMelee or wep.StatGroups
+			local statdisplay = melee and wep.StatDisplayMelee or wep.StatDisplay
 
-		local stat_cache = {}
-		wep.MiscCache["c2_breakdown"] = stat_cache
-		for index, data in ipairs(statdisplay) do
-			compute_stat( wep, stat_cache, index, data )
-			local TargetData = {
-				{
-					Text = TacRP:TryTranslate(data.Name),
-					Big = true,
-				},
-				{
-					Text = TacRP:TryTranslate(data.Description),
+			local stat_cache = {}
+			wep.MiscCache["c2_breakdown"] = stat_cache
+			for index, data in ipairs(statdisplay) do
+				compute_stat( wep, stat_cache, index, data )
+				local TargetData = {
+					{
+						Text = TacRP:TryTranslate(data.Name),
+						Big = true,
+					},
+					{
+						Text = TacRP:TryTranslate(data.Description),
+					}
 				}
-			}
-			local TargetID = "breakdown_" .. data.Name
+				local TargetID = "breakdown_" .. data.Name
 
-			if data.Spacer and stat_cache[index] then
-				local top = index == 1
-				if not top then
-					local bar = p_breakdown:Add("Panel")
-					table.insert( self.ChildPanels, bar )
-					bar:SetTall( 1 )
-					bar:Dock(TOP)
-					bar:DockMargin( 0, s(2), 0, s(2) )
-					function bar:Paint( w, h )
-						surface.SetDrawColor( COLOR_OUTLINE )
-						C2_Gradient_Left( 0, 0, w, 1 )
-					end
-				end
-
-				local item = p_breakdown:Add( "Panel" )
-				table.insert( self.ChildPanels, item )
-				item:Dock( TOP )
-				item:SetTall( s(14) )
-				item.TargetID = TargetID
-				item.TargetData = TargetData
-				function item:Paint( w, h )
-					if self:IsHovered() then
-						surface.SetDrawColor( COLOR_HOVER )
-						C2_Gradient_Left( 0, 0, w, h )
-					end
-					C2_DrawText(
-						TacRP:TryTranslate(data.Name),
-						"TacRP_STD_14",
-						s(4), 0,
-						color_white
-					)
-					return true
-				end
-			else
-				local cache = stat_cache[index]
-				if not cache then continue end
-
-				local item = p_breakdown:Add( "Panel" )
-				table.insert( self.ChildPanels, item )
-				item:Dock( TOP )
-				item:SetTall( s(14+5) )
-				item.TargetID = TargetID
-				item.TargetData = TargetData
-				function item:Paint( w, h )
-					if self:IsHovered() then
-						surface.SetDrawColor( COLOR_HOVER )
-						C2_Gradient_Left( 0, 0, w, h )
+				if data.Spacer and stat_cache[index] then
+					local top = index == 1
+					if not top then
+						local bar = p_breakdown:Add("Panel")
+						table.insert( self.ChildPanels, bar )
+						bar:SetTall( 1 )
+						bar:Dock(TOP)
+						bar:DockMargin( 0, s(2), 0, s(2) )
+						function bar:Paint( w, h )
+							surface.SetDrawColor( COLOR_OUTLINE )
+							C2_Gradient_Left( 0, 0, w, 1 )
+						end
 					end
 
-					C2_DrawText(
-						TacRP:TryTranslate(data.Name),
-						"TacRP_STD_8",
-						s(6), 0,
-						color_white
-					)
-
-					local stat_color = cache.varying and (cache.positive and COLOR_POSITIVE or COLOR_NEGATIVE) or color_white
-
-					C2_DrawText(
-						cache.text_curr,
-						"TacRP_STD_14",
-						s(6+4), s(5),
-						stat_color
-					)
-
-					local bump_x = surface.GetTextSize(cache.text_curr) + s(4)
-
-					if cache.diff and cache.diff ~= "" then
-						local text_diff = "(" .. cache.diff .. ")"
+					local item = p_breakdown:Add( "Panel" )
+					table.insert( self.ChildPanels, item )
+					item:Dock( TOP )
+					item:SetTall( s(14) )
+					item.TargetID = TargetID
+					item.TargetData = TargetData
+					function item:Paint( w, h )
+						if self:IsHovered() then
+							surface.SetDrawColor( COLOR_HOVER )
+							C2_Gradient_Left( 0, 0, w, h )
+						end
 						C2_DrawText(
-							text_diff,
-							"TacRP_STD_10",
-							s(6+4) + bump_x, s(5+3.5),
+							TacRP:TryTranslate(data.Name),
+							"TacRP_STD_14",
+							s(4), 0,
+							color_white
+						)
+						return true
+					end
+				else
+					local cache = stat_cache[index]
+					if not cache then continue end
+
+					local item = p_breakdown:Add( "Panel" )
+					table.insert( self.ChildPanels, item )
+					item:Dock( TOP )
+					item:SetTall( s(14+5) )
+					item.TargetID = TargetID
+					item.TargetData = TargetData
+					function item:Paint( w, h )
+						if self:IsHovered() then
+							surface.SetDrawColor( COLOR_HOVER )
+							C2_Gradient_Left( 0, 0, w, h )
+						end
+
+						C2_DrawText(
+							TacRP:TryTranslate(data.Name),
+							"TacRP_STD_8",
+							s(6), 0,
+							color_white
+						)
+
+						local stat_color = cache.varying and (cache.positive and COLOR_POSITIVE or COLOR_NEGATIVE) or color_white
+
+						C2_DrawText(
+							cache.text_curr,
+							"TacRP_STD_14",
+							s(6+4), s(5),
 							stat_color
 						)
-						bump_x = bump_x + surface.GetTextSize(text_diff) + s(4)
-					end
 
-					if cache.text_curr ~= cache.text_base then
-						C2_DrawText(
-							cache.text_base,
-							"TacRP_STD_10",
-							s(6+4) + bump_x, s(5+3.5),
-							COLOR_OLD
-						)
+						local bump_x = surface.GetTextSize(cache.text_curr) + s(4)
+
+						if cache.diff and cache.diff ~= "" then
+							local text_diff = "(" .. cache.diff .. ")"
+							C2_DrawText(
+								text_diff,
+								"TacRP_STD_10",
+								s(6+4) + bump_x, s(5+3.5),
+								stat_color
+							)
+							bump_x = bump_x + surface.GetTextSize(text_diff) + s(4)
+						end
+
+						if cache.text_curr ~= cache.text_base then
+							C2_DrawText(
+								cache.text_base,
+								"TacRP_STD_10",
+								s(6+4) + bump_x, s(5+3.5),
+								COLOR_OLD
+							)
+						end
+						
+						return true
 					end
-					
-					return true
 				end
 			end
 		end
-	end
 
-	function p_breakdown:Think()
-		if not wep.MiscCache["c2_breakdown"] then
-			self:Populate()
+		function p_breakdown:Think()
+			if not wep.MiscCache["c2_breakdown"] then
+				self:Populate()
+			end
 		end
-	end
 
-	p_breakdown:Populate()
+		p_breakdown:Populate()
+	end
 end
 
 -- reloading for development

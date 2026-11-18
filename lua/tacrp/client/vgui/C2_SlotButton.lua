@@ -64,13 +64,26 @@ function PANEL:DoClick()
 	if self.AttList.ActiveSlot == self.SlotIndex then
 		self.AttList:Clear()
 	else
-		self.AttList:Populate( self.SlotData.Category, self.Weapon, self.SlotIndex )
+		self.AttList:Populate( self.SlotData.Category, self.Weapon, self.SlotIndex, self )
 	end
 end
 
 function PANEL:DoRightClick()
 	if self.SlotData.Installed then
 		self.Weapon:Detach( self.SlotIndex )
+		self:SetupTarget()
+	end
+end
+
+function PANEL:SetupTarget()
+	local att = self.SlotData.Installed
+	if att then
+		local adata = TacRP.Attachments[att]
+		self.TargetID = "attachment_" .. att
+		self.TargetData = TacRP.C2.GetTargetDataForAttachment( adata )
+	else
+		self.TargetID = nil
+		self.TargetData = nil
 	end
 end
 

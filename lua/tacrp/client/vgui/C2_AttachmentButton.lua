@@ -10,34 +10,12 @@ PANEL.AttachmentName = nil
 PANEL.AttachmentData = nil
 PANEL.Weapon = nil
 PANEL.SlotIndex = nil
+PANEL.SlotOpener = nil
+PANEL.AttList = nil
 
 function PANEL:SetupTarget()
 	self.TargetID = "attachment_" .. self.AttachmentName
-	local adata = self.AttachmentData
-	local tdata = {
-		{
-			Text = TacRP:TryTranslate(adata.FullName or adata.PrintName),
-			Big = true,
-		},
-		{
-			Text = TacRP:TryTranslate(adata.Description),
-		}
-	}
-	if adata.Pros then
-		for _, text in ipairs(adata.Pros) do
-			table.insert( tdata, {
-				Text = "+ " .. TacRP:TryTranslate( text ),
-			})
-		end
-	end
-	if adata.Cons then
-		for _, text in ipairs(adata.Cons) do
-			table.insert( tdata, {
-				Text = "- " .. TacRP:TryTranslate( text ),
-			})
-		end
-	end
-	self.TargetData = tdata
+	self.TargetData = TacRP.C2.GetTargetDataForAttachment(self.AttachmentData)
 end
 
 function PANEL:Paint( w, h )
@@ -72,12 +50,18 @@ function PANEL:DoClick()
 	end
 	self.Weapon:Detach( self.SlotIndex, true )
 	self.Weapon:Attach( self.SlotIndex, self.AttachmentName )
+	-- if self.SlotOpener then
+		self.AttList.SlotOpener:SetupTarget()
+	-- end
 end
 
 function PANEL:DoRightClick()
 	if self.Weapon.Attachments[ self.SlotIndex ].Installed == self.AttachmentName then
 		self.Weapon:Detach( self.SlotIndex )
 	end
+	-- if self.SlotOpener then
+		self.AttList.SlotOpener:SetupTarget()
+	-- end
 end
 
 vgui.Register("C2_AttachmentButton", PANEL, "DButton")
