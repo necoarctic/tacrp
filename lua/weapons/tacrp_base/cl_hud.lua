@@ -20,11 +20,10 @@ function SWEP:ShouldDrawCrosshair()
 
     local p = self:GetOwner()
     if (p:KeyDown(IN_ZOOM) or p.TacRPBlindFireDown)
-        and self:GetValue("CanBlindFire") and tobool(p:GetInfo("tacrp_blindfiremenu")) then
+        and self:GetValue("CanBlindFire") and TacRP.ConVars["blindfiremenu"]:GetBool() then
         return false
     end
-
-    if self:IsQuickNadeAllowed() and tobool(p:GetInfo("tacrp_nademenu")) and p:KeyDown(IN_GRENADE2) then
+    if p:KeyDown(IN_GRENADE2) and self:IsQuickNadeAllowed() and TacRP.ConVars["nademenu"]:GetBool() then
         return false
     end
 
