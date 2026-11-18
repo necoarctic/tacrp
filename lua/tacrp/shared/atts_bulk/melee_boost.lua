@@ -12,6 +12,7 @@ ATT.Description = "att.melee_boost_all.desc"
 ATT.Pros = {"stat.meleeperkstr", "stat.meleeperkagi", "stat.meleeperkint"}
 
 ATT.Category = "melee_boost"
+ATT.Free = true
 
 ATT.SortOrder = 1
 
@@ -33,6 +34,7 @@ ATT.Pros = {"stat.meleeperkstr"}
 ATT.Cons = {"stat.meleeperkagi", "stat.meleeperkint"}
 
 ATT.Category = "melee_boost"
+ATT.Free = true
 
 ATT.SortOrder = 2
 
@@ -54,6 +56,7 @@ ATT.Pros = {"stat.meleeperkagi"}
 ATT.Cons = {"stat.meleeperkstr", "stat.meleeperkint"}
 
 ATT.Category = "melee_boost"
+ATT.Free = true
 
 ATT.SortOrder = 3
 
@@ -75,6 +78,7 @@ ATT.Pros = {"stat.meleeperkint"}
 ATT.Cons = {"stat.meleeperkstr", "stat.meleeperkagi"}
 
 ATT.Category = "melee_boost"
+ATT.Free = true
 
 ATT.SortOrder = 4
 
@@ -96,6 +100,7 @@ ATT.Pros = {"stat.lifesteal"}
 ATT.Cons = {"stat.meleeperkstr", "stat.meleeperkagi"}
 
 ATT.Category = "melee_boost"
+ATT.Free = true
 
 ATT.SortOrder = 10
 
@@ -117,6 +122,7 @@ ATT.Pros = {"stat.damagecharge"}
 ATT.Cons = {"stat.meleeperkint"}
 
 ATT.Category = "melee_boost"
+ATT.Free = true
 
 ATT.SortOrder = 11
 
@@ -137,6 +143,7 @@ ATT.Pros = {"stat.meleedelay"}
 ATT.Cons = {"stat.meleeattackmisstime"}
 
 ATT.Category = "melee_boost"
+ATT.Free = true
 
 ATT.SortOrder = 12
 
@@ -156,6 +163,7 @@ ATT.Description = "att.melee_boost_shock.desc"
 ATT.Pros = {"att.procon.gasimmune", "att.procon.flashresist", "att.procon.stunresist"}
 
 ATT.Category = "melee_boost"
+ATT.Free = true
 ATT.InvAtt = "perk_shock"
 
 ATT.SortOrder = 12

@@ -13,6 +13,7 @@ ATT.Description = "att.perk_aim.desc"
 ATT.Pros = {"stat.zoom", "stat.scopedsway", "stat.movespread"}
 
 ATT.Category = "perk_shooting"
+ATT.Free = true
 
 ATT.SortOrder = 2
 
@@ -34,6 +35,7 @@ ATT.Description = "att.perk_blindfire.desc"
 ATT.Pros = {"stat.peekpenalty", "stat.blindfiresway", "stat.freeaimangle"}
 
 ATT.Category = {"perk"}
+ATT.Free = true
 
 ATT.SortOrder = 7
 
@@ -55,6 +57,7 @@ ATT.Description = "att.perk_hipfire.desc"
 ATT.Pros = {"stat.sway", "stat.hipfirespread"}
 
 ATT.Category = "perk"
+ATT.Free = true
 
 ATT.SortOrder = 2
 
@@ -75,6 +78,7 @@ ATT.Description = "att.perk_melee.desc"
 ATT.Pros = {"stat.meleedamage", "att.procon.meleeslow"}
 
 ATT.Category = "perk_melee"
+ATT.Free = true
 
 ATT.SortOrder = 2
 
@@ -95,6 +99,7 @@ ATT.Description = "att.perk_reload.desc"
 ATT.Pros = {"stat.reloadtime"}
 
 ATT.Category = "perk_reload"
+ATT.Free = true
 
 ATT.SortOrder = 2
 
@@ -114,6 +119,7 @@ ATT.Description = "att.perk_speed.desc"
 ATT.Pros = {"stat.movespeed", "stat.reloadspeed"}
 
 ATT.Category = "perk"
+ATT.Free = true
 
 ATT.SortOrder = 2
 
@@ -134,6 +140,7 @@ ATT.Description = "att.perk_throw.desc"
 ATT.Pros = {"att.procon.quickthrow", "att.procon.throwrocks"}
 
 ATT.Category = {"perk", "perk_throw"}
+ATT.Free = true
 
 ATT.SortOrder = 6
 
@@ -154,6 +161,7 @@ ATT.Description = "att.perk_mlg.desc"
 ATT.Pros = {"stat.quickscope", "stat.midairspread", "stat.movespread"}
 
 ATT.Category = "perk_shooting"
+ATT.Free = true
 
 ATT.SortOrder = 9
 
@@ -175,6 +183,7 @@ ATT.Description = "att.melee_boost_shock.desc"
 ATT.Pros = {"att.procon.gasimmune", "att.procon.flashresist", "att.procon.stunresist"}
 
 ATT.Category = {"perk", "perk_passive"}
+ATT.Free = true
 
 ATT.SortOrder = 8
 
