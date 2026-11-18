@@ -614,6 +614,40 @@ function SWEP:C2_Open()
 
 		list_slots[i] = button
 	end
+
+	-- take and hold support
+	if TAH and TAH.ConVars["game_limitedcust"] and TAH.ConVars["game_limitedcust"]:GetBool() then
+		local p = LocalPlayer()
+		local button = p_slotlist:Add("DButton")
+		button:Dock( TOP )
+		button:SetTall( s(BUTTON_HEIGHT) )
+		button:DockMargin( 0, 0, 0, s(MARGIN_S) )
+		function button:Paint(w, h)
+			C2_Box(0, 0, w, h)
+			
+			C2_DrawText(
+				"Use Attachment Kit",
+				"TacRP_STD_12",
+				w/2,
+				h/2,
+				color_white,
+				TEXT_ALIGN_CENTER,
+				TEXT_ALIGN_CENTER
+			)
+
+			C2_Outline(0, 0, w, h)
+			return true
+		end
+
+		function button:DoClick()
+			if p.TAH_PendingAttWeapon == wep then
+				RunConsoleCommand("tah_attbox")
+			else
+				RunConsoleCommand("tah_use_attbox")
+			end
+		end
+	end
+
 	p_slotlist:InvalidateLayout( true )
 	p_slotlist:SizeToChildren( false, true )
 
