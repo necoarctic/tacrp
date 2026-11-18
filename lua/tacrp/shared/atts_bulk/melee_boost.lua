@@ -163,7 +163,7 @@ ATT.Description = "att.melee_boost_shock.desc"
 ATT.Pros = {"att.procon.gasimmune", "att.procon.flashresist", "att.procon.stunresist"}
 
 ATT.Category = "melee_boost"
-ATT.Free = true
+ATT.Free = false
 ATT.InvAtt = "perk_shock"
 
 ATT.SortOrder = 12
