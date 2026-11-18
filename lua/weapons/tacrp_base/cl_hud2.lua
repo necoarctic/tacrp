@@ -1,7 +1,7 @@
 -- TODO move convars to main convars file
-local h2_enabled = CreateClientConVar( "tacrp_h2_enable", 1, true, false )
-local h2_enabled_health = CreateClientConVar( "tacrp_h2_enable_health", 1, true, false )
-local h2_enabled_ammo = CreateClientConVar( "tacrp_h2_enable_ammo", 1, true, false )
+local h2_enable = CreateClientConVar( "tacrp_h2_enable", 1, true, false )
+local h2_enable_health = CreateClientConVar( "tacrp_h2_enable_health", 1, true, false )
+local h2_enable_ammo = CreateClientConVar( "tacrp_h2_enable_ammo", 1, true, false )
 local s = TacRP.SS
 local MARGIN_XS = TacRP.C2.MARGIN_XS
 local MARGIN_S = TacRP.C2.MARGIN_S
@@ -20,9 +20,9 @@ local hide_ammo = {
 }
 
 hook.Add( "HUDShouldDraw", "TacRP_HUD2_HUDShouldDraw", function( name )
-	if h2_enabled:GetBool() then
-		if h2_enabled_health:GetBool() and hide_health[ name ] then return false end
-		if h2_enabled_ammo:GetBool() and hide_ammo[ name ] then return false end
+	if h2_enable:GetBool() then
+		if h2_enable_health:GetBool() and hide_health[ name ] then return false end
+		if h2_enable_ammo:GetBool() and hide_ammo[ name ] then return false end
 	end
 end )
 
@@ -54,7 +54,7 @@ local COLOR_NEXTBURST = Color( 255, 180, 120 )
 local COLOR_REST = Color( 255, 255, 255 )
 local COLOR_LOWAMMO = Color( 255, 0, 0, 127 )
 local COLOR_EMPTY = Color( 32, 32, 32, 127 )
-local COLOR_SHADOW = Color( 32, 32, 32, 80 )
+local COLOR_SHADOW = Color( 32, 32, 32, 127 )
 
 local NEWLINE_AT = 30
 local LOW_AMMO_PERCENTAGE = 0.34
@@ -62,78 +62,74 @@ local LOW_AMMO_PERCENTAGE = 0.34
 local function H2_DrawAmmo( ply, wep )
 	local sw, sh = ScrW(), ScrH()
 	local Hw = s(140)
-	local Hh = s(19)
+	local Hh = s(20)
 	local Hx = sw - Hw - s(MARGIN_XL)
 	local Hy = sh - Hh - s(MARGIN_XL)
 	local tacrp = wep.ArcticTacRP
 	C2_FullBox( Hx, Hy, Hw, Hh )
 
-	C2_DrawText( wep:GetPrintName(), "TacRP_STD_12I", Hx + s(4), Hy + s(3), color_white, TEXT_ALIGN_LEFT )
+	C2_DrawText(
+		wep.AbbrevName or wep:GetPrintName(),
+		"TacRP_STD_12I",
+		Hx + s(4),
+		Hy + Hh/2 - s(0.5),
+		color_white,
+		TEXT_ALIGN_LEFT,
+		TEXT_ALIGN_CENTER
+	)
 
 	-- firemode
 	if tacrp then
-		if wep:GetSafe() then
-			C2_DrawText(
-				"Safety",
-				"TacRP_STD_10",
-				Hx + Hw - s(4+1),
-				Hy + Hh/2 + s(-3.5),
-				color_white,
-				TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER
-			)
-			C2_DrawText( "[E] + [RMB] " .. get_firemode_text( wep, wep:GetCurrentFiremode() ), "TacRP_STD_8", Hx + Hw - s(4+1), Hy + s(2+7), color_white, TEXT_ALIGN_RIGHT )
-		else
-			local fm_text = get_firemode_text( wep, wep:GetCurrentFiremode() )
-			local different = wep:GetCurrentFiremode() ~= wep:GetNextFiremode()
+		local safety = wep:GetSafe()
+		local fm_text = safety and "Safety" or get_firemode_text( wep, wep:GetCurrentFiremode() )
+		local different = safety or (wep:GetCurrentFiremode() ~= wep:GetNextFiremode())
+		C2_DrawText(
+			fm_text,
+			"TacRP_STD_10",
+			Hx + Hw - s(4+1),
+			Hy + Hh/2 + (different and s(-3.5) or s(-0.5)),
+			color_white,
+			TEXT_ALIGN_RIGHT,
+			TEXT_ALIGN_CENTER
+		)
+		if different then
+			local fm_text = safety and ("[E] + [RMB] " .. get_firemode_text( wep, wep:GetCurrentFiremode() )) or ("[E] + [R] " .. get_firemode_text( wep, wep:GetNextFiremode() ))
 			C2_DrawText(
 				fm_text,
-				"TacRP_STD_10",
+				"TacRP_STD_8",
 				Hx + Hw - s(4+1),
-				Hy + Hh/2 + (different and s(-3.5) or s(-0.5)),
+				Hy + Hh - s(2),
 				color_white,
 				TEXT_ALIGN_RIGHT,
-				TEXT_ALIGN_CENTER
+				TEXT_ALIGN_BOTTOM
 			)
-			if different then
-				local fm_text = get_firemode_text( wep, wep:GetNextFiremode() )
-				C2_DrawText(
-					"[E] + [R] " .. fm_text,
-					"TacRP_STD_8",
-					Hx + Hw - s(4+1),
-					Hy + s(2+7),
-					color_white,
-					TEXT_ALIGN_RIGHT
-				)
-			end
 		end
 	end
 
-	local IW, IH = math.ceil(s(12)), math.ceil(s(12))
-	local shift_x, shift_y = 0, 0
-	local newline_counter = 0
-	local linecount = 0
-
-	local aps = 1
+	local ammo_per_shot = 1
 	if wep.GetValue then
-		aps = wep:GetValue("AmmoPerShot")
+		ammo_per_shot = wep:GetValue("AmmoPerShot")
 	end
 
+	local t = CurTime()
+	local flash_empty = t % 0.3 < 0.25
+	local flash_lowammo = t % 0.5 < 0.1
+	local o_x = Hx + Hw
+	local o_y = Hy
+	local final_x = 0
+	local final_y = 0
+
 	surface.SetMaterial( MATERIAL_BULLET )
+	-- ammo counter bullets
 	for gun=1, (tacrp and wep.DualAkimbo) and 2 or 1 do
-		local max_clip = wep:GetMaxClip1()
-		local clip = wep:Clip1()
+		local mag_max = wep:GetMaxClip1()
+		local mag_loaded = wep:Clip1()
 		if gun == 2 then
-			max_clip = wep:GetMaxClip2()
-			clip = wep:Clip2()
-			-- shift and make new line
-			newline_counter = 0
-			linecount = linecount + 1
-			shift_x = math.ceil( s( -2 * linecount ) )
-			shift_y = shift_y - math.ceil( s(4) )
+			mag_max = wep:GetMaxClip2()
+			mag_loaded = wep:Clip2()
 		end
 		local burst_length = 1
 		local burst_count = 0
-
 		if tacrp then
 			burst_count = gun == 2 and wep:GetBurstCount2() or wep:GetBurstCount()
 			local fm = wep:GetCurrentFiremode()
@@ -142,85 +138,86 @@ local function H2_DrawAmmo( ply, wep )
 			end
 		end
 
-		for i=1, max_clip do
-			local Dx = Hx + Hw - s(4+4) + shift_x
-			local Dy = Hy - s(4+1) + shift_y
+		-- theoretically customizable
+		local im_w, im_h = s(12), s(12)
+		local line_max = 30
+		local bgap_x = s(4)
+		local bgap_newlinex = s(2)
+		local bgap_line = s(4)
 
-			shift_x = shift_x - math.ceil(s(4))
-			newline_counter = newline_counter + 1
-			if i ~= max_clip and newline_counter >= NEWLINE_AT then
-				newline_counter = 0
-				linecount = linecount + 1
-				shift_x = math.ceil( s( -2 * linecount ) )
-				shift_y = shift_y - math.ceil( s(4) )
-			end
+		for bullet = 1, mag_max do
+			local i = bullet - 1
+			local b_x = o_x - s(12) - final_x
+			local b_y = o_y - s(4) - final_y
 
-			if i<= clip then
+			local linecount = math.floor(i / line_max) -- starts from 0
+			b_x = b_x - (bgap_x * (i % line_max)) - (bgap_newlinex * linecount)
+			b_y = b_y - (bgap_line * linecount)
+			
+			if bullet <= mag_loaded then -- this round is loaded
 				surface.SetDrawColor( COLOR_SHADOW )
-				surface.DrawTexturedRectRotated( Dx + 2, Dy + 1, IW, IH, ROTATION )
-				surface.DrawTexturedRectRotated( Dx + 2, Dy + 2, IW, IH, ROTATION )
+				surface.DrawTexturedRectRotated( b_x + 2, b_y + 1, im_w, im_h, ROTATION )
+				surface.DrawTexturedRectRotated( b_x + 2, b_y + 2, im_w, im_h, ROTATION )
 				
-				if ( i + aps > clip ) then
+				if ( bullet + ammo_per_shot > mag_loaded ) then
 					surface.SetDrawColor( COLOR_NEXT )
-				elseif i > ( clip - ( burst_length * aps ) + ( burst_count * aps ) ) then
+				elseif bullet > ( mag_loaded - ( burst_length * ammo_per_shot ) + ( burst_count * ammo_per_shot ) ) then
 					surface.SetDrawColor( COLOR_NEXTBURST )
 				else
 					surface.SetDrawColor( COLOR_REST )
 				end
-				surface.DrawTexturedRectRotated( Dx, Dy, IW, IH, ROTATION )
+				surface.DrawTexturedRectRotated( b_x, b_y, im_w, im_h, ROTATION )
 			else
-				if clip == 0 then
-					if CurTime() % 0.25 < 0.2 then
-						surface.SetDrawColor( COLOR_LOWAMMO )
-					else
-						surface.SetDrawColor( COLOR_EMPTY )
-					end
-				elseif max_clip * LOW_AMMO_PERCENTAGE >= clip and CurTime() % 0.5 < 0.1 then
-					surface.SetDrawColor( COLOR_LOWAMMO )
+				if mag_loaded == 0 then
+					surface.SetDrawColor( flash_empty and COLOR_LOWAMMO or COLOR_EMPTY )
 				else
-					surface.SetDrawColor( COLOR_EMPTY )
+					surface.SetDrawColor( (mag_max * LOW_AMMO_PERCENTAGE >= mag_loaded and flash_lowammo) and COLOR_LOWAMMO or COLOR_EMPTY )
 				end
-				surface.DrawTexturedRectRotated( Dx, Dy, IW, IH, ROTATION )
+				surface.DrawTexturedRectRotated( b_x, b_y, im_w, im_h, ROTATION )
 			end
+			-- surface.SetDrawColor( 255, 0, 0 )
+			-- surface.DrawRect( b_x-1, b_y-1, 2, 2 )
 		end
+		local lc = math.floor((mag_max-1) / line_max) + 1
+		final_x = final_x + (bgap_newlinex * lc)
+		final_y = final_y + (bgap_line * lc)
 	end
+
+	-- ammo text
 	local ammo_type = wep:GetPrimaryAmmoType()
+	local has_ammotype = ammo_type ~= -1
 	local ammo_count = ply:GetAmmoCount(ammo_type)
 	local ammo_text
-	local has_ammotype = ammo_type ~= -1
 	local clip = tostring( wep:Clip1() )
 	if wep:Clip2() ~= -1 then
 		clip = clip .. " + " .. tostring( wep:Clip2() )
 	end
+
+	if tacrp and wep:GetInfiniteAmmo() then
+		ammo_count = "∞"
+	end
+	
 	if wep:Clip1() == -1 then
 		if not has_ammotype then
 			return
 		else
 			ammo_text = ammo_count
 		end
-		C2_DrawText(
-			ammo_text,
-			"TacRP_STD_10",
-			Hx + Hw + s(-2*-1) - s(8),
-			Hy - s(12),
-			color_white,
-			TEXT_ALIGN_RIGHT
-		)
 	else
 		if not has_ammotype then
 			ammo_text = clip
 		else
 			ammo_text = clip .. " / " .. ammo_count
 		end
-		C2_DrawText(
-			ammo_text,
-			"TacRP_STD_10",
-			Hx + Hw + s(-2*linecount) - s(8),
-			Hy + shift_y - s(17),
-			color_white,
-			TEXT_ALIGN_RIGHT
-		)
 	end
+	C2_DrawText(
+		ammo_text,
+		"TacRP_STD_10",
+		Hx + Hw - s(10) - final_x,
+		Hy - s(2) - final_y,
+		color_white,
+		TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM
+	)
 end
 
 local lasthealtime = -math.huge
@@ -339,8 +336,8 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 	if !wep:IsValid() then return end
 	local tacrp = wep.ArcticTacRP
 
-	if h2_enabled:GetBool() then
-		if h2_enabled_health:GetBool() then
+	if h2_enable:GetBool() then
+		if h2_enable_health:GetBool() then
 			local Hw = s(56)
 			local Hh = s(32)
 			local Hx = s(MARGIN_XL)
@@ -410,7 +407,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 			end
 		end
 
-		if h2_enabled_ammo:GetBool() then
+		if h2_enable_ammo:GetBool() then
 			H2_DrawAmmo( ply, wep )
 		end
 	end
@@ -419,7 +416,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 		return
 	end
 
-	if h2_enabled:GetBool() then
+	if h2_enable:GetBool() then
 		local push_y = 0
 		local caps = wep:GetHintCapabilities()
 
