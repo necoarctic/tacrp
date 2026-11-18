@@ -1,7 +1,7 @@
 -- TODO move convars to main convars file
-local h2_enable = CreateClientConVar( "tacrp_h2_enable", 1, true, false )
-local h2_enable_health = CreateClientConVar( "tacrp_h2_enable_health", 1, true, false )
-local h2_enable_ammo = CreateClientConVar( "tacrp_h2_enable_ammo", 1, true, false )
+local h2_enable = TacRP.ConVars["h2_enable"]
+local h2_enable_health = TacRP.ConVars["h2_enable_health"]
+local h2_enable_ammo = TacRP.ConVars["h2_enable_ammo"]
 local s = TacRP.SS
 local MARGIN_XS = TacRP.C2.MARGIN_XS
 local MARGIN_S = TacRP.C2.MARGIN_S

@@ -2,6 +2,9 @@ function SWEP:ShouldDrawCrosshair()
     if not TacRP.ConVars["crosshair"]:GetBool() then
         return false
     end
+    if self:GetBlindFireMode() ~= TacRP.BLINDFIRE_NONE then
+        return false
+    end
     if not self:DoLowerIrons() and self:GetSightAmount() > 0.3 and self:GetScopeLevel() > 0 and not self:GetPeeking() then
         return false
     end

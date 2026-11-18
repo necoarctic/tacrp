@@ -66,7 +66,7 @@ SWEP.CustomizeHUD = nil
 
 function SWEP:CreateCustomizeHUD()
     self:RemoveCustomizeHUD()
-    if not self:GetOwner():KeyDown( IN_WALK ) then
+    if TacRP.ConVars["c2_enable"]:GetBool() and not self:GetOwner():KeyDown( IN_WALK ) then
         self:C2_Open()
         return
     end

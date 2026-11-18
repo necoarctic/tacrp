@@ -62,19 +62,19 @@ C2_COLOR_Accent.a = 10
 
 -- TODO move convars to main convars file
 -- Main color convars
-local c_1_h = CreateClientConVar( "tacrp_c2_1_h", 20, true, false )
-local c_1_s = CreateClientConVar( "tacrp_c2_1_s", 0.4, true, false )
-local c_1_v = CreateClientConVar( "tacrp_c2_1_v", 1, true, false )
-local c_1_a = CreateClientConVar( "tacrp_c2_1_a", (1/32), true, false )
+local c_1_h = TacRP.ConVars["c2_1_h"]
+local c_1_s = TacRP.ConVars["c2_1_s"]
+local c_1_v = TacRP.ConVars["c2_1_v"]
+local c_1_a = TacRP.ConVars["c2_1_a"]
 
 -- Accent color convars
-local c_2_h = CreateClientConVar( "tacrp_c2_2_h", 20, true, false )
-local c_2_s = CreateClientConVar( "tacrp_c2_2_s", 0.6, true, false )
-local c_2_v = CreateClientConVar( "tacrp_c2_2_v", 1, true, false )
-local c_2_a = CreateClientConVar( "tacrp_c2_2_a", (1/32), true, false )
+local c_2_h = TacRP.ConVars["c2_2_h"]
+local c_2_s = TacRP.ConVars["c2_2_s"]
+local c_2_v = TacRP.ConVars["c2_2_v"]
+local c_2_a = TacRP.ConVars["c2_2_a"]
 
-local c_2_gd = CreateClientConVar( "tacrp_c2_graddown", 0, true, false )
-local c_2_classic = CreateClientConVar( "tacrp_c2_classic", 0, true, false )
+local c_2_gd = TacRP.ConVars["c2_graddown"]
+local c_2_classic = TacRP.ConVars["c2_classic"]
 
 function C2_UpdateColors()
 	C2_COLOR_Main = HSVToColor( c_1_h:GetFloat(), c_1_s:GetFloat(), c_1_v:GetFloat() )
@@ -918,23 +918,23 @@ local pres = {
 		["tacrp_c2_1_h"]	= 40,
 		["tacrp_c2_1_s"]	= 0.8,
 		["tacrp_c2_1_v"]	= 1,
-		["tacrp_c2_1_a"]	= 0.25,
+		["tacrp_c2_1_a"]	= 0.15,
 		["tacrp_c2_2_h"]	= 180,
 		["tacrp_c2_2_s"]	= 0.8,
 		["tacrp_c2_2_v"]	= 1,
-		["tacrp_c2_2_a"]	= 0.25,
+		["tacrp_c2_2_a"]	= 0.15,
 		["tacrp_c2_graddown"]	= false,
 		["tacrp_c2_classic"]	= false,
 	},
 	["Fresh Vapor"] = {
 		["tacrp_c2_1_h"]	= 285,
 		["tacrp_c2_1_s"]	= 0.61,
-		["tacrp_c2_1_v"]	= 1,
-		["tacrp_c2_1_a"]	= 0.1,
+		["tacrp_c2_1_v"]	= 1.00,
+		["tacrp_c2_1_a"]	= 0.10,
 		["tacrp_c2_2_h"]	= 200,
 		["tacrp_c2_2_s"]	= 0.61,
 		["tacrp_c2_2_v"]	= 0.85,
-		["tacrp_c2_2_a"]	= 0.2,
+		["tacrp_c2_2_a"]	= 0.20,
 		["tacrp_c2_graddown"]	= true,
 		["tacrp_c2_classic"]	= false,
 	},
@@ -1031,6 +1031,30 @@ local pres = {
 		["tacrp_c2_2_s"]	= 0.23,
 		["tacrp_c2_2_v"]	= 1.00,
 		["tacrp_c2_2_a"]	= 0.33,
+		["tacrp_c2_graddown"]	= true,
+		["tacrp_c2_classic"]	= false,
+	},
+	["Fragrant Laundry"] = {
+		["tacrp_c2_1_h"]	= 340,
+		["tacrp_c2_1_s"]	= 0.20,
+		["tacrp_c2_1_v"]	= 0.40,
+		["tacrp_c2_1_a"]	= 0.20,
+		["tacrp_c2_2_h"]	= 290,
+		["tacrp_c2_2_s"]	= 0.20,
+		["tacrp_c2_2_v"]	= 1.00,
+		["tacrp_c2_2_a"]	= 0.1,
+		["tacrp_c2_graddown"]	= true,
+		["tacrp_c2_classic"]	= false,
+	},
+	["Turquoise Tactics"] = {
+		["tacrp_c2_1_h"]	= 0,
+		["tacrp_c2_1_s"]	= 0.00,
+		["tacrp_c2_1_v"]	= 0.10,
+		["tacrp_c2_1_a"]	= 0.40,
+		["tacrp_c2_2_h"]	= 200,
+		["tacrp_c2_2_s"]	= 1.00,
+		["tacrp_c2_2_v"]	= .75,
+		["tacrp_c2_2_a"]	= 0.2,
 		["tacrp_c2_graddown"]	= true,
 		["tacrp_c2_classic"]	= false,
 	},

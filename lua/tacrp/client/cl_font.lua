@@ -57,7 +57,9 @@ local fonts_to_make = {
     },
     -- Remove these following fonts eventually
     ["Myriad_Pro"] = {
-        default = "Comic Sans MS",
+        -- default = "Comic Sans MS",
+        default = "Myriad Pro",
+        convar = "font1",
         old_suffix = true,
         sizes = {
             4,
@@ -87,7 +89,9 @@ local fonts_to_make = {
         sizes_unscaled_italic = {},
     },
     ["HD44780A00_5x8"] = {
-        default = "Comic Sans MS",
+        -- default = "Comic Sans MS",
+        default = "HD44780A00 5x8",
+        convar = "font2",
         old_suffix = true,
         sizes = {
             4,
