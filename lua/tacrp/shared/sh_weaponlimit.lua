@@ -171,7 +171,7 @@ if CLIENT then
         end
 
         if text then
-            local font = "TacRP_LCD_4"
+            local font = "TacRP_HD44780A00_5x8_4"
             surface.SetFont(font)
             local w, h = surface.GetTextSize(text)
             w = w + TacRP.SS(8)

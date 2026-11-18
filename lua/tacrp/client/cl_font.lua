@@ -1,6 +1,6 @@
 local hudscale = TacRP.ConVars["hudscale"]
 function TacRP.SS(i)
-    return ScrH() / 480 * i * hudscale:GetFloat()
+    return ScrH() / 360 * i * hudscale:GetFloat()
 end
 local function real_holoss()
     return (ScrH() / 480) / 2
@@ -68,17 +68,78 @@ local fonts_to_make = {
         sizes_unscaled = {},
         sizes_unscaled_italic = {},
     },
+    ["Myriad_Pro"] = {
+        default = "Comic Sans MS",
+        sizes = {
+            4,
+            5,
+            6,
+            8,
+            10,
+            11,
+            12,
+            14,
+            16,
+            20,
+            32,
+            36,
+        },
+        sizes_italic = {
+            6,
+            8,
+            12,
+        },
+        sizes_glow = {},
+        sizes_unscaled = {
+            24,
+            32,
+            48
+        },
+        sizes_unscaled_italic = {},
+    },
+    ["HD44780A00_5x8"] = {
+        default = "Comic Sans MS",
+        sizes = {
+            4,
+            5,
+            6,
+            8,
+            10,
+            11,
+            12,
+            14,
+            16,
+            20,
+            32,
+            36,
+        },
+        sizes_italic = {
+            6,
+            8,
+            12,
+        },
+        sizes_glow = {},
+        sizes_unscaled = {
+            24,
+            32,
+            48
+        },
+        sizes_unscaled_italic = {},
+    },
 }
 
 local function generatefonts()
     for fontname, def in pairs(fonts_to_make) do
-        local choice = TacRP.ConVars[def.convar]:GetString()
-        if choice == "" then
-            choice = def.default
+        local selected_font = def.default
+        if def.convar then
+            local choice = TacRP.ConVars[def.convar]:GetString()
+            if choice ~= "" then
+                selected_font = cvar_choice
+            end
         end
         for _, size in ipairs(def.sizes) do
             surface.CreateFont("TacRP_" .. fontname .. "_" .. tostring(size), {
-                font = choice,
+                font = selected_font,
                 size = TacRP.SS(size),
                 weight = 0,
                 antialias = true,
@@ -87,7 +148,7 @@ local function generatefonts()
         end
         for _, size in ipairs(def.sizes_italic) do
             surface.CreateFont("TacRP_" .. fontname .. "_" .. tostring(size) .. "I", {
-                font = choice,
+                font = selected_font,
                 size = TacRP.SS(size),
                 weight = 0,
                 antialias = true,
@@ -97,7 +158,7 @@ local function generatefonts()
         end
         for _, size in ipairs(def.sizes_glow) do
             surface.CreateFont("TacRP_" .. fontname .. "_" .. tostring(size) .. "G", {
-                font = choice,
+                font = selected_font,
                 size = TacRP.SS(size),
                 weight = 0,
                 antialias = true,
@@ -107,7 +168,7 @@ local function generatefonts()
         end
         for _, size in ipairs(def.sizes_unscaled) do
             surface.CreateFont("TacRP_" .. fontname .. "_" .. tostring(size) .. "X", {
-                font = choice,
+                font = selected_font,
                 size = size,
                 weight = 0,
                 antialias = true,
@@ -116,7 +177,7 @@ local function generatefonts()
         end
         for _, size in ipairs(def.sizes_unscaled_italic) do
             surface.CreateFont("TacRP_" .. fontname .. "_" .. tostring(size) .. "XI", {
-                font = choice,
+                font = selected_font,
                 size = size,
                 weight = 0,
                 antialias = true,

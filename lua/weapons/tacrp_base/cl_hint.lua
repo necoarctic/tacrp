@@ -172,7 +172,7 @@ function SWEP:DrawHints()
     local a = TacRP.ConVars["hints_always"]:GetBool() and 1 or math.Clamp(((self.LastHintLife + 4) - CurTime()) / 1, 0, 1)
     if a <= 0 then return end
 
-    local font = TacRP.ConVars["hints_altfont"]:GetBool() and "TacRP_STD_8" or "TacRP_LCD_5"
+    local font = TacRP.ConVars["hints_altfont"]:GetBool() and "TacRP_Myriad_Pro_8" or "TacRP_HD44780A00_5x8_5"
 
     local caps = self:GetHintCapabilities()
 
@@ -202,7 +202,7 @@ function SWEP:DrawHints()
                 key = rename[key] or key
                 local addw = string.len(key) * TacRP.SS(3.5) + TacRP.SS(5)
                 surface.DrawOutlinedRect(x + x_glyph, y_glyph - glyphsize / 2, addw, glyphsize, 1)
-                draw.SimpleText(key, "TacRP_LCD_5", x + x_glyph + addw / 2, y_glyph, clr_w, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText(key, "TacRP_HD44780A00_5x8_5", x + x_glyph + addw / 2, y_glyph, clr_w, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 x_glyph = x_glyph + addw
             end
 

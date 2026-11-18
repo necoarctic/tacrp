@@ -53,7 +53,7 @@ function PANEL:PerformLayout(w, h)
     end
 
     self.Title:SetSize(w, ScreenScale(6))
-    self.Title:SetFont("TacRP_STD_6")
+    self.Title:SetFont("TacRP_Myriad_Pro_6")
     self.Title:SizeToContentsX(8)
     if self.Title:GetWide() >= w then
         self.Title:SetWide(w)
@@ -143,7 +143,7 @@ function PANEL:Paint(w, h)
             numtxt = "*"
         end
 
-        surface.SetFont("TacRP_STD_6")
+        surface.SetFont("TacRP_Myriad_Pro_6")
         surface.SetTextColor(col_text)
         local nt_w = surface.GetTextSize(numtxt)
         surface.SetTextPos(w - nt_w - TacRP.SS(2), TacRP.SS(1))
@@ -176,7 +176,7 @@ function PANEL:PaintOver(w, h)
 
         local atttxt = TacRP:GetAttName(att, true)
         if !self.DescCache then
-            self.DescCache = TacRP.MultiLineText(TacRP:GetAttDesc(att), bw, "TacRP_STD_6")
+            self.DescCache = TacRP.MultiLineText(TacRP:GetAttDesc(att), bw, "TacRP_Myriad_Pro_6")
         end
         bh = bh + (#self.DescCache - 1) * TacRP.SS(5)
 
@@ -194,12 +194,12 @@ function PANEL:PaintOver(w, h)
 
         -- Att. Name
         surface.SetTextColor(col_text)
-        surface.SetFont("TacRP_STD_10")
+        surface.SetFont("TacRP_Myriad_Pro_10")
         surface.SetTextPos(rx + TacRP.SS(2), ry + TacRP.SS(1))
         surface.DrawText(atttxt)
 
         -- Att. Description
-        surface.SetFont("TacRP_STD_6")
+        surface.SetFont("TacRP_Myriad_Pro_6")
         for i, k in ipairs(self.DescCache) do
             surface.SetTextPos(rx + TacRP.SS(2), ry + TacRP.SS(1 + 8 + 2 + 5 * (i - 1)))
             surface.DrawText(k)
@@ -211,12 +211,12 @@ function PANEL:PaintOver(w, h)
         if atttbl.Pros then for aa, ab in ipairs(atttbl.Pros) do
             surface.SetDrawColor(col_text_pro)
             TacRP.DrawCorneredBox( rx, ry + bump, bw, TacRP.SS(10) )
-            surface.SetFont("TacRP_STD_8")
+            surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextColor(col_text)
             surface.SetTextPos(rx + rump, ry + bump + txjy)
             surface.DrawText(TacRP:TryTranslate(ab))
 
-            surface.SetFont("TacRP_STD_8")
+            surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextPos(rx + TacRP.SS(3), ry + bump + txjy)
             surface.DrawText("+")
 
@@ -226,12 +226,12 @@ function PANEL:PaintOver(w, h)
         if atttbl.Cons then for aa, ab in ipairs(atttbl.Cons) do
             surface.SetDrawColor(col_text_con)
             TacRP.DrawCorneredBox( rx, ry + bump, bw, TacRP.SS(10) )
-            surface.SetFont("TacRP_STD_8")
+            surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextColor(col_text)
             surface.SetTextPos(rx + rump, ry + bump + txjy)
             surface.DrawText(TacRP:TryTranslate(ab))
 
-            surface.SetFont("TacRP_STD_8")
+            surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextPos(rx + TacRP.SS(3.8), ry + bump + txjy)
             surface.DrawText("-")
 
@@ -250,7 +250,7 @@ function PANEL:PaintOver(w, h)
             local reasonx, reasonw = rx + TacRP.SS(14), bw - TacRP.SS(14)
             surface.SetDrawColor(25, 0, 0, 240)
             TacRP.DrawCorneredBox(reasonx, ry + bump, reasonw, TacRP.SS(12), col_text_con)
-            surface.SetFont("TacRP_STD_12")
+            surface.SetFont("TacRP_Myriad_Pro_12")
             if flash_end > CurTime() then
                 local c = 255 - (flash_end - CurTime()) * 255
                 surface.SetTextColor(255, c, c)
@@ -271,7 +271,7 @@ function PANEL:PaintOver(w, h)
             reason = "Free Customization At Bench"
             surface.SetDrawColor(0, 0, 0, 200)
             TacRP.DrawCorneredBox(reasonx, ry + bump, reasonw, TacRP.SS(10), col_text_con)
-            surface.SetFont("TacRP_STD_10")
+            surface.SetFont("TacRP_Myriad_Pro_10")
             surface.SetTextColor(255, 255, 255)
             surface.SetDrawColor(255, 255, 255)
             local tw = surface.GetTextSize(reason)

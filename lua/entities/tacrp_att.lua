@@ -86,11 +86,13 @@ elseif CLIENT then
         self:Draw()
     end
 
-    local font = "TacRP_STD_48X"
+    local font = "TacRP_Myriad_Pro_48_Unscaled"
     local iw2 = 128
 
     local drawit = function(self, p, a, alpha)
         cam.Start3D2D(p, a, 0.05)
+            -- surface.SetFont("TacRP_LondonBetween_24_Unscaled")
+
             if !self.PrintLines then
                 self.PrintLines = TacRP.MultiLineText(TacRP:GetAttName(self.AttToGive), 328, font)
             end
@@ -133,6 +135,21 @@ elseif CLIENT then
             pos = pos + ang:Right() * -8
 
             drawit(self, pos, ang, a)
+
+            -- cam.Start3D2D(pos, ang, 0.1)
+            --     surface.SetFont("TacRP_LondonBetween_24_Unscaled")
+
+            --     local w = surface.GetTextSize(self.PrintName)
+
+            --     surface.SetTextPos(-w / 2, 0)
+            --     surface.SetTextColor(255, 255, 255, 255)
+            --     surface.DrawText(self.PrintName)
+
+            --     surface.SetDrawColor(255, 255, 255)
+            --     surface.SetMaterial(self.Icon or defaulticon)
+            --     local iw = 64
+            --     surface.DrawTexturedRect(-iw / 2, -iw - 8, iw, iw)
+            -- cam.End3D2D()
 
             local ang2 = self:GetAngles()
 
