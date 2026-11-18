@@ -4,7 +4,7 @@ local MARGIN_S = TacRP.C2.MARGIN_S
 local MARGIN_M = TacRP.C2.MARGIN_M
 local MARGIN_L = TacRP.C2.MARGIN_L
 local MARGIN_XL = TacRP.C2.MARGIN_XL
-local COLOR_OUTLINE = color_white
+local COLOR_OUTLINE = TacRP.C2.COLOR_OUTLINE
 
 local PANEL = {}
 function PANEL:Paint( w, h )

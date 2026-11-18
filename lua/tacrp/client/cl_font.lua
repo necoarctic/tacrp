@@ -13,6 +13,7 @@ local fonts_to_make = {
         default = "Myriad Pro",
         sizes = {
             32,
+            24,
             14,
             12,
             10,
@@ -23,6 +24,7 @@ local fonts_to_make = {
         },
         sizes_italic = {
             12,
+            10,
         },
         sizes_glow = {
             -- Newsletter

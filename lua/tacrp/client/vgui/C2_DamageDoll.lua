@@ -99,7 +99,7 @@ function PANEL:Paint( w, h )
 
 	C2_DrawText(
 		TacRP:GetPhrase( hovered and (num > 1 and "unit.ptk" or "unit.stk") or "unit.damage" ),
-		"TacRP_STD_8",
+		"TacRP_STD_6",
 		w - s(MARGIN_XS),
 		s(MARGIN_XS),
 		color_white,

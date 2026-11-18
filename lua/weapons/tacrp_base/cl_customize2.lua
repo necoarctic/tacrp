@@ -1,11 +1,11 @@
 local s = TacRP.SS
 
-local COLOR_BACKGROUND = Color( 0, 0, 0, 220 )
-local COLOR_HOVER = Color( 255, 255, 255, 100 )
-local COLOR_OLD = Color( 200, 200, 200 )
-local COLOR_POSITIVE = Color( 120, 255, 120 )
-local COLOR_NEGATIVE = Color( 255, 200, 200 )
-local COLOR_OUTLINE = color_white
+local COLOR_BACKGROUND = TacRP.C2.COLOR_BACKGROUND
+local COLOR_HOVER = TacRP.C2.COLOR_HOVER
+local COLOR_OLD = TacRP.C2.COLOR_OLD
+local COLOR_POSITIVE = TacRP.C2.COLOR_POSITIVE
+local COLOR_NEGATIVE = TacRP.C2.COLOR_NEGATIVE
+local COLOR_OUTLINE = TacRP.C2.COLOR_OUTLINE
 
 local function sort_atts(a, b)
 	a = a or ""
@@ -385,37 +385,22 @@ function SWEP:C2_Open()
 		align_left:SetX( math.ease.InCirc( 1-c2.Interp ) * -sw/2 )
 	end ]]
 
-	local p_helphover = c2:Add("Panel")
-	p_helphover.CurrentID = nil
-	local wide = 200
-	p_helphover:SetWide( s(wide) )
-	p_helphover:DockPadding( s(MARGIN_S), s(MARGIN_S), s(MARGIN_S), s(MARGIN_S) )
-	p_helphover:Center()
-	p_helphover:SetDrawOnTop(true)
+	local p_hint = c2:Add("Panel")
+	p_hint.CurrentID = nil
+	local wide = 160
+	p_hint:SetWide( s(wide) )
+	p_hint:DockPadding( s(MARGIN_S), s(MARGIN_S), s(MARGIN_S), s(MARGIN_S) )
+	p_hint:Center()
+	p_hint:SetDrawOnTop(true)
 
-	function p_helphover:Paint( w, h )
+	function p_hint:Paint( w, h )
 		surface.SetDrawColor( COLOR_BACKGROUND )
 		surface.DrawRect( 0, 0, w, h )
 		C2_Outline( 0, 0, w, h )
 	end
 
-	function p_helphover:PerformLayout( w, h )
+	function p_hint:PerformLayout( w, h )
 		self:SizeToChildren( false, true )
-	end
-	
-	function p_helphover:Think()
-		local w, h = self:GetSize()
-		local x, y = input.GetCursorPos()
-
-		if (x > sw/2) then
-			x = x - w - s(32)
-		else
-			x = x + s(32)
-		end
-
-		x = math.Clamp( x, s(MARGIN_XL), sw - w - s(MARGIN_XL) )
-		y = math.Clamp( y - h/2, s(MARGIN_XL), sh - h - s(MARGIN_XL) )
-		self:SetPos( x, y )
 	end
 
 	function c2:Think()
@@ -426,8 +411,8 @@ function SWEP:C2_Open()
 		local target = vgui.GetHoveredPanel()
 		if target and target.TargetID and target.TargetData then
 
-			if target.TargetID ~= p_helphover.CurrentID then
-				for _, panel in ipairs( p_helphover:GetChildren() ) do
+			if target.TargetID ~= p_hint.CurrentID then
+				for _, panel in ipairs( p_hint:GetChildren() ) do
 					panel:Remove()
 				end
 
@@ -435,7 +420,7 @@ function SWEP:C2_Open()
 					for _, data in ipairs( target.TargetData ) do
 						local size = data.Big and 12 or 8
 						if data.Right then
-							local detail = p_helphover:Add("Panel")
+							local detail = p_hint:Add("Panel")
 							detail:SetSize( w, s(8+2+2) )
 							function detail:Paint( w, h )
 								C2_DrawText(
@@ -447,7 +432,7 @@ function SWEP:C2_Open()
 								)
 							end
 						elseif data.Separator then
-							local detail = p_helphover:Add("Panel")
+							local detail = p_hint:Add("Panel")
 							detail:Dock( TOP )
 							detail:SetTall( s(2) )
 							detail:DockMargin( s(-4), s(4), s(-4), s(4) )
@@ -456,7 +441,7 @@ function SWEP:C2_Open()
 								C2_Gradient_Left( 0, 0, w, 1 )
 							end
 						else
-							local detail = p_helphover:Add("Panel")
+							local detail = p_hint:Add("Panel")
 							detail:Dock( TOP )
 							local lines = TacRP.MultiLineText(data.Text, s(wide - 4 - 4), "TacRP_STD_"..size )
 							detail:SetTall( s(#lines * size) )
@@ -474,26 +459,41 @@ function SWEP:C2_Open()
 
 						end
 					end
-					p_helphover:InvalidateLayout()
+					p_hint:InvalidateLayout(true)
 				end
-				p_helphover.CurrentID = target.TargetID
+				p_hint.CurrentID = target.TargetID
 			end
 
-			p_helphover:Show()
+			local hint_w, hint_h = p_hint:GetSize()
+			local target_x, target_y = self:GetChildPosition(target)
+			local target_w, target_h = target:GetSize()
+			local final_x
+			if target_x > self:GetWide()/2 then
+				final_x = target_x - hint_w - s(4)
+			else
+				final_x = target_x + target_w + s(4)
+			end
+
+			local final_y = target_y + target_h/2 - hint_h/2
+			final_y = math.Clamp( final_y, s(MARGIN_XL), self:GetTall() - hint_h - s(MARGIN_XL) )
+
+			p_hint:SetPos( final_x, final_y )
+
+			p_hint:Show()
 		else
-			p_helphover:Hide()
+			p_hint:Hide()
 		end
 	end
 	
 	local p_header = c2:Add("Panel")
 	p_header:Dock(TOP)
-	p_header:SetTall( s(MARGIN_S+32+MARGIN_S) )
+	p_header:SetTall( s(MARGIN_S+24+MARGIN_S) )
 	function p_header:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
 
 		C2_DrawText(
 			wep.PrintName,
-			"TacRP_STD_32",
+			"TacRP_STD_24",
 			s(MARGIN_L), h/2,
 			color_white,
 			nil,
@@ -512,12 +512,12 @@ function SWEP:C2_Open()
 			items = items + 1
 		end
 
-		local shift = s(12)
+		local shift = s(10)
 		local bump_y = -shift/2 * items
 
 		C2_DrawText(
 			txt_weptype,
-			"TacRP_STD_12",
+			"TacRP_STD_10",
 			w - s(MARGIN_L), (h/2) + bump_y,
 			color_white,
 			TEXT_ALIGN_RIGHT
@@ -527,7 +527,7 @@ function SWEP:C2_Open()
 		if txt_ammo then
 			C2_DrawText(
 				txt_ammo,
-				"TacRP_STD_12",
+				"TacRP_STD_10",
 				w - s(MARGIN_L), (h/2) + bump_y,
 				color_white,
 				TEXT_ALIGN_RIGHT
@@ -539,17 +539,17 @@ function SWEP:C2_Open()
 	end
 
 	do
-		local LINE_HEIGHT = 12
+		local LINE_HEIGHT = 10
 		local p_footer = c2:Add("Panel")
-		p_footer:SetWide( s(330) )
+		p_footer:SetWide( s(300) )
 		function p_footer:Paint( w, h )
 			C2_FullBox( 0, 0, w, h )
-			local desc = TacRP.MultiLineText( wep.Description, w - s(MARGIN_XL*2), "TacRP_STD_12" )
+			local desc = TacRP.MultiLineText( wep.Description, w - s(MARGIN_XL*2), "TacRP_STD_10" )
 			local line_index = 0
 			for _, line in ipairs( desc ) do
 				C2_DrawText(
 					line,
-					"TacRP_STD_12",
+					"TacRP_STD_10",
 					s( MARGIN_XL ),
 					s( MARGIN_M + (LINE_HEIGHT * line_index) ),
 					color_white
@@ -559,11 +559,11 @@ function SWEP:C2_Open()
 
 			if not wep.Description_Quote then return end
 			line_index = line_index + 1
-			local quot = TacRP.MultiLineText( wep.Description_Quote, w - s(MARGIN_XL*2), "TacRP_STD_12" )
+			local quot = TacRP.MultiLineText( wep.Description_Quote, w - s(MARGIN_XL*2), "TacRP_STD_10" )
 			for _, line in ipairs( quot ) do
 				C2_DrawText(
 					line,
-					"TacRP_STD_12I",
+					"TacRP_STD_10I",
 					s( MARGIN_XL ),
 					s( MARGIN_M + (LINE_HEIGHT * line_index) ),
 					color_white
@@ -573,9 +573,9 @@ function SWEP:C2_Open()
 		end
 
 		function p_footer:PerformLayout( w, h )
-			local lines = #TacRP.MultiLineText( wep.Description, w - s(MARGIN_XL*2), "TacRP_STD_12" )
+			local lines = #TacRP.MultiLineText( wep.Description, w - s(MARGIN_XL*2), "TacRP_STD_10" )
 			if wep.Description_Quote then
-				lines = lines + 1 + #TacRP.MultiLineText( wep.Description_Quote, w - s(MARGIN_XL*2), "TacRP_STD_12" )
+				lines = lines + 1 + #TacRP.MultiLineText( wep.Description_Quote, w - s(MARGIN_XL*2), "TacRP_STD_10" )
 			end
 			self:SetTall( s( MARGIN_M*2 + LINE_HEIGHT*lines ) )
 			self:AlignBottom( s( MARGIN_XL ) )
@@ -584,28 +584,25 @@ function SWEP:C2_Open()
 	end
 	
 	local p_slotlist = c2:Add("C2_ScrollPanel")
-	p_slotlist.TopBottomPadding = false
 	p_slotlist:GetCanvas():DockPadding( 0, 0, s(4), 0 ) -- scrollbar
-	p_slotlist:SetWide( s(96) )
+	p_slotlist.TopBottomPadding = false
+	p_slotlist:SetWide( s( MARGIN_S * 2 + 96 + 4 ) )
 	p_slotlist:Dock(LEFT)
 	p_slotlist:DockMargin( 0, s(MARGIN_S), 0, 0 )
-	p_slotlist:GetCanvas():DockMargin( 0, 0, s(MARGIN_S), 0 )
 	-- p_slotlist.Paint = paint_box
 
-	local list_slots = {}
-	local list_atts = {}
-	
 	local p_attlist = c2:Add("C2_ScrollPanel")
+	p_attlist:GetCanvas():DockPadding( 0, 0, s(4), 0 ) -- scrollbar
 	p_attlist.TopBottomPadding = false
-	p_attlist:GetCanvas():DockPadding( 0, 0, s(4), 0 )
-	p_attlist:SetWide( s(128) )
+	p_attlist:SetWide( s( MARGIN_S * 2 + 96 + 4 ) )
 	p_attlist:Dock(LEFT)
-	p_attlist:DockMargin( s(MARGIN_S), s(MARGIN_S), 0, s(MARGIN_S) )
+	p_attlist:DockMargin( 0, s(MARGIN_S), 0, 0 )
 	p_attlist.ActiveSlot = nil
+	p_attlist.ChildPanels = {}
 	function p_attlist:Clear()
-		for i, v in ipairs(list_atts) do
+		for i, v in ipairs(self.ChildPanels) do
 			v:Remove()
-			list_atts[i] = nil
+			self.ChildPanels[i] = nil
 		end
 		self.ActiveSlot = nil
 	end
@@ -627,7 +624,7 @@ function SWEP:C2_Open()
 			button.SlotIndex = slotindex
 			button:SetupTarget()
 
-			table.insert(list_atts, button)
+			table.insert(self.ChildPanels, button)
 		end
 
 		self.ActiveSlot = slotindex
@@ -643,8 +640,6 @@ function SWEP:C2_Open()
 		button.SlotData = slot_data
 		button.AttList = p_attlist
 		button:EvaluateSize()
-
-		list_slots[i] = button
 	end
 
 	-- take and hold support
@@ -683,8 +678,8 @@ function SWEP:C2_Open()
 	p_slotlist:InvalidateLayout( true )
 	p_slotlist:SizeToChildren( false, true )
 
-	local doll_wide = 42
-	local want_wide = 128
+	local doll_wide = 36
+	local want_wide = 112
 
 	local p_align_right = c2:Add( "Panel" )
 	p_align_right:Dock(RIGHT)
@@ -694,7 +689,7 @@ function SWEP:C2_Open()
 	if not self:GetValue("NoRanger") then
 		local p_align_dmgstats = p_align_right:Add( "Panel" )
 		p_align_dmgstats:Dock( TOP )
-		p_align_dmgstats:SetTall( s(96) )
+		p_align_dmgstats:SetTall( s(80) )
 		p_align_dmgstats:DockMargin( 0, 0, 0, s(MARGIN_S) )
 
 		local p_dmgdoll = p_align_dmgstats:Add( "C2_DamageDoll" )
@@ -711,6 +706,15 @@ function SWEP:C2_Open()
 
 	local p_align_breakdown = p_align_right:Add("Panel")
 	p_align_breakdown:Dock( FILL )
+
+	--[[ for i=1, 3 do
+		local p_tab = p_align_breakdown:Add("DButton")
+		p_tab:Dock(TOP)
+		function p_tab:Paint( w, h )
+			C2_FullBox( 0, 0, w, h )
+			return true
+		end
+	end ]]
 
 	local p_breakdown = p_align_right:Add("C2_ScrollPanel")
 	p_breakdown:Dock( RIGHT )
@@ -760,7 +764,7 @@ function SWEP:C2_Open()
 				local item = p_breakdown:Add( "Panel" )
 				table.insert( self.ChildPanels, item )
 				item:Dock( TOP )
-				item:SetTall( s(14+1) )
+				item:SetTall( s(14) )
 				item.TargetID = TargetID
 				item.TargetData = TargetData
 				function item:Paint( w, h )
