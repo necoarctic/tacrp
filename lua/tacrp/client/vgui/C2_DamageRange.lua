@@ -22,7 +22,7 @@ function PANEL:Paint( w, h )
 	local range_min, range_max = wep:GetMinMaxRange()
 
 	-- initial range
-	local panel_range = 3000
+	local panel_range = 4000
 	local phys_to_pixel = panel_range/w
 
 	-- multiply it to fit this weapon's max range
@@ -101,13 +101,14 @@ function PANEL:Paint( w, h )
 		color_white
 	)
 
-	local skip = (TacRP.ConVars["metricunit"]:GetBool() and 25 / TacRP.HUToM or 1000)
+	local height = math.ceil(s(4))
+	local skip = (TacRP.ConVars["metricunit"]:GetBool() and 50 / TacRP.HUToM or 2000)
 	skip = skip * math.max( 1, density - 2 )
 	for i=0, panel_range, skip do
 		if i == 0 then continue end
 		local x = i/phys_to_pixel
 		surface.SetDrawColor( COLOR_OUTLINE )
-		C2_Gradient_Down( x - s(.5), h - s(4), s(1), s(4) )
+		C2_Gradient_Down( x - s(.5), h - height, s(1), height )
 		C2_DrawText(
 			wep:RangeUnitize(i),
 			"TacRP_STD_6",

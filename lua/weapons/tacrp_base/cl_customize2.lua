@@ -293,7 +293,7 @@ function SWEP:C2_Open()
 	if IsValid( c2 ) then c2:Remove() end
 	local sw, sh = ScrW(), ScrH()
 	local wep = self
-	c2 = vgui.Create( "Panel" )
+	c2 = vgui.Create( "EditablePanel" )
 	c2:SetSize( sw, sh )
 	c2:Center()
 	c2:MakePopup()

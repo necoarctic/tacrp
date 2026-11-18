@@ -1329,9 +1329,10 @@ local function menu_client_ti(panel)
         label = "#tacrp.client.hudscale", -- HUD Scale
         command = "tacrp_hudscale",
         type = "float",
-        min = 0.25,
-        max = 1.5,
-    })
+        min = 0.8,
+        max = 1.3,
+        
+    }):SetDecimals(1)
     panel:ControlHelp("#tacrp.client.hudscale.desc")
 
     header(panel, "#tacrp.client.hints") -- \nHints
