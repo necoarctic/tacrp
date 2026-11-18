@@ -338,36 +338,41 @@ function SWEP:C2_Open()
 			end
 		end
 
-		local txt = TacRP:TryTranslate("cust.drop_wep")
-		surface.SetFont("TacRP_STD_6")
-		local width = surface.GetTextSize(txt)
-		width = width + s(BUTTON_SIZE)
-		local p_dropweapon = c2:Add("DButton")
-		p_dropweapon:SetSize( width, s(BUTTON_SIZE) )
-		p_dropweapon:AlignRight( s(MARGIN_L + BUTTON_SIZE + MARGIN_S) )
-		p_dropweapon:AlignTop( s(MARGIN_L/2 - BUTTON_SIZE/2) )
+		local primarygrenade = self:GetValue("PrimaryGrenade")
+		if ( engine.ActiveGamemode() == "terrortown"
+			or TacRP.ConVars["allowdrop"]:GetBool()
+		) and TacRP.ConVars["cust_drop"]:GetBool() and ( !primarygrenade or !TacRP.IsGrenadeInfiniteAmmo(primarygrenade) ) then
+			local txt = TacRP:TryTranslate("cust.drop_wep")
+			surface.SetFont("TacRP_STD_6")
+			local width = surface.GetTextSize(txt)
+			width = width + s(BUTTON_SIZE)
+			local p_dropweapon = c2:Add("DButton")
+			p_dropweapon:SetSize( width, s(BUTTON_SIZE) )
+			p_dropweapon:AlignRight( s(MARGIN_L + BUTTON_SIZE + MARGIN_S) )
+			p_dropweapon:AlignTop( s(MARGIN_L/2 - BUTTON_SIZE/2) )
 
-		function p_dropweapon:DoClick()
-			RunConsoleCommand("tacrp_drop")
-		end
-
-		function p_dropweapon:Paint( w, h )
-			C2_Box( 0, 0, w, h )
-			if self:IsHovered() then
-				surface.SetDrawColor( COLOR_HOVER )
-				surface.DrawRect( 0, 0, w, h )
+			function p_dropweapon:DoClick()
+				RunConsoleCommand("tacrp_drop")
 			end
-			C2_DrawText(
-				txt,
-				"TacRP_STD_6",
-				w/2,
-				h/2,
-				color_white,
-				TEXT_ALIGN_CENTER,
-				TEXT_ALIGN_CENTER
-			)
-			C2_Outline( 0, 0, w, h )
-			return true
+
+			function p_dropweapon:Paint( w, h )
+				C2_Box( 0, 0, w, h )
+				if self:IsHovered() then
+					surface.SetDrawColor( COLOR_HOVER )
+					surface.DrawRect( 0, 0, w, h )
+				end
+				C2_DrawText(
+					txt,
+					"TacRP_STD_6",
+					w/2,
+					h/2,
+					color_white,
+					TEXT_ALIGN_CENTER,
+					TEXT_ALIGN_CENTER
+				)
+				C2_Outline( 0, 0, w, h )
+				return true
+			end
 		end
 	end
 
