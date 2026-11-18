@@ -303,32 +303,63 @@ function SWEP:C2_Open()
 	local margin = s(MARGIN_XL)
 	c2:DockPadding( margin, margin, margin, margin )
 
+	local BUTTON_SIZE = 10
+	local p_closebutton = c2:Add("DButton")
+	p_closebutton:SetSize( s(BUTTON_SIZE), s(BUTTON_SIZE) )
+	p_closebutton:AlignRight( s(MARGIN_XL) )
+	p_closebutton:AlignTop( s(MARGIN_XL/2 - BUTTON_SIZE/2) )
+
+	function p_closebutton:DoClick()
+		c2:Remove()
+	end
+
+	function p_closebutton:Paint( w, h )
+		C2_FullBox( 0, 0, w, h )
+		C2_DrawText(
+			"×",
+			"TacRP_STD_8",
+			w/2,
+			h/2 - s(.5),
+			color_white,
+			TEXT_ALIGN_CENTER,
+			TEXT_ALIGN_CENTER
+		)
+		return true
+	end
+
 	function c2:OnRemove()
 		if TacRP.ConVars["autosave"]:GetBool() and TacRP.ConVars["free_atts"]:GetBool() then
 			wep:SavePreset()
 		end
 	end
 
-	local cl = c2:Add("DButton")
-	cl:SetSize( s(58), s(12) )
-	cl:AlignBottom( s(MARGIN_XL) )
-	cl:AlignLeft( s(MARGIN_XL) )
-	function cl:DoClick()
-		RunConsoleCommand("tacrp_drop")
-		c2:Remove()
-	end
-	function cl:Paint( w, h )
-		C2_FullBox( 0, 0, w, h )
-		C2_DrawText(
-			"Drop Weapon",
-			"TacRP_STD_10",
-			w/2,
-			h/2,
-			color_white,
-			TEXT_ALIGN_CENTER,
-			TEXT_ALIGN_CENTER
-		)
-		return true
+	do
+		local txt = TacRP:TryTranslate("cust.drop_wep")
+		surface.SetFont("TacRP_STD_8")
+		local width = surface.GetTextSize(txt)
+		width = width + s(BUTTON_SIZE)
+		local p_dropweapon = c2:Add("DButton")
+		p_dropweapon:SetSize( width, s(BUTTON_SIZE) )
+		p_dropweapon:AlignRight( s(MARGIN_XL + BUTTON_SIZE + MARGIN_S) )
+		p_dropweapon:AlignTop( s(MARGIN_XL/2 - BUTTON_SIZE/2) )
+
+		function p_dropweapon:DoClick()
+			RunConsoleCommand("tacrp_drop")
+		end
+
+		function p_dropweapon:Paint( w, h )
+			C2_FullBox( 0, 0, w, h )
+			C2_DrawText(
+				txt,
+				"TacRP_STD_8",
+				w/2,
+				h/2,
+				color_white,
+				TEXT_ALIGN_CENTER,
+				TEXT_ALIGN_CENTER
+			)
+			return true
+		end
 	end
 
 	--[[ c2.Interp = 0
@@ -386,6 +417,10 @@ function SWEP:C2_Open()
 	end
 
 	function c2:Think()
+		if !IsValid(wep) or !IsValid(wep:GetOwner()) or wep:GetOwner():GetActiveWeapon() != wep then
+			self:Remove()
+		end
+
 		local target = vgui.GetHoveredPanel()
 		if target and target.TargetID and target.TargetData then
 
@@ -450,13 +485,13 @@ function SWEP:C2_Open()
 	
 	local p_header = c2:Add("Panel")
 	p_header:Dock(TOP)
-	p_header:SetTall( s(48) )
+	p_header:SetTall( s(MARGIN_S+32+MARGIN_S) )
 	function p_header:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
 
 		C2_DrawText(
 			wep.PrintName,
-			"TacRP_STD_36",
+			"TacRP_STD_32",
 			s(MARGIN_L), h/2,
 			color_white,
 			nil,

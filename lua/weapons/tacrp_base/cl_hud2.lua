@@ -341,15 +341,15 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 
 	if h2_enabled:GetBool() then
 		if h2_enabled_health:GetBool() then
-			local Hw = s(60)
-			local Hh = s(36)
+			local Hw = s(56)
+			local Hh = s(32)
 			local Hx = s(MARGIN_XL)
 			local Hy = sh - Hh - s(MARGIN_XL)
 			C2_FullBox( Hx, Hy, Hw, Hh )
 
 			C2_DrawText(
 				"HEALTH",
-				"TacRP_STD_10",
+				"TacRP_STD_8",
 				Hx + s(4),
 				Hy + s(2),
 				color_white,
@@ -357,7 +357,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 			)
 			C2_DrawText(
 				ply:Health(),
-				"TacRP_STD_36",
+				"TacRP_STD_32",
 				Hx + Hw - s(4),
 				Hy + s(3),
 				color_white,
@@ -385,15 +385,15 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 			end
 			
 			if ply:Armor() > 0 then -- Armor
-				Hx = Hx + Hw + s(MARGIN_XL)
+				Hx = Hx + Hw + s(MARGIN_L)
 				Hy = sh - Hh - s(MARGIN_XL)
-				local Hw = s(60)
-				local Hh = s(36)
+				local Hw = s(56)
+				local Hh = s(32)
 				C2_FullBox( Hx, Hy, Hw, Hh )
 
 				C2_DrawText(
 					"ARMOR",
-					"TacRP_STD_10",
+					"TacRP_STD_8",
 					Hx + s(4),
 					Hy + s(2),
 					color_white,
@@ -401,7 +401,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 				)
 				C2_DrawText(
 					ply:Armor(),
-					"TacRP_STD_36",
+					"TacRP_STD_32",
 					Hx + Hw - s(4),
 					Hy + s(3),
 					color_white,
