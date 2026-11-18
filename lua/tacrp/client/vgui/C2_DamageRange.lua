@@ -20,12 +20,15 @@ function PANEL:Paint( w, h )
 	local dmg_min = (raw_dmg_min + exp) * dmult
 	local range_min, range_max = wep:GetMinMaxRange()
 
+	local _, base_range_max = wep:GetMinMaxRange(true)
+	local greatest_range_max = math.max( range_max, base_range_max )
+
 	-- initial range
-	local panel_range = 4000
+	local panel_range = 2000
 	local phys_to_pixel = panel_range/w
 
 	-- multiply it to fit this weapon's max range
-	local density = math.ceil(range_max / panel_range)
+	local density = math.ceil(greatest_range_max / panel_range)
 	panel_range = panel_range * density
 	phys_to_pixel = panel_range/w
 
@@ -60,7 +63,7 @@ function PANEL:Paint( w, h )
 	C2_Gradient_Down( p1_x, y, 1, tall )
 	C2_Gradient_Down( p2_x, y, 1, tall )
 
-	surface.SetFont("TacRP_STD_10")
+	surface.SetFont("TacRP_STD_8")
 	local txt_range_max = wep:RangeUnitize(range_max)
 	local txt_range_min = wep:RangeUnitize(range_min)
 	local width_dmg_max = surface.GetTextSize(txt_dmg_max)
@@ -70,7 +73,7 @@ function PANEL:Paint( w, h )
 
 	C2_DrawText(
 		txt_dmg_max,
-		"TacRP_STD_10",
+		"TacRP_STD_8",
 		math.max( s(MARGIN_S), p1_x - width_dmg_max/2 ),
 		s(4),
 		color_white
@@ -78,15 +81,15 @@ function PANEL:Paint( w, h )
 	
 	C2_DrawText(
 		txt_range_min,
-		"TacRP_STD_10",
+		"TacRP_STD_8",
 		math.max( s(MARGIN_S), p1_x - width_range_min/2 ),
-		s(4+10),
+		s(4+8),
 		color_white
 	)
 
 	C2_DrawText(
 		txt_dmg_min,
-		"TacRP_STD_10",
+		"TacRP_STD_8",
 		math.min( w - width_dmg_min - s(MARGIN_S), p2_x - width_dmg_min/2 ),
 		s(4),
 		color_white
@@ -94,15 +97,17 @@ function PANEL:Paint( w, h )
 
 	C2_DrawText(
 		txt_range_max,
-		"TacRP_STD_10",
+		"TacRP_STD_8",
 		math.min( w - width_range_max - s(MARGIN_S), p2_x - width_range_max/2 ),
-		s(4+10),
+		s(4+8),
 		color_white
 	)
 
 	local height = math.ceil(s(4))
-	local skip = (TacRP.ConVars["metricunit"]:GetBool() and 50 / TacRP.HUToM or 2000)
-	skip = skip * math.max( 1, density - 2 )
+	local skip = (TacRP.ConVars["metricunit"]:GetBool() and 25 / TacRP.HUToM or 1000)
+	if density > 2 then
+		skip = skip * 2
+	end
 	for i=0, panel_range, skip do
 		if i == 0 then continue end
 		local x = i/phys_to_pixel
@@ -127,10 +132,9 @@ function PANEL:Paint( w, h )
 		self.DamageDoll.Range = range
 	end
 
-	local range_x = range / phys_to_pixel
-
-	
 	if not hovered and range <= range_min then return true end
+
+	local range_x = range / phys_to_pixel
 	C2_Gradient_Down( range_x - s(1), y+tall/2, s(2), tall/2 )
 
 	local txt_dmg
