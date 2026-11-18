@@ -41,7 +41,6 @@ local MARGIN_XS = TacRP.C2.MARGIN_XS
 local MARGIN_S = TacRP.C2.MARGIN_S
 local MARGIN_M = TacRP.C2.MARGIN_M
 local MARGIN_L = TacRP.C2.MARGIN_L
-local MARGIN_XL = TacRP.C2.MARGIN_XL
 local BUTTON_HEIGHT = TacRP.C2.BUTTON_HEIGHT
 
 -- Text shadow upper
@@ -300,22 +299,26 @@ function SWEP:C2_Open()
 	c2:SetPopupStayAtBack( true )
 	c2:SetKeyboardInputEnabled( false )
 	-- c2.m_bDeleteOnClose = true
-	local margin = s(MARGIN_XL)
+	local margin = s(MARGIN_L)
 	c2:DockPadding( margin, margin, margin, margin )
 
 	do -- Close & Drop Weapon button
-		local BUTTON_SIZE = 10
+		local BUTTON_SIZE = 8
 		local p_closebutton = c2:Add("DButton")
 		p_closebutton:SetSize( s(BUTTON_SIZE), s(BUTTON_SIZE) )
-		p_closebutton:AlignRight( s(MARGIN_XL) )
-		p_closebutton:AlignTop( s(MARGIN_XL/2 - BUTTON_SIZE/2) )
+		p_closebutton:AlignRight( s(MARGIN_L) )
+		p_closebutton:AlignTop( s(MARGIN_L/2 - BUTTON_SIZE/2) )
 
 		function p_closebutton:DoClick()
 			c2:Remove()
 		end
 
 		function p_closebutton:Paint( w, h )
-			C2_FullBox( 0, 0, w, h )
+			C2_Box( 0, 0, w, h )
+			if self:IsHovered() then
+				surface.SetDrawColor( COLOR_HOVER )
+				surface.DrawRect( 0, 0, w, h )
+			end
 			C2_DrawText(
 				"×",
 				"TacRP_STD_8",
@@ -325,6 +328,7 @@ function SWEP:C2_Open()
 				TEXT_ALIGN_CENTER,
 				TEXT_ALIGN_CENTER
 			)
+			C2_Outline( 0, 0, w, h )
 			return true
 		end
 
@@ -335,29 +339,34 @@ function SWEP:C2_Open()
 		end
 
 		local txt = TacRP:TryTranslate("cust.drop_wep")
-		surface.SetFont("TacRP_STD_8")
+		surface.SetFont("TacRP_STD_6")
 		local width = surface.GetTextSize(txt)
 		width = width + s(BUTTON_SIZE)
 		local p_dropweapon = c2:Add("DButton")
 		p_dropweapon:SetSize( width, s(BUTTON_SIZE) )
-		p_dropweapon:AlignRight( s(MARGIN_XL + BUTTON_SIZE + MARGIN_S) )
-		p_dropweapon:AlignTop( s(MARGIN_XL/2 - BUTTON_SIZE/2) )
+		p_dropweapon:AlignRight( s(MARGIN_L + BUTTON_SIZE + MARGIN_S) )
+		p_dropweapon:AlignTop( s(MARGIN_L/2 - BUTTON_SIZE/2) )
 
 		function p_dropweapon:DoClick()
 			RunConsoleCommand("tacrp_drop")
 		end
 
 		function p_dropweapon:Paint( w, h )
-			C2_FullBox( 0, 0, w, h )
+			C2_Box( 0, 0, w, h )
+			if self:IsHovered() then
+				surface.SetDrawColor( COLOR_HOVER )
+				surface.DrawRect( 0, 0, w, h )
+			end
 			C2_DrawText(
 				txt,
-				"TacRP_STD_8",
+				"TacRP_STD_6",
 				w/2,
 				h/2,
 				color_white,
 				TEXT_ALIGN_CENTER,
 				TEXT_ALIGN_CENTER
 			)
+			C2_Outline( 0, 0, w, h )
 			return true
 		end
 	end
@@ -475,7 +484,7 @@ function SWEP:C2_Open()
 			end
 
 			local final_y = target_y + target_h/2 - hint_h/2
-			final_y = math.Clamp( final_y, s(MARGIN_XL), self:GetTall() - hint_h - s(MARGIN_XL) )
+			final_y = math.Clamp( final_y, s(MARGIN_L), self:GetTall() - hint_h - s(MARGIN_L) )
 
 			p_hint:SetPos( final_x, final_y )
 
@@ -494,7 +503,7 @@ function SWEP:C2_Open()
 		C2_DrawText(
 			wep.PrintName,
 			"TacRP_STD_24",
-			s(MARGIN_L), h/2,
+			s(MARGIN_M), h/2,
 			color_white,
 			nil,
 			TEXT_ALIGN_CENTER
@@ -518,7 +527,7 @@ function SWEP:C2_Open()
 		C2_DrawText(
 			txt_weptype,
 			"TacRP_STD_10",
-			w - s(MARGIN_L), (h/2) + bump_y,
+			w - s(MARGIN_M), (h/2) + bump_y,
 			color_white,
 			TEXT_ALIGN_RIGHT
 		)
@@ -528,7 +537,7 @@ function SWEP:C2_Open()
 			C2_DrawText(
 				txt_ammo,
 				"TacRP_STD_10",
-				w - s(MARGIN_L), (h/2) + bump_y,
+				w - s(MARGIN_M), (h/2) + bump_y,
 				color_white,
 				TEXT_ALIGN_RIGHT
 			)
@@ -539,19 +548,21 @@ function SWEP:C2_Open()
 	end
 
 	do
+		local SPACING_W = MARGIN_L
+		local SPACING_H = MARGIN_M
 		local LINE_HEIGHT = 10
 		local p_footer = c2:Add("Panel")
-		p_footer:SetWide( s(300) )
+		p_footer:SetWide( s(308) )
 		function p_footer:Paint( w, h )
 			C2_FullBox( 0, 0, w, h )
-			local desc = TacRP.MultiLineText( wep.Description, w - s(MARGIN_XL*2), "TacRP_STD_10" )
+			local desc = TacRP.MultiLineText( wep.Description, w - s(SPACING_W*2), "TacRP_STD_10" )
 			local line_index = 0
 			for _, line in ipairs( desc ) do
 				C2_DrawText(
 					line,
 					"TacRP_STD_10",
-					s( MARGIN_XL ),
-					s( MARGIN_M + (LINE_HEIGHT * line_index) ),
+					s( SPACING_W ),
+					s( SPACING_H + (LINE_HEIGHT * line_index) ),
 					color_white
 				)
 				line_index = line_index + 1
@@ -559,13 +570,13 @@ function SWEP:C2_Open()
 
 			if not wep.Description_Quote then return end
 			line_index = line_index + 1
-			local quot = TacRP.MultiLineText( wep.Description_Quote, w - s(MARGIN_XL*2), "TacRP_STD_10" )
+			local quot = TacRP.MultiLineText( wep.Description_Quote, w - s(SPACING_W*2), "TacRP_STD_10I" )
 			for _, line in ipairs( quot ) do
 				C2_DrawText(
 					line,
 					"TacRP_STD_10I",
-					s( MARGIN_XL ),
-					s( MARGIN_M + (LINE_HEIGHT * line_index) ),
+					s( SPACING_W ),
+					s( SPACING_H + (LINE_HEIGHT * line_index) ),
 					color_white
 				)
 				line_index = line_index + 1
@@ -573,12 +584,12 @@ function SWEP:C2_Open()
 		end
 
 		function p_footer:PerformLayout( w, h )
-			local lines = #TacRP.MultiLineText( wep.Description, w - s(MARGIN_XL*2), "TacRP_STD_10" )
+			local lines = #TacRP.MultiLineText( wep.Description, w - s(SPACING_W*2), "TacRP_STD_10" )
 			if wep.Description_Quote then
-				lines = lines + 1 + #TacRP.MultiLineText( wep.Description_Quote, w - s(MARGIN_XL*2), "TacRP_STD_10" )
+				lines = lines + 1 + #TacRP.MultiLineText( wep.Description_Quote, w - s(SPACING_W*2), "TacRP_STD_10I" )
 			end
-			self:SetTall( s( MARGIN_M*2 + LINE_HEIGHT*lines ) )
-			self:AlignBottom( s( MARGIN_XL ) )
+			self:SetTall( s( SPACING_H*2 + LINE_HEIGHT*lines ) )
+			self:AlignBottom( s( MARGIN_L ) )
 			self:CenterHorizontal()
 		end
 	end

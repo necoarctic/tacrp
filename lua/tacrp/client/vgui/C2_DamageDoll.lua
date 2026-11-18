@@ -3,7 +3,6 @@ local MARGIN_XS = TacRP.C2.MARGIN_XS
 local MARGIN_S = TacRP.C2.MARGIN_S
 local MARGIN_M = TacRP.C2.MARGIN_M
 local MARGIN_L = TacRP.C2.MARGIN_L
-local MARGIN_XL = TacRP.C2.MARGIN_XL
 
 local armor = Material("tacrp/hud/armor.png", "mip smooth")
 local body = Material("tacrp/hud/body.png", "mips smooth")

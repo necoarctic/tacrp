@@ -7,7 +7,6 @@ local MARGIN_XS = TacRP.C2.MARGIN_XS
 local MARGIN_S = TacRP.C2.MARGIN_S
 local MARGIN_M = TacRP.C2.MARGIN_M
 local MARGIN_L = TacRP.C2.MARGIN_L
-local MARGIN_XL = TacRP.C2.MARGIN_XL
 
 local hide_health = {
 	["CHudHealth"] = true,
@@ -63,8 +62,8 @@ local function H2_DrawAmmo( ply, wep )
 	local sw, sh = ScrW(), ScrH()
 	local Hw = s(140)
 	local Hh = s(20)
-	local Hx = sw - Hw - s(MARGIN_XL)
-	local Hy = sh - Hh - s(MARGIN_XL)
+	local Hx = sw - Hw - s(MARGIN_L)
+	local Hy = sh - Hh - s(MARGIN_L)
 	local tacrp = wep.ArcticTacRP
 	C2_FullBox( Hx, Hy, Hw, Hh )
 
@@ -340,8 +339,8 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 		if h2_enable_health:GetBool() then
 			local Hw = s(56)
 			local Hh = s(32)
-			local Hx = s(MARGIN_XL)
-			local Hy = sh - Hh - s(MARGIN_XL)
+			local Hx = s(MARGIN_L)
+			local Hy = sh - Hh - s(MARGIN_L)
 			C2_FullBox( Hx, Hy, Hw, Hh )
 
 			C2_DrawText(
@@ -382,8 +381,8 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 			end
 			
 			if ply:Armor() > 0 then -- Armor
-				Hx = Hx + Hw + s(MARGIN_L)
-				Hy = sh - Hh - s(MARGIN_XL)
+				Hx = Hx + Hw + s(MARGIN_M)
+				Hy = sh - Hh - s(MARGIN_L)
 				local Hw = s(56)
 				local Hh = s(32)
 				C2_FullBox( Hx, Hy, Hw, Hh )
@@ -425,7 +424,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 		end
 
 		for control, data in SortedPairsByMemberValue(caps, "so") do
-			local x = s(MARGIN_XL)
+			local x = s(MARGIN_L)
 			local y = sh/2
 
 			local keys = string.Explode("/", control, false)
