@@ -383,6 +383,11 @@ local conVars = {
         client = true,
     },
     {
+        name = "hudscale_simres",
+        default = "0",
+        client = true,
+    },
+    {
         name = "language",
         default = "",
         replicated = true,

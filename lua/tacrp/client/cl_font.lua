@@ -1,6 +1,11 @@
 local hudscale = TacRP.ConVars["hudscale"]
+local hudscale_simres = TacRP.ConVars["hudscale_simres"]
 function TacRP.SS(i)
-    return ScrH() / 360 * i * hudscale:GetFloat()
+    local res = hudscale_simres:GetInt()
+    if res == 0 then
+        res = ScrH()
+    end
+    return (res / 360) * i * hudscale:GetFloat()
 end
 local function real_holoss()
     return (ScrH() / 480) / 2
@@ -195,6 +200,7 @@ hook.Add( "OnScreenSizeChanged", "TacRP.RegenHolo", function()
     TacRP.HoloSS = real_holoss()
 end )
 cvars.AddChangeCallback( "tacrp_hudscale", TacRP.Regen, "tacrp_hudscale" )
+cvars.AddChangeCallback( "tacrp_hudscale_simres", TacRP.Regen, "tacrp_hudscale" )
 cvars.AddChangeCallback( "tacrp_font1", TacRP.Regen, "TacRP_Change_Font1" )
 cvars.AddChangeCallback( "tacrp_font2", TacRP.Regen, "TacRP_Change_Font2" )
 

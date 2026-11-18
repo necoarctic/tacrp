@@ -10,11 +10,14 @@ end
 local function scroll_grip_paint( self, w, h )
 	local todo = DisableClipping( true )
 		surface.SetDrawColor( 255, 255, 255 )
-		if self:GetParent():GetParent().TopBottomPadding then
-			surface.DrawRect( s(1), s(2), s(2), h - s(4) )
-		else
-			surface.DrawRect( s(1), 0, s(2), h )
-		end
+		local width = s(2)
+		local pad = self:GetParent():GetParent().TopBottomPadding and 1 or 0
+		surface.DrawRect(
+			w - width - 3,
+			3 * pad,
+			width,
+			h - (6 * pad)
+		)
 	DisableClipping( todo )
 	return true
 end
