@@ -14,29 +14,29 @@ local body_arms = Material("tacrp/hud/body_arms.png", "mips smooth")
 local body_legs = Material("tacrp/hud/body_legs.png", "mips smooth")
 
 local stk_clr = {
-	HSVToColor( 0, 1, 1 ),
+	HSVToColor( 345, 1, 1 ),
 	HSVToColor( 10, .7, .9 ),
 	HSVToColor( 15, .55, .7 ),
 	HSVToColor( 15, .3, .6 ),
-	HSVToColor( 15, 0, .6 ),
-	HSVToColor( 15, 0, .5 ),
-	HSVToColor( 15, 0, .35 ),
-	HSVToColor( 15, 0, .25 ),
-	HSVToColor( 15, 0, .15 ),
-	HSVToColor( 15, 0, 0 ),
+	HSVToColor( 0, 0, .5 ),
+	HSVToColor( 0, 0, .4 ),
+	HSVToColor( 0, 0, .3 ),
+	HSVToColor( 0, 0, .2 ),
+	HSVToColor( 0, 0, .1 ),
+	HSVToColor( 0, 0, 0 ),
 }
 
 local stk_clr_amr = {
-	HSVToColor( 240, 1, 1 ),
-	HSVToColor( 230, .7, .9 ),
+	HSVToColor( 260, 1, 1 ),
+	HSVToColor( 225, .75, .9 ),
 	HSVToColor( 215, .55, .7 ),
 	HSVToColor( 215, .3, .6 ),
-	HSVToColor( 215, 0, .5 ),
-	HSVToColor( 215, 0, .4 ),
-	HSVToColor( 215, 0, .35 ),
-	HSVToColor( 215, 0, .25 ),
-	HSVToColor( 215, 0, .15 ),
-	HSVToColor( 215, 0, 0 ),
+	HSVToColor( 0, 0, .5 ),
+	HSVToColor( 0, 0, .4 ),
+	HSVToColor( 0, 0, .3 ),
+	HSVToColor( 0, 0, .2 ),
+	HSVToColor( 0, 0, .1 ),
+	HSVToColor( 0, 0, 0 ),
 }
 
 local function get_dmgtext_and_setcolor(dmg, num, mult, hover, armor)
@@ -88,7 +88,7 @@ function PANEL:Paint( w, h )
 	surface.SetMaterial(body)
 	surface.DrawTexturedRect(x2, y2, w2, h2)
 
-	local dmg = wep:GetDamageAtRange(0, true) + wep:GetValue("ExplosiveDamage")
+	local dmg = wep:GetDamageAtRange(self.Range or 0, true) + wep:GetValue("ExplosiveDamage")
 	local armor = self.EnableArmor
 	if armor then
 		dmg = dmg * math.Clamp(wep:GetValue("ArmorPenetration"), 0, 1)

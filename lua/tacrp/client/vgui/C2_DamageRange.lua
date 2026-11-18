@@ -20,8 +20,17 @@ function PANEL:Paint( w, h )
 	local dmg_min = (raw_dmg_min + exp) * dmult
 	local range_min, range_max = wep:GetMinMaxRange()
 
-	local phys_to_pixel = range_max/w
-	local panel_range = range_max + s(32) * phys_to_pixel
+	-- initial range
+	local panel_range = 3000
+	local phys_to_pixel = panel_range/w
+
+	-- multiply it to fit this weapon's max range
+	local density = math.ceil(range_max / panel_range)
+	panel_range = panel_range * density
+	phys_to_pixel = panel_range/w
+
+	-- fit a bit more meters to the right to keep it comfy
+	panel_range = panel_range + (s(32) * phys_to_pixel)
 	phys_to_pixel = panel_range/w
 
 	local tall = h * .75
@@ -92,12 +101,13 @@ function PANEL:Paint( w, h )
 		color_white
 	)
 
-	for i=0, panel_range, (TacRP.ConVars["metricunit"]:GetBool() and 25 / TacRP.HUToM or 1000) do
+	local skip = (TacRP.ConVars["metricunit"]:GetBool() and 25 / TacRP.HUToM or 1000)
+	skip = skip * math.max( 1, density - 2 )
+	for i=0, panel_range, skip do
 		if i == 0 then continue end
-		-- surface.DrawRect( i / phys_to_pixel, h-2, 1, 1 )
 		local x = i/phys_to_pixel
 		surface.SetDrawColor( COLOR_OUTLINE )
-		C2_Gradient_Down( x, h - s(4), s(4), 1 )
+		C2_Gradient_Down( x - s(.5), h - s(4), s(1), s(4) )
 		C2_DrawText(
 			wep:RangeUnitize(i),
 			"TacRP_STD_6",
@@ -106,6 +116,43 @@ function PANEL:Paint( w, h )
 			TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM
 		)
 	end
+
+	local range = self.LastRange or range_min
+	local hovered = self:IsHovered()
+	if hovered then
+		range = (self:LocalCursorPos()/w) * panel_range
+		self.LastRange = range
+	end
+	if self.DamageDoll then
+		self.DamageDoll.Range = range
+	end
+
+	local range_x = range / phys_to_pixel
+
+	
+	if not hovered and range <= range_min then return true end
+	C2_Gradient_Down( range_x - s(1), y+tall/2, s(2), tall/2 )
+
+	local txt_dmg = wep:GetDamageAtRange(range) .. " " .. TacRP:TryTranslate("unit.damage")
+	local txt_range = wep:RangeUnitize(range)
+	surface.SetFont("TacRP_STD_6")
+	local width_txt_dmg = surface.GetTextSize(txt_dmg)
+	local width_txt_range = surface.GetTextSize(txt_range)
+
+	C2_DrawText(
+		txt_dmg,
+		"TacRP_STD_6",
+		math.Clamp( range_x - width_txt_dmg/2, s(4), w - width_txt_dmg - s(4) ), y+tall/2 - s(6),
+		color_white,
+		TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM
+	)
+	C2_DrawText(
+		txt_range,
+		"TacRP_STD_6",
+		math.Clamp( range_x - width_txt_range/2, s(4), w - width_txt_range - s(4) ), y+tall/2,
+		color_white,
+		TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM
+	)
 
 	return true
 end

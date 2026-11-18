@@ -188,6 +188,7 @@ local function compute_stat( wep, stat_cache, index, data )
 		if !data.ConVar then data.ConVar = GetConVar(data.ConVarCheck) end
 		if data.ConVar:GetBool() == tobool(data.ConVarInvert) then return end
 	end
+
 	if data.Spacer then
 		stat_cache[index] = true
 		return
@@ -203,6 +204,10 @@ local function compute_stat( wep, stat_cache, index, data )
 	if data.DefaultValue ~= nil and
 		raw_base == data.DefaultValue and
 		raw_curr == data.DefaultValue then
+		return
+	end
+
+	if data.ValueCheck and wep:GetValue(data.ValueCheck) ~= (not data.ValueInvert) then
 		return
 	end
 
@@ -548,11 +553,11 @@ function SWEP:C2_Open()
 	
 	local p_slotlist = c2:Add("C2_ScrollPanel")
 	p_slotlist.TopBottomPadding = false
-	p_slotlist:GetCanvas():DockPadding( 0, 0, s(4), 0 )
+	p_slotlist:GetCanvas():DockPadding( 0, 0, s(4), 0 ) -- scrollbar
 	p_slotlist:SetWide( s(96) )
 	p_slotlist:Dock(LEFT)
-	p_slotlist:DockMargin( 0, s(MARGIN_S), 0, s(MARGIN_S) )
-	p_slotlist:GetCanvas():DockMargin( 0, 0, s(4), 0 )
+	p_slotlist:DockMargin( 0, s(MARGIN_S), 0, 0 )
+	p_slotlist:GetCanvas():DockMargin( 0, 0, s(MARGIN_S), 0 )
 	-- p_slotlist.Paint = paint_box
 
 	local list_slots = {}
@@ -635,6 +640,7 @@ function SWEP:C2_Open()
 		local p_dmgrange = p_align_dmgstats:Add( "C2_DamageRange" )
 		p_dmgrange:Dock( FILL )
 		p_dmgrange.Weapon = wep
+		p_dmgrange.DamageDoll = p_dmgdoll
 	end
 
 	local p_align_breakdown = p_align_right:Add("Panel")
@@ -643,109 +649,134 @@ function SWEP:C2_Open()
 	local p_breakdown = p_align_right:Add("C2_ScrollPanel")
 	p_breakdown:Dock( RIGHT )
 	p_breakdown:SetWide( s( want_wide - MARGIN_S ) )
-	p_breakdown:GetCanvas():DockPadding( 0, 0, 0, s(4) )
+	p_breakdown:GetCanvas():DockPadding( 0, s(MARGIN_S), 0, s(MARGIN_S) )
 	p_breakdown.Paint = paint_box
+	p_breakdown.ChildPanels = {}
 
-	-- pregenerate stat display
-	local stat_cache = {}
+	function p_breakdown:Populate()
+		for _, v in pairs(self.ChildPanels) do
+			v:Remove()
+		end
 
-	for index, data in ipairs(wep.StatDisplay) do
-		compute_stat( wep, stat_cache, index, data )
+		local melee = wep:GetValue("PrimaryMelee")
+		local statgroup = melee and wep.StatGroupsMelee or wep.StatGroups
+		local statdisplay = melee and wep.StatDisplayMelee or wep.StatDisplay
 
-
-		local TargetData = {
-			-- {
-			-- 	Text = TacRP:GetPhrase("rating.score", {score = math.Round(1, 1), max = 100}),
-			-- 	Right = true,
-			-- },
-			{
-				Text = TacRP:TryTranslate(data.Name),
-				Big = true,
-			},
-			{
-				Text = TacRP:TryTranslate(data.Description),
+		local stat_cache = {}
+		wep.MiscCache["c2_breakdown"] = stat_cache
+		for index, data in ipairs(statdisplay) do
+			compute_stat( wep, stat_cache, index, data )
+			local TargetData = {
+				{
+					Text = TacRP:TryTranslate(data.Name),
+					Big = true,
+				},
+				{
+					Text = TacRP:TryTranslate(data.Description),
+				}
 			}
-		}
-		local TargetID = "breakdown_" .. data.Name
+			local TargetID = "breakdown_" .. data.Name
 
-		if data.Spacer and stat_cache[index] then
-			local top = index == 1
-			local item = p_breakdown:Add( "Panel" )
-			item:Dock( TOP )
-			item:SetTall( s(18) )
-			item.TargetID = TargetID
-			item.TargetData = TargetData
-			function item:Paint( w, h )
+			if data.Spacer and stat_cache[index] then
+				local top = index == 1
 				if not top then
-					surface.SetDrawColor( COLOR_OUTLINE )
-					C2_Gradient_Left( 0, s(2), w, 1 )
-				end
-				C2_DrawText(
-					TacRP:TryTranslate(data.Name),
-					"TacRP_STD_14",
-					s(4), h,
-					color_white,
-					nil, TEXT_ALIGN_BOTTOM
-				)
-				return true
-			end
-		else
-			local cache = stat_cache[index]
-			if not cache then continue end
-
-			local item = p_breakdown:Add( "Panel" )
-			item:Dock( TOP )
-			item:SetTall( s(14+5) )
-			item.TargetID = TargetID
-			item.TargetData = TargetData
-			function item:Paint( w, h )
-				if self:IsHovered() then
-					surface.SetDrawColor( COLOR_HOVER )
-					C2_Gradient_Left( 0, 0, w, h )
+					local bar = p_breakdown:Add("Panel")
+					table.insert( self.ChildPanels, bar )
+					bar:SetTall( 1 )
+					bar:Dock(TOP)
+					bar:DockMargin( 0, s(2), 0, s(2) )
+					function bar:Paint( w, h )
+						surface.SetDrawColor( COLOR_OUTLINE )
+						C2_Gradient_Left( 0, 0, w, 1 )
+					end
 				end
 
-				C2_DrawText(
-					TacRP:TryTranslate(data.Name),
-					"TacRP_STD_8",
-					s(6), 0,
-					color_white
-				)
-
-				local stat_color = cache.varying and (cache.positive and COLOR_POSITIVE or COLOR_NEGATIVE) or color_white
-
-				C2_DrawText(
-					cache.text_curr,
-					"TacRP_STD_14",
-					s(6+4), s(5),
-					stat_color
-				)
-
-				local bump_x = surface.GetTextSize(cache.text_curr) + s(4)
-
-				if cache.diff and cache.diff ~= "" then
-					local text_diff = "(" .. cache.diff .. ")"
+				local item = p_breakdown:Add( "Panel" )
+				table.insert( self.ChildPanels, item )
+				item:Dock( TOP )
+				item:SetTall( s(14+1) )
+				item.TargetID = TargetID
+				item.TargetData = TargetData
+				function item:Paint( w, h )
+					if self:IsHovered() then
+						surface.SetDrawColor( COLOR_HOVER )
+						C2_Gradient_Left( 0, 0, w, h )
+					end
 					C2_DrawText(
-						text_diff,
-						"TacRP_STD_10",
-						s(6+4) + bump_x, s(5+3.5),
+						TacRP:TryTranslate(data.Name),
+						"TacRP_STD_14",
+						s(4), 0,
+						color_white
+					)
+					return true
+				end
+			else
+				local cache = stat_cache[index]
+				if not cache then continue end
+
+				local item = p_breakdown:Add( "Panel" )
+				table.insert( self.ChildPanels, item )
+				item:Dock( TOP )
+				item:SetTall( s(14+5) )
+				item.TargetID = TargetID
+				item.TargetData = TargetData
+				function item:Paint( w, h )
+					if self:IsHovered() then
+						surface.SetDrawColor( COLOR_HOVER )
+						C2_Gradient_Left( 0, 0, w, h )
+					end
+
+					C2_DrawText(
+						TacRP:TryTranslate(data.Name),
+						"TacRP_STD_8",
+						s(6), 0,
+						color_white
+					)
+
+					local stat_color = cache.varying and (cache.positive and COLOR_POSITIVE or COLOR_NEGATIVE) or color_white
+
+					C2_DrawText(
+						cache.text_curr,
+						"TacRP_STD_14",
+						s(6+4), s(5),
 						stat_color
 					)
-					bump_x = bump_x + surface.GetTextSize(text_diff) + s(4)
-				end
 
-				if cache.text_curr ~= cache.text_base then
-					C2_DrawText(
-						cache.text_base,
-						"TacRP_STD_10",
-						s(6+4) + bump_x, s(5+3.5),
-						COLOR_OLD
-					)
+					local bump_x = surface.GetTextSize(cache.text_curr) + s(4)
+
+					if cache.diff and cache.diff ~= "" then
+						local text_diff = "(" .. cache.diff .. ")"
+						C2_DrawText(
+							text_diff,
+							"TacRP_STD_10",
+							s(6+4) + bump_x, s(5+3.5),
+							stat_color
+						)
+						bump_x = bump_x + surface.GetTextSize(text_diff) + s(4)
+					end
+
+					if cache.text_curr ~= cache.text_base then
+						C2_DrawText(
+							cache.text_base,
+							"TacRP_STD_10",
+							s(6+4) + bump_x, s(5+3.5),
+							COLOR_OLD
+						)
+					end
+					
+					return true
 				end
-				
-				return true
 			end
 		end
 	end
+
+	function p_breakdown:Think()
+		if not wep.MiscCache["c2_breakdown"] then
+			self:Populate()
+		end
+	end
+
+	p_breakdown:Populate()
 end
 
 -- reloading for development
