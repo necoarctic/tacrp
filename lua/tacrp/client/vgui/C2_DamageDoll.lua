@@ -189,8 +189,8 @@ function PANEL:Paint( w, h )
 		C2_DrawText(
 			i,
 			"TacRP_STD_6",
-			x + s(2.9),
-			y - s(.5),
+			x + size/2,
+			y,
 			color_white,
 			TEXT_ALIGN_CENTER
 		)

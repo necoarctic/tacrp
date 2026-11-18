@@ -14,6 +14,7 @@ function PANEL:Paint( w, h )
 	local raw_dmg_max = wep:GetValue("Damage_Max")
 	local raw_dmg_min = wep:GetValue("Damage_Min")
 	local exp = wep:GetValue("ExplosiveDamage")
+	local pellets = wep:GetValue("Num")
 	local dmult = wep:GetConfigDamageMultiplier()
 
 	local dmg_max = (raw_dmg_max + exp) * dmult
@@ -51,7 +52,6 @@ function PANEL:Paint( w, h )
 
 	local txt_dmg_max = math.floor(dmg_max) .. TacRP:GetPhrase("unit.damage")
 	local txt_dmg_min = math.floor(dmg_min) .. TacRP:GetPhrase("unit.damage")
-	local pellets = wep:GetValue("Num")
 	if pellets > 1 then
 		txt_dmg_max = dmg_max * pellets .. "-" .. txt_dmg_max
 		txt_dmg_min = dmg_min * pellets .. "-" .. txt_dmg_min
@@ -133,7 +133,12 @@ function PANEL:Paint( w, h )
 	if not hovered and range <= range_min then return true end
 	C2_Gradient_Down( range_x - s(1), y+tall/2, s(2), tall/2 )
 
-	local txt_dmg = wep:GetDamageAtRange(range) .. " " .. TacRP:TryTranslate("unit.damage")
+	local txt_dmg
+	if pellets > 1 then
+		txt_dmg = wep:GetDamageAtRange(range) * pellets .. "-" .. wep:GetDamageAtRange(range) .. TacRP:TryTranslate("unit.damage")
+	else
+		txt_dmg = wep:GetDamageAtRange(range) .. " " .. TacRP:TryTranslate("unit.damage")
+	end
 	local txt_range = wep:RangeUnitize(range)
 	surface.SetFont("TacRP_STD_6")
 	local width_txt_dmg = surface.GetTextSize(txt_dmg)
