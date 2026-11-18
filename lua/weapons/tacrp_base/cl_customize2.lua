@@ -303,37 +303,37 @@ function SWEP:C2_Open()
 	local margin = s(MARGIN_XL)
 	c2:DockPadding( margin, margin, margin, margin )
 
-	local BUTTON_SIZE = 10
-	local p_closebutton = c2:Add("DButton")
-	p_closebutton:SetSize( s(BUTTON_SIZE), s(BUTTON_SIZE) )
-	p_closebutton:AlignRight( s(MARGIN_XL) )
-	p_closebutton:AlignTop( s(MARGIN_XL/2 - BUTTON_SIZE/2) )
+	do -- Close & Drop Weapon button
+		local BUTTON_SIZE = 10
+		local p_closebutton = c2:Add("DButton")
+		p_closebutton:SetSize( s(BUTTON_SIZE), s(BUTTON_SIZE) )
+		p_closebutton:AlignRight( s(MARGIN_XL) )
+		p_closebutton:AlignTop( s(MARGIN_XL/2 - BUTTON_SIZE/2) )
 
-	function p_closebutton:DoClick()
-		c2:Remove()
-	end
-
-	function p_closebutton:Paint( w, h )
-		C2_FullBox( 0, 0, w, h )
-		C2_DrawText(
-			"×",
-			"TacRP_STD_8",
-			w/2,
-			h/2 - s(.5),
-			color_white,
-			TEXT_ALIGN_CENTER,
-			TEXT_ALIGN_CENTER
-		)
-		return true
-	end
-
-	function c2:OnRemove()
-		if TacRP.ConVars["autosave"]:GetBool() and TacRP.ConVars["free_atts"]:GetBool() then
-			wep:SavePreset()
+		function p_closebutton:DoClick()
+			c2:Remove()
 		end
-	end
 
-	do
+		function p_closebutton:Paint( w, h )
+			C2_FullBox( 0, 0, w, h )
+			C2_DrawText(
+				"×",
+				"TacRP_STD_8",
+				w/2,
+				h/2 - s(.5),
+				color_white,
+				TEXT_ALIGN_CENTER,
+				TEXT_ALIGN_CENTER
+			)
+			return true
+		end
+
+		function c2:OnRemove()
+			if TacRP.ConVars["autosave"]:GetBool() and TacRP.ConVars["free_atts"]:GetBool() then
+				wep:SavePreset()
+			end
+		end
+
 		local txt = TacRP:TryTranslate("cust.drop_wep")
 		surface.SetFont("TacRP_STD_8")
 		local width = surface.GetTextSize(txt)
@@ -398,21 +398,23 @@ function SWEP:C2_Open()
 		surface.DrawRect( 0, 0, w, h )
 		C2_Outline( 0, 0, w, h )
 	end
+
 	function p_helphover:PerformLayout( w, h )
 		self:SizeToChildren( false, true )
 	end
+	
 	function p_helphover:Think()
 		local w, h = self:GetSize()
 		local x, y = input.GetCursorPos()
 
 		if (x > sw/2) then
-			x = x - w - s(40)
+			x = x - w - s(32)
 		else
-			x = x + s(40)
+			x = x + s(32)
 		end
 
 		x = math.Clamp( x, s(MARGIN_XL), sw - w - s(MARGIN_XL) )
-		y = math.min( y + s(10), sh - h - s(MARGIN_XL) )
+		y = math.Clamp( y - h/2, s(MARGIN_XL), sh - h - s(MARGIN_XL) )
 		self:SetPos( x, y )
 	end
 
@@ -536,54 +538,49 @@ function SWEP:C2_Open()
 		return true
 	end
 
-	local p_footer = c2:Add("Panel")
-	-- p_footer:Dock(BOTTOM)
-	-- p_footer:SetTall( s(48) )
-	-- local size = sw - s(360)
-	p_footer:SetWide( s(360) )
-	p_footer:AlignBottom( s(MARGIN_XL) )
-	p_footer:CenterHorizontal()
-	-- p_footer:DockMargin( size/2, 0, size/2, 0 )
-	function p_footer:Paint( w, h )
-		C2_FullBox( 0, 0, w, h )
-		local desc = TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_STD_12" )
-		local line_index = 0
-		for _, line in ipairs( desc ) do
-			C2_DrawText(
-				line,
-				"TacRP_STD_12",
-				s(12),
-				s( 6 + ( 12 * line_index ) ),
-				color_white
-			)
+	do
+		local LINE_HEIGHT = 12
+		local p_footer = c2:Add("Panel")
+		p_footer:SetWide( s(330) )
+		function p_footer:Paint( w, h )
+			C2_FullBox( 0, 0, w, h )
+			local desc = TacRP.MultiLineText( wep.Description, w - s(MARGIN_XL*2), "TacRP_STD_12" )
+			local line_index = 0
+			for _, line in ipairs( desc ) do
+				C2_DrawText(
+					line,
+					"TacRP_STD_12",
+					s( MARGIN_XL ),
+					s( MARGIN_M + (LINE_HEIGHT * line_index) ),
+					color_white
+				)
+				line_index = line_index + 1
+			end
+
+			if not wep.Description_Quote then return end
 			line_index = line_index + 1
+			local quot = TacRP.MultiLineText( wep.Description_Quote, w - s(MARGIN_XL*2), "TacRP_STD_12" )
+			for _, line in ipairs( quot ) do
+				C2_DrawText(
+					line,
+					"TacRP_STD_12I",
+					s( MARGIN_XL ),
+					s( MARGIN_M + (LINE_HEIGHT * line_index) ),
+					color_white
+				)
+				line_index = line_index + 1
+			end
 		end
 
-		if not wep.Description_Quote then return end
-
-		line_index = line_index + 1
-
-		local quot = TacRP.MultiLineText( wep.Description_Quote, w - s(12*2), "TacRP_STD_12" )
-		for _, line in ipairs( quot ) do
-			C2_DrawText(
-				line,
-				"TacRP_STD_12I",
-				s(12),
-				s( 6 + ( 12 * line_index ) ),
-				color_white
-			)
-			line_index = line_index + 1
+		function p_footer:PerformLayout( w, h )
+			local lines = #TacRP.MultiLineText( wep.Description, w - s(MARGIN_XL*2), "TacRP_STD_12" )
+			if wep.Description_Quote then
+				lines = lines + 1 + #TacRP.MultiLineText( wep.Description_Quote, w - s(MARGIN_XL*2), "TacRP_STD_12" )
+			end
+			self:SetTall( s( MARGIN_M*2 + LINE_HEIGHT*lines ) )
+			self:AlignBottom( s( MARGIN_XL ) )
+			self:CenterHorizontal()
 		end
-	end
-
-	function p_footer:PerformLayout( w, h )
-		local lines = #TacRP.MultiLineText( wep.Description, w - s(12*2), "TacRP_STD_12" )
-		if wep.Description_Quote then
-			lines = lines + 1 + #TacRP.MultiLineText( wep.Description_Quote, w - s(12*2), "TacRP_STD_12" )
-		end
-		self:SetTall( s(6+(12*lines)+6) )
-		self:AlignBottom( s(MARGIN_XL) )
-		self:CenterHorizontal()
 	end
 	
 	local p_slotlist = c2:Add("C2_ScrollPanel")
@@ -1075,6 +1072,6 @@ hook.Add( "PopulateToolMenu", "CustomMenuSettings", function()
 	spawnmenu.AddToolMenuOption( "Options", "Tactical RP Weapons", "TacRP_H2", "Beta: HUD 2", "", "", function( panel )
 		panel:CheckBox( "Enable HUD", "tacrp_h2_enable" )
 		panel:CheckBox( "Enable Health", "tacrp_h2_enable_health" )
-		panel:CheckBox( "Enable Ammo", "tacrp_h2_enabled_ammo" )
+		panel:CheckBox( "Enable Ammo", "tacrp_h2_enable_ammo" )
 	end )
 end )
