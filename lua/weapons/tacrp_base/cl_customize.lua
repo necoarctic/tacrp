@@ -66,6 +66,10 @@ SWEP.CustomizeHUD = nil
 
 function SWEP:CreateCustomizeHUD()
     self:RemoveCustomizeHUD()
+    if not self:GetOwner():KeyDown( IN_WALK ) then
+        self:C2_Open()
+        return
+    end
 
     gui.EnableScreenClicker(true)
     TacRP.CursorEnabled = true
@@ -1410,6 +1414,7 @@ function SWEP:CreateCustomizeHUD()
 end
 
 function SWEP:RemoveCustomizeHUD()
+    self:C2_Close()
     if self.CustomizeHUD then
         self.CustomizeHUD:Remove()
 
@@ -1426,13 +1431,8 @@ function SWEP:DrawCustomizeHUD()
 
     local customize = self:GetCustomize()
     if customize and !lastcustomize then
-        if self:GetOwner():KeyDown( IN_WALK ) then
-            self:CreateCustomizeHUD()
-        else
-            self:C2_Open()
-        end
+        self:CreateCustomizeHUD()
     elseif !customize and lastcustomize then
-        self:C2_Close()
         self:RemoveCustomizeHUD()
     end
     
