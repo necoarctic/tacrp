@@ -13,7 +13,7 @@ SWEP.SubCatTier = "9Special"
 SWEP.SubCatType = "6Launcher"
 
 SWEP.Description = "Soviet rocket launcher with powerful explosion.\nSafety fuse prevents point blank detonations."
-SWEP.Description_Quote = "If you hear someone screaming its name, duck for cover." // not a quote but is good life advice
+SWEP.Description_Quote = "If you hear someone screaming its name, duck for cover." -- Not a quote, but good life advice.
 
 SWEP.Trivia_Caliber = "40mm Rockets"
 SWEP.Trivia_Manufacturer = "NPO Bazalt"

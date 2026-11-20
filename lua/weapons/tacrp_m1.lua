@@ -12,7 +12,7 @@ SWEP.SubCatTier = "5Value"
 SWEP.SubCatType = "5Sporter"
 
 SWEP.Description = "Lightweight rifle with no stock or optic mount.\nGood hip-fire accuracy among rifles, but range is low."
-SWEP.Description_Quote = "\"The one with the gun gets to tell the truth.\""
+SWEP.Description_Quote = "\"The one with the gun gets to tell the truth.\"" -- Blue Rain (2013)
 
 SWEP.Trivia_Caliber = ".223 Remington"
 SWEP.Trivia_Manufacturer = "Sturm, Ruger & Co."

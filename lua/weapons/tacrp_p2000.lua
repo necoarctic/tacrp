@@ -12,7 +12,7 @@ SWEP.SubCatTier = "3Security"
 SWEP.SubCatType = "1Pistol"
 
 SWEP.Description = "Well-rounded, run-of-the-mill police handgun."
-SWEP.Description_Quote = "\"Raus! Raus! Raus!\""
+SWEP.Description_Quote = "\"Raus! Raus! Raus!\"" -- I feel like I should know this, but I don't.
 
 SWEP.Trivia_Caliber = "9x19mm"
 SWEP.Trivia_Manufacturer = "Heckler & Koch"

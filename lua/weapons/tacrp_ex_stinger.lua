@@ -14,7 +14,7 @@ SWEP.SubCatTier = "9Special"
 SWEP.SubCatType = "6Launcher"
 
 SWEP.Description = "Homing anti-air missile launcher. High blast damage but limited effect on armored targets.\nRequires a lock-on in order to fire."
-SWEP.Description_Quote = "\"A cornered fox is more dangerous than a jackal!\""
+SWEP.Description_Quote = "\"A cornered fox is more dangerous than a jackal!\"" -- Metal Gear Solid (1998)
 
 SWEP.Trivia_Caliber = "Infrared Homing Missile"
 SWEP.Trivia_Manufacturer = "Raytheon Missiles and Defense"

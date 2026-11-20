@@ -12,7 +12,7 @@ SWEP.SubCatTier = "4Consumer"
 SWEP.SubCatType = "3Submachine Gun"
 
 SWEP.Description = "Boxy SMG developed with low production costs in mind.\nHigh damage up close, but range and rate of fire is low."
-SWEP.Description_Quote = "\"The fuck are these, cocktail guns?\"" -- Battlefield 4
+SWEP.Description_Quote = "\"The fuck are these, cocktail guns?\"" -- Battlefield 4 (2013)
 
 SWEP.Trivia_Caliber = ".45 ACP"
 SWEP.Trivia_Manufacturer = "Heckler & Koch"

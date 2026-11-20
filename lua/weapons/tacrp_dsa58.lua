@@ -12,7 +12,7 @@ SWEP.SubCatTier = "3Security"
 SWEP.SubCatType = "5Battle Rifle"
 
 SWEP.Description = "Battle rifle with slow fire rate but very high damage and armor penetration. Has a grippod that provides some stability if deployed."
-SWEP.Description_Quote = "\"Shut up, clock in and load up.\""
+SWEP.Description_Quote = "\"Shut up, clock in and load up.\"" -- Call of Duty: Black Ops II (2012)
 
 SWEP.Trivia_Caliber = "7.62x51mm"
 SWEP.Trivia_Manufacturer = "DS Arms"

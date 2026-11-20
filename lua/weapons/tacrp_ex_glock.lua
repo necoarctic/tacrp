@@ -11,7 +11,7 @@ SWEP.SubCatTier = "4Consumer"
 SWEP.SubCatType = "1Pistol"
 
 SWEP.Description = "Polymer pistol with larger-than-standard capacity and a fast fire rate."
-SWEP.Description_Quote = "Does not show up on airport metal detectors."
+SWEP.Description_Quote = "Does not show up on airport metal detectors." -- Die Hard 2 (1990)
 
 SWEP.Trivia_Caliber = "9x19mm"
 SWEP.Trivia_Manufacturer = "Glock Ges.m.b.H"

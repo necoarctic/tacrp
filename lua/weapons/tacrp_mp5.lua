@@ -12,7 +12,7 @@ SWEP.SubCatTier = "3Security"
 SWEP.SubCatType = "3Submachine Gun"
 
 SWEP.Description = "Well-balanced submachine gun known for its precision."
-SWEP.Description_Quote = "\"Now I have a machine gun. Ho, ho, ho.\""
+SWEP.Description_Quote = "\"Now I have a machine gun. Ho, ho, ho.\"" -- Die Hard (1988)
 
 SWEP.Trivia_Caliber = "9x19mm"
 SWEP.Trivia_Manufacturer = "Heckler & Koch"

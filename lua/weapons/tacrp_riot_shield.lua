@@ -14,7 +14,7 @@ SWEP.SubCatTier = "9Special"
 SWEP.SubCatType = "9Equipment"
 
 SWEP.Description = "Lightweight plastic shield which can stop most rifle caliber rounds. Able to sprint and melee without compromising safety at the cost of a slight movement speed penalty."
-SWEP.Description_Quote = "You know what they say..." -- Technically a Hotel Mario reference, I guess
+SWEP.Description_Quote = "You know what they say..." -- Technically a Hotel Mario (1994) reference, I guess.
 
 SWEP.Credits = "Model/Texture: Tactical Intervention\nAnimation: Arqu"
 

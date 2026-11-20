@@ -13,7 +13,7 @@ SWEP.SubCatTier = "2Operator"
 SWEP.SubCatType = "7Sniper Rifle"
 
 SWEP.Description = "Heavy anti-materiel rifle that can kill in one shot. Too heavy to bash with. \nEquipped with a 12x scope by default."
-SWEP.Description_Quote = "Gun Runner tested, NCR approved."
+SWEP.Description_Quote = "Gun Runner tested, NCR approved." -- Fallout: New Vegas (2010)
 
 SWEP.Trivia_Caliber = ".50 BMG"
 SWEP.Trivia_Manufacturer = "PGM Précision"

@@ -12,7 +12,7 @@ SWEP.SubCatTier = "3Security"
 SWEP.SubCatType = "2Magnum Pistol"
 
 SWEP.Description = "Oversized M1911 derivative designed for big game hunting. Fast firing, strong vertical kick."
-SWEP.Description_Quote = "\"Dancing in the shadow... I kiss you.\"" // Angel Beats
+SWEP.Description_Quote = "\"Dancing in the shadow... I kiss you.\"" -- Angel Beats! (2010)
 
 SWEP.Trivia_Caliber = ".45 Winchester Magnum"
 SWEP.Trivia_Manufacturer = "LAR Manufacturing"

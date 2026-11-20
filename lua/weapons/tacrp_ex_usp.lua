@@ -12,7 +12,7 @@ SWEP.SubCatTier = "3Security"
 SWEP.SubCatType = "1Pistol"
 
 SWEP.Description = "Tactical pistol with good damage and range."
-SWEP.Description_Quote = "\"Man of few words, aren't you?\""
+SWEP.Description_Quote = "\"Man of few words, aren't you?\"" -- Half Life 2 (2004)
 
 SWEP.Trivia_Caliber = ".40 S&W"
 SWEP.Trivia_Manufacturer = "Heckler & Koch"

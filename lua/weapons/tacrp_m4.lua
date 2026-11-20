@@ -12,7 +12,7 @@ SWEP.SubCatTier = "2Operator"
 SWEP.SubCatType = "4Assault Rifle"
 
 SWEP.Description = "A close cousin to the classic American rifle with a slower but more controllable rate of fire."
-SWEP.Description_Quote = "Green and very, very mean."
+SWEP.Description_Quote = "Green and very, very mean." -- Halo 3: ODST (2009) ((could be wrong, but eh))
 
 SWEP.Trivia_Caliber = "5.56x45mm"
 SWEP.Trivia_Manufacturer = "Colt Canada"

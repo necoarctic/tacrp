@@ -12,7 +12,7 @@ SWEP.SubCatTier = "4Consumer"
 SWEP.SubCatType = "3Submachine Gun" -- :trolley:
 
 SWEP.Description = "Burst rifle with minimal recoil and good hip firing accuracy."
-SWEP.Description_Quote = "The South Korean Military classifies this as an SMG. No, I'm not joking."
+SWEP.Description_Quote = "The South Korean Military classifies this as an SMG. No, I'm not joking." -- true!
 
 SWEP.Trivia_Caliber = "5.56x45mm"
 SWEP.Trivia_Manufacturer = "Daewoo Precision"

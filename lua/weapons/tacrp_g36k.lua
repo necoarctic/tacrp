@@ -12,7 +12,7 @@ SWEP.SubCatTier = "2Operator"
 SWEP.SubCatType = "4Assault Rifle"
 
 SWEP.Description = "Assault rifle with high muzzle velocity. Well suited for medium range sustained fire.\nEquipped with a 2x scope by default."
-SWEP.Description_Quote = "\"Yeah, it was a good day.\"" -- Stargate SG-1 (S9E16) 
+SWEP.Description_Quote = "\"Yeah, it was a good day.\"" -- Stargate SG-1, Season 9, Episode 16
 
 SWEP.Trivia_Caliber = "5.56x45mm"
 SWEP.Trivia_Manufacturer = "Heckler & Koch"
