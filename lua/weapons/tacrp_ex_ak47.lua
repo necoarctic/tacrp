@@ -11,7 +11,7 @@ SWEP.SubCatTier = "2Operator"
 SWEP.SubCatType = "4Assault Rifle"
 
 SWEP.Description = "Iconic Soviet assault rifle. A rugged and simple design that inspired countless clones and derivatives."
-SWEP.Description_Quote = "\"It's not my fault that it's being used where it shouldn't be.\"" -- The Dark Knight (2008)
+SWEP.Description_Quote = "\"It's not my fault that it's being used where it shouldn't be.\"" -- Mikhail Kalashnikov (Full Quote: "I created a weapon to defend the borders of my motherland. It's not my fault that it's being used where it shouldn't be. The politicians are more to blame for this.")
 
 SWEP.Trivia_Caliber = "7.62x39mm"
 SWEP.Trivia_Manufacturer = "Kalashnikov Concern"
