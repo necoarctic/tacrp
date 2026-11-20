@@ -134,7 +134,7 @@ local function generatefonts()
         if def.convar then
             local choice = TacRP.ConVars[def.convar]:GetString()
             if choice ~= "" then
-                selected_font = cvar_choice
+                selected_font = choice
             end
         end
         for _, size in ipairs(def.sizes) do

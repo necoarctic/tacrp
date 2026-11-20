@@ -329,16 +329,27 @@ function SWEP:ThinkGrenade()
         end
     end
 
-    if self:GetOwner():KeyPressed(IN_GRENADE1) then
+    local ply = self:GetOwner()
+    if ply:KeyPressed(IN_GRENADE1) then
         self:PrimeGrenade()
-    elseif !tobool(self:GetOwner():GetInfo("tacrp_nademenu")) and self:GetOwner():KeyPressed(self.GrenadeMenuKey) then
-        self:SelectGrenade()
-    elseif tobool(self:GetOwner():GetInfo("tacrp_nademenu")) and self.GrenadeMenuKey != IN_GRENADE2 and !self:GetOwner():KeyDown(self.GrenadeMenuKey) then
+    elseif !tobool(ply:GetInfo("tacrp_nademenu")) and ply:KeyPressed(self.GrenadeMenuKey) then
+        local selected_nade = self:GetGrenadeIndex()
+        -- choose only valid grenades
+        for i=1, TacRP.QuickNades_Count do
+            local target_nade = selected_nade + i
+            target_nade = ((target_nade-1) % TacRP.QuickNades_Count) + (ply:KeyDown(IN_WALK) and -1 or 1)
+            if self:CheckGrenade(target_nade, true) then
+                self:SelectGrenade(target_nade)
+                ply:EmitSound("tacrp/weapons/grenade/roll-" .. math.random(1, 3) .. ".wav")
+                break
+            end
+        end
+    elseif tobool(ply:GetInfo("tacrp_nademenu")) and self.GrenadeMenuKey != IN_GRENADE2 and !ply:KeyDown(self.GrenadeMenuKey) then
         self.GrenadeMenuKey = IN_GRENADE2
     end
 
-    if CLIENT and self.GrenadeWaitSelect and self:GetOwner():HasWeapon(self.GrenadeWaitSelect) then
-        input.SelectWeapon(self:GetOwner():GetWeapon(self.GrenadeWaitSelect))
+    if CLIENT and self.GrenadeWaitSelect and ply:HasWeapon(self.GrenadeWaitSelect) then
+        input.SelectWeapon(ply:GetWeapon(self.GrenadeWaitSelect))
         self.GrenadeWaitSelect = nil
     end
 
