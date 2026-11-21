@@ -26,7 +26,7 @@ local stk_clr = {
 }
 
 local stk_clr_amr = {
-	HSVToColor( 260, 1, 1 ),
+	HSVToColor( 265, 1, 1 ),
 	HSVToColor( 225, .75, .9 ),
 	HSVToColor( 215, .55, .7 ),
 	HSVToColor( 215, .3, .6 ),
@@ -105,6 +105,17 @@ function PANEL:Paint( w, h )
 		TEXT_ALIGN_RIGHT
 	)
 
+	if num > 1 then
+		C2_DrawText(
+			"×" .. num,
+			"TacRP_STD_6",
+			w - s(MARGIN_XS),
+			s(MARGIN_XS + 6),
+			color_white,
+			TEXT_ALIGN_RIGHT
+		)
+	end
+
 	do -- body
 		local txt
 		
@@ -176,6 +187,18 @@ function PANEL:Paint( w, h )
 			color_white,
 			TEXT_ALIGN_CENTER,
 			TEXT_ALIGN_CENTER
+		)
+	end
+
+	if self.Range then
+		C2_DrawText(
+			wep:RangeUnitize(self.Range),
+			"TacRP_STD_6",
+			s(MARGIN_XS),
+			h - s(MARGIN_XS),
+			color_white,
+			TEXT_ALIGN_LEFT,
+			TEXT_ALIGN_BOTTOM
 		)
 	end
 
