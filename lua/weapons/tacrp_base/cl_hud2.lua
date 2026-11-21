@@ -60,18 +60,18 @@ local LOW_AMMO_PERCENTAGE = 0.34
 
 local function H2_DrawAmmo( ply, wep )
 	local sw, sh = ScrW(), ScrH()
-	local Hw = s(140)
-	local Hh = s(20)
-	local Hx = sw - Hw - s(MARGIN_L)
-	local Hy = sh - Hh - s(MARGIN_L)
+	local panel_w = s(140)
+	local panel_h = s(20)
+	local panel_x = sw - panel_w - s(MARGIN_L)
+	local panel_y = sh - panel_h - s(MARGIN_L)
 	local tacrp = wep.ArcticTacRP
-	C2_FullBox( Hx, Hy, Hw, Hh )
+	C2_FullBox( panel_x, panel_y, panel_w, panel_h )
 
 	C2_DrawText(
 		wep.AbbrevName or wep:GetPrintName(),
 		"TacRP_STD_12I",
-		Hx + s(MARGIN_S),
-		Hy + Hh/2,
+		panel_x + s(MARGIN_S),
+		panel_y + panel_h/2,
 		color_white,
 		TEXT_ALIGN_LEFT,
 		TEXT_ALIGN_CENTER
@@ -85,8 +85,8 @@ local function H2_DrawAmmo( ply, wep )
 		C2_DrawText(
 			fm_text,
 			"TacRP_STD_10",
-			Hx + Hw - s(MARGIN_S),
-			Hy + Hh/2 - s(different and 4 or 0),
+			panel_x + panel_w - s(MARGIN_S),
+			panel_y + panel_h/2 - s(different and 4 or 0),
 			color_white,
 			TEXT_ALIGN_RIGHT,
 			TEXT_ALIGN_CENTER
@@ -96,8 +96,8 @@ local function H2_DrawAmmo( ply, wep )
 			C2_DrawText(
 				fm_text,
 				"TacRP_STD_8",
-				Hx + Hw - s(MARGIN_S),
-				Hy + Hh/2 + s(4),
+				panel_x + panel_w - s(MARGIN_S),
+				panel_y + panel_h/2 + s(4),
 				color_white,
 				TEXT_ALIGN_RIGHT,
 				TEXT_ALIGN_CENTER
@@ -114,8 +114,8 @@ local function H2_DrawAmmo( ply, wep )
 	local flash_empty = t % 0.3 < 0.25
 	local flash_lowammo = t % 0.5 < 0.1
 	local flash_lowammo = t % 0.5 < 0.1
-	local o_x = Hx + Hw
-	local o_y = Hy
+	local o_x = panel_x + panel_w
+	local o_y = panel_y
 	local final_x = 0
 	local final_y = 0
 
@@ -199,7 +199,7 @@ local function H2_DrawAmmo( ply, wep )
 	
 	if wep:Clip1() == -1 then
 		if not has_ammotype then
-			return
+			return panel_x, panel_y, panel_w, panel_h
 		else
 			ammo_text = ammo_count
 		end
@@ -213,13 +213,13 @@ local function H2_DrawAmmo( ply, wep )
 	C2_DrawText(
 		ammo_text,
 		"TacRP_STD_10",
-		Hx + Hw - s(10) - final_x,
-		Hy - s(2) - final_y,
+		panel_x + panel_w - s(10) - final_x,
+		panel_y - s(2) - final_y,
 		color_white,
 		TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM
 	)
 
-	return Hx, Hy, Hw, Hh
+	return panel_x, panel_y, panel_w, panel_h
 end
 
 local lasthealtime = -math.huge
