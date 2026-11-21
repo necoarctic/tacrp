@@ -1271,6 +1271,12 @@ local conVars = {
         default = "1",
         client = true,
     },
+    -- Spawnmenu v2
+    {
+        name = "s2_enable",
+        default = "1",
+        client = true,
+    },
 }
 
 TacRP.ConVars = {}

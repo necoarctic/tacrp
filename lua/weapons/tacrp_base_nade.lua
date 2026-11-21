@@ -12,8 +12,8 @@ SWEP.NoAimAssist = true
 SWEP.PrintName = "Arctic's Tactical RP Base Grenade"
 SWEP.Category = "Tactical RP"
 
-SWEP.SubCatTier = "9Special"
-SWEP.SubCatType = "9Throwable"
+SWEP.SubCatTier = "Special"
+SWEP.SubCatType = "Throwable"
 
 SWEP.Description = ""
 

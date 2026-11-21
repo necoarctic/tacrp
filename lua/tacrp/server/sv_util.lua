@@ -78,8 +78,8 @@ end
 local cats = {
     ["ClassName"] = true,
     ["PrintName"] = true,
-    ["SubCatTier"] = function(wep) return string.sub(wep.SubCatTier, 1) end,
-    ["SubCatType"] = function(wep) return string.sub(wep.SubCatType, 1) end,
+    ["SubCatTier"] = function(wep) return TacRP.Tier_SortOrder[wep.SubCatTier] end,
+    ["SubCatType"] = function(wep) return TacRP.Tier_SortOrder[wep.SubCatType] end,
     ["Damage_Max"] = true,
     ["Damage_Min"] = true,
     ["Raw DPS"] = function(wep)

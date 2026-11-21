@@ -35,16 +35,10 @@ local fonts_to_make = {
             -- Newsletter
             8,
         },
-        sizes_unscaled = {
-            -- Spawnmenu
-            24,
-            16,
-            12,
-        },
+        sizes_unscaled = {},
         sizes_unscaled_italic = {
-            -- Spawnmenu
-            32,
-            20,
+            -- Spawnmenu 2
+            16,
         }
     },
     ["LCD"] = {
