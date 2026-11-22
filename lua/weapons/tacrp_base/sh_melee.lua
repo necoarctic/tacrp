@@ -157,6 +157,7 @@ function SWEP:Melee(alt)
 
     self:SetLastMeleeTime(CurTime())
     self:SetNextMeleeTime(CurTime() + t)
+    self:SetAnimLockTime(CurTime() + t)
 end
 
 function SWEP:GetHeavyAttackDamage(base)

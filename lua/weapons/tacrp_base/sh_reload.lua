@@ -14,7 +14,7 @@ function SWEP:Reload()
     local stop = self:RunHook("Hook_PreReload")
     if stop then return end
 
-    if self:StillWaiting(true) then return end
+    if self:StillWaiting() then return end
 
     if self:GetJammed() then
         local t = self:PlayAnimation("jam", 0.75, true, true) or 0

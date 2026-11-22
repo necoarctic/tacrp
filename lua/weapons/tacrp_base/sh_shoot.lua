@@ -598,12 +598,20 @@ function SWEP:IsOneButtonAkimbo()
 	return TacRP.ConVars["onebutton_akimbo"]:GetBool() or self:GetOwner():GetInfoNum("tacrp_onebutton_akimbo_client", 0) != 0
 end
 
+-- these functions are called at the whim at the engine and so i won't deal with them
 function SWEP:PrimaryAttack()
 	if self:GetOwner():IsNPC() then
 		self:NPC_PrimaryAttack()
-		return
 	end
 
+	return
+end
+
+function SWEP:SecondaryAttack()
+	return
+end
+
+function SWEP:Player_Primary()
 	if self:GetOwner():KeyDown(IN_USE) then
 		self:Melee()
 		return
@@ -617,7 +625,7 @@ function SWEP:PrimaryAttack()
 	self:Weapon_Attack(false)
 end
 
-function SWEP:SecondaryAttack()
+function SWEP:Player_Secondary()
 	if not self:StillWaiting() and self:GetOwner():KeyDown(IN_USE) and self:GetOwner():KeyPressed(IN_ATTACK2) then
 		self:ToggleSafety()
 		self:SetAnimLockTime( CurTime() + 0.25 )
@@ -633,44 +641,45 @@ function SWEP:SecondaryAttack()
 	return
 end
 
+local COOLING_TIME = 0.5
 function SWEP:Weapon_Dryfire( gun2 )
 	local ret = self:RunHook("Hook_PreDryfire")
-	if ret != true then
-		if self:GetValue("DualAkimbo") then
-			// Don't play dryfire animation while the other gun is cooling
-			local coolingTime = 0.5
-			local rightCooling = self.LastSecondaryFireTime and CurTime() - self.LastSecondaryFireTime < coolingTime
-			if !rightCooling then
-				local rightEmpty = self:Clip2() < self:GetValue("AmmoPerShot")
-				if rightEmpty then
-					// Both guns empty - use standard dryfire
-					if self:GetBlindFire() then
-						self:PlayAnimation("blind_dryfire")
-					else
-						self:PlayAnimation("dryfire")
-					end
-				elseif self:HasSequence("dryfire_left") then
-					// Only left gun empty, right has ammo - use partial dryfire if available
-					self:PlayAnimation("dryfire_left")
-				end
-				// If no partial dryfire animation, skip animation (just play sound)
-			end
-		else
-			if self:GetBlindFire() then
-				self:PlayAnimation("blind_dryfire")
-			else
+	if ret == true then
+		return
+	end
+	
+	if self:GetValue("DualAkimbo") then
+		// Don't play dryfire animation while the other gun is cooling
+		local rightCooling = self.LastSecondaryFireTime and CurTime() - self.LastSecondaryFireTime < COOLING_TIME
+		if !rightCooling then
+			local rightEmpty = self:Clip2() < self:GetValue("AmmoPerShot")
+			if rightEmpty then
 				self:PlayAnimation("dryfire")
+			elseif self:HasSequence("dryfire_left") then
+				self:PlayAnimation("dryfire_left")
 			end
 		end
-		self:EmitSound(self:GetValue("Sound_DryFire"), 75, 100, 1, CHAN_ITEM)
-		self:SetBurstCount(0)
-		self:SetNextPrimaryFire(CurTime() + 0.2)
-		self:RunHook("Hook_PostDryfire")
+	else
+		if self:GetBlindFire() then
+			self:PlayAnimation("blind_dryfire")
+		else
+			self:PlayAnimation("dryfire")
+		end
 	end
+	self:EmitSound(self:GetValue("Sound_DryFire"), 75, 100, 1, CHAN_ITEM)
+	self:RunHook("Hook_PostDryfire")
 end
 
 function SWEP:Weapon_Attack( gun2 )
-	if self:StillWaiting( false, false, gun2 ) then
+	if self:StillWaitingSuper() then
+		return
+	end
+
+	if self:GetAnimLockTime() > CurTime() then
+		return
+	end
+
+	if self:A_GetNextFire( gun2 ) > CurTime() then
 		return
 	end
 

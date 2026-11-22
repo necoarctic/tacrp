@@ -7,16 +7,6 @@ function SWEP:Think()
 
     self:ThinkBurst()
 
-    if self:GetValue("DualAkimbo") then
-        if self:A_GetClip( false ) == 0 and self:A_GetClip( true ) == 0 then
-            self:Reload()
-        end
-    else
-        if self:A_GetClip( false ) == 0 then
-            self:Reload()
-        end
-    end
-
     if self:GetPatternCount() > 0 and (self:GetRecoilAmount() == 0 or self:GetReloading()) then
         self:SetPatternCount(0)
     end
@@ -134,6 +124,26 @@ function SWEP:Think()
     end
 
     self:RunHook("Hook_PostThink")
+
+    -- Replace engine calls of PrimaryAttack cause they don't run due to NextPrimaryFire
+    if owner:KeyDown(IN_ATTACK) then
+        self:Player_Primary()
+    end
+    if owner:KeyDown(IN_ATTACK2) then
+        self:Player_Secondary()
+    end
+
+    if owner:GetInfoNum("tacrp_autoreload", 0) ~= 0 then
+        if self:GetValue("DualAkimbo") then
+            if self:A_GetClip( false ) == 0 and self:A_GetClip( true ) == 0 then
+                self:Reload()
+            end
+        else
+            if self:A_GetClip( false ) == 0 then
+                self:Reload()
+            end
+        end
+    end
 end
 
 function SWEP:ThinkBurst()

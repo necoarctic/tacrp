@@ -19,7 +19,8 @@ local conVars = {
     {
         name = "autoreload",
         default = "1",
-        client = true
+        client = true,
+        userinfo = true,
     },
     {
         name = "autosave",
