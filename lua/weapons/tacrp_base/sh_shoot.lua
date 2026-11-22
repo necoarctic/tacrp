@@ -544,8 +544,11 @@ function SWEP:PlayShootAnim( gun2 )
 			if self:GetValue("LastShot") and self:Clip1() == self:GetValue("AmmoPerShot") then
 				self:PlayAnimation( self:TranslateSequence("dryfire"), mult, false )
 			end
-			-- TODO por que networked variable if not important over the network?
-			self:SetLastProceduralFireTime(CurTime())
+			if SINGLEPLAYER then
+				self:CallOnClient("SetLastProceduralFireTime", UnPredictedCurTime())
+			else
+				self:SetLastProceduralFireTime(UnPredictedCurTime())
+			end
 		else
 			self:PlayAnimation(seq .. "_iron", mult, false, idle)
 		end

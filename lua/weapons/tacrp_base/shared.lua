@@ -641,7 +641,6 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Float", "NWSightAmount")
     self:NetworkVar("Float", "BlindFireFinishTime")
     self:NetworkVar("Float", "HolsterTime")
-    self:NetworkVar("Float", "NWLastProceduralFireTime")
     self:NetworkVar("Float", "NWHoldBreathAmount")
     self:NetworkVar("Float", "Breath")
     self:NetworkVar("Float", "LockOnStartTime")
@@ -699,6 +698,14 @@ function SWEP:SetupDataTables()
     self:SetLockOnStartTime(0)
 end
 
+SWEP.LastProceduralFireTime = 0
+function SWEP:GetLastProceduralFireTime()
+    return self.LastProceduralFireTime
+end
+function SWEP:SetLastProceduralFireTime( value )
+    self.LastProceduralFireTime = value
+end
+
 function SWEP:OnDrop(owner)
     if self.PreviousZoom and IsValid(owner) then
         owner:SetCanZoom(true)
@@ -724,5 +731,4 @@ end
 
 clunpredictvar(SWEP, "SightAmount", "NWSightAmount", 0)
 -- clunpredictvar(SWEP, "SprintAmount", "NWSprintAmount", 0)
-clunpredictvar(SWEP, "LastProceduralFireTime", "NWLastProceduralFireTime", 0)
 clunpredictvar(SWEP, "HoldBreathAmount", "NWHoldBreathAmount", 0)

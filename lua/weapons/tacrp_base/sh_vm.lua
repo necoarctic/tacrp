@@ -168,7 +168,7 @@ function SWEP:GetViewModelPosition(pos, ang)
     ---------------------------------------------
     local procdata = self:GetValue("ProceduralIronFire")
     if IsValid(vm) and procdata then
-        local dt = math.max(0, UnPredictedCurTime() - self:GetLastProceduralFireTime() + self:GetPingOffsetScale())
+        local dt = math.max(0, UnPredictedCurTime() - self:GetLastProceduralFireTime())
 
         if dt <= procdata.tmax then
             self.ProceduralIronCleanup = false
