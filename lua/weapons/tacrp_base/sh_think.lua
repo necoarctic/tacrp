@@ -1,6 +1,5 @@
 local SINGLEPLAYER = game.SinglePlayer()
 function SWEP:Think()
-    local ct = CurTime()
     local owner = self:GetOwner()
 
     local stop = self:RunHook("Hook_PreThink")
@@ -189,7 +188,7 @@ function SWEP:ThinkBurst()
                 if burst_count ~= max_burst then
                     self:A_SetNextFire( gun2, math.max(
                         self:A_GetNextFire( gun2 ),
-                        ct + self:GetValue("PostBurstDelay")
+                        CurTime() + self:GetValue("PostBurstDelay")
                     ) )
                 end
                 self:A_SetBurstCount( gun2, 0 )

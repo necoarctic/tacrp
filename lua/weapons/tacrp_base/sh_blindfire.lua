@@ -253,7 +253,6 @@ function SWEP:ToggleBlindFire(bf)
     if diff then
         self:ToggleCustomize(false)
         self:ScopeToggle(0)
-        self:SetBlindFireFinishTime(CurTime() + (bf == TacRP.BLINDFIRE_KYS and 1 or 0.3))
     end
 
     self:SetBlindFireMode(bf)

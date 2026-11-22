@@ -42,7 +42,6 @@ function SWEP:Deploy()
     self:SetLastScopeTime(0)
     self:SetHolsterTime(0)
     self:SetPrimedGrenade(false)
-    self:SetBlindFireFinishTime(0)
     -- self:SetJammed(false)
     self:SetCharge(false)
 
