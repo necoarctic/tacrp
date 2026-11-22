@@ -5,35 +5,15 @@ function SWEP:Think()
     local stop = self:RunHook("Hook_PreThink")
     if stop then return end
 
-    local current_firemode = self:GetCurrentFiremode()
-    for i=1, 2 do
-        local gun2 = i == 2
-        local key = gun2 and IN_ATTACK2 or IN_ATTACK
-        local burst_count = self:A_GetBurstCount( gun2 )
-        if burst_count > 0 then
-            if current_firemode >= 0 then -- automatic weapons can have the "runaway burst" stat :v
-                if not owner:KeyDown( key ) then
-                    self:A_SetBurstCount( gun2, 0 )
-                end
-            elseif self:GetValue("RunawayBurst") then
-                if burst_count < -current_firemode then
-                    self:Weapon_Attack( gun2 )
-                else
-                    if self:GetValue("AutoBurst") or not owner:KeyDown( key ) then
-                        self:A_SetBurstCount( gun2, 0 )
-                    end
-                end
-            else
-                if not owner:KeyDown(key) then
-                    if burst_count ~= -current_firemode then
-                        self:A_SetNextFire( gun2, math.max(
-                            self:A_GetNextFire( gun2 ),
-                            ct + self:GetValue("PostBurstDelay")
-                        ) )
-                    end
-                    self:A_SetBurstCount( gun2, 0 )
-                end
-            end
+    self:ThinkBurst()
+
+    if self:GetValue("DualAkimbo") then
+        if self:A_GetClip( false ) == 0 and self:A_GetClip( true ) == 0 then
+            self:Reload()
+        end
+    else
+        if self:A_GetClip( false ) == 0 then
+            self:Reload()
         end
     end
 
@@ -154,4 +134,52 @@ function SWEP:Think()
     end
 
     self:RunHook("Hook_PostThink")
+end
+
+function SWEP:ThinkBurst()
+    local max_burst = self:GetMaxBurst()
+    local owner = self:GetOwner()
+    if not IsValid(owner) then
+        owner = nil
+    end
+    
+    for i=1, self:GetValue("DualAkimbo") and 2 or 1 do
+        local gun2 = i == 2
+        local key = gun2 and IN_ATTACK2 or IN_ATTACK
+        local attack_down = owner and owner:KeyDown( key ) or false
+        local burst_count = self:A_GetBurstCount( gun2 )
+        local dryfire = self:A_GetClip( gun2 ) < self:GetValue("AmmoPerShot") or self:GetJammed()
+        local max_burst = dryfire and 1 or max_burst
+        local burst_mode = max_burst ~= math.huge and max_burst ~= 1
+        
+        if burst_count == 0 then
+            continue
+        end
+
+        -- automatic weapons can have the "runaway burst" stat :v
+        if not burst_mode then
+            if not attack_down then
+                self:A_SetBurstCount( gun2, 0 )
+            end
+            continue
+        end
+            
+        if self:GetValue("RunawayBurst") then
+            if burst_count < max_burst then
+                self:Weapon_Attack( gun2 )
+            elseif not attack_down then
+                self:A_SetBurstCount( gun2, 0 )
+            end
+        else
+            if not attack_down then
+                if burst_count ~= max_burst then
+                    self:A_SetNextFire( gun2, math.max(
+                        self:A_GetNextFire( gun2 ),
+                        ct + self:GetValue("PostBurstDelay")
+                    ) )
+                end
+                self:A_SetBurstCount( gun2, 0 )
+            end
+        end
+    end
 end
