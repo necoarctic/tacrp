@@ -1,3 +1,4 @@
+local SINGLEPLAYER = game.SinglePlayer()
 function SWEP:DoDeployAnimation()
     if self:GetReloading() and self:GetValue("MidReload") and !self:GetValue("ShotgunReload") and self:HasSequence("midreload") then
         local t = self:PlayAnimation("midreload", self:GetValue("ReloadTimeMult"), true, true)
@@ -71,12 +72,12 @@ function SWEP:Deploy()
         self:SetupModel(true)
         self:SetupModel(false)
         self.LastHintLife = CurTime()
-    elseif !game.SinglePlayer() then
+    elseif !SINGLEPLAYER then
         self:DoBodygroups(true) -- Not sure why this is necessary
         self:DoBodygroups(false)
     end
 
-    if (game.SinglePlayer() or CLIENT) and !TacRP.NewsPopup and TacRP.ConVars["checknews"]:GetBool() then
+    if (SINGLEPLAYER or CLIENT) and !TacRP.NewsPopup and TacRP.ConVars["checknews"]:GetBool() then
         TacRP.NewsPopup = true
         RunConsoleCommand("tacrp_news_check")
     end
@@ -110,7 +111,7 @@ local v1 = Vector(1, 1, 1)
 local a0 = Angle(0, 0, 0)
 
 function SWEP:ClientHolster()
-    if game.SinglePlayer() then
+    if SINGLEPLAYER then
         self:CallOnClient("ClientHolster")
     end
 
@@ -128,7 +129,7 @@ function SWEP:ClientHolster()
 end
 
 function SWEP:Holster(wep)
-    if game.SinglePlayer() and CLIENT then return end
+    if SINGLEPLAYER and CLIENT then return end
 
     if CLIENT and self:GetOwner() != LocalPlayer() then return end
 
@@ -137,6 +138,7 @@ function SWEP:Holster(wep)
     end
 
     self:SetCustomize(false)
+    self:SetPrimedGrenade(false)
 
     if self:GetReloading() then
         if self:GetValue("ShotgunReload") then
@@ -147,7 +149,6 @@ function SWEP:Holster(wep)
             self:CancelReload(false)
         end
     end
-
 
     if self:GetHolsterTime() > CurTime() then return false end -- or self:GetPrimedGrenade()
 
@@ -166,7 +167,7 @@ function SWEP:Holster(wep)
             net.Broadcast()
         end
 
-        if game.SinglePlayer() then
+        if SINGLEPLAYER then
             self:CallOnClient("KillModel")
         else
             if CLIENT then
@@ -264,7 +265,7 @@ end
 function SWEP:ClientInitialize()
     if SERVER then return end
 
-    if game.SinglePlayer() and SERVER and IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
+    if SINGLEPLAYER and SERVER and IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
         self:CallOnClient("ClientInitialize")
     end
 
@@ -280,7 +281,7 @@ function SWEP:ClientInitialize()
 end
 
 function SWEP:SetBaseSettings()
-    if game.SinglePlayer() and SERVER and IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
+    if SINGLEPLAYER and SERVER and IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
         self:CallOnClient("SetBaseSettings")
     end
 
