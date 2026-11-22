@@ -133,9 +133,8 @@ SWEP.CrosshairStatic = true
 function SWEP:PrimaryAttack()
     local stop = self:RunHook("Hook_PreShoot")
     if stop then return end
-
+    if self:GetAnimLockTime() > CurTime() then return end
     self:Melee()
-    return
 end
 
 function SWEP:ThinkSprint()

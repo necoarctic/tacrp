@@ -12,6 +12,7 @@ function SWEP:StillWaiting()
 	local ct = CurTime()
 	if self:A_GetNextFire( false ) > ct then return true end
 	if self:A_GetNextFire( true ) > ct then return true end
+	if self:GetNextMeleeTime() > ct then return true end
 	if self:GetAnimLockTime() > ct then return true end
 
 	return false
@@ -811,6 +812,7 @@ function SWEP:Weapon_Attack( gun2 )
 	local ct = CurTime()
 	if self:GetAnimLockTime() > ct then return end
 	if self:A_GetNextFire( gun2 ) > ct then return end
+	if self:GetNextMeleeTime() > ct then return end
 	if self:GetSafe() then return end
 	if self:GetBiocodeLocked() then return end
 
