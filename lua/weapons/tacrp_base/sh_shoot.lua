@@ -700,7 +700,22 @@ function SWEP:Player_Primary()
 		self:SetAnimLockTime( CurTime() + 0.25 )
 	end
 
-	self:Weapon_Attack(false)
+	if self:GetValue("DualAkimbo") and self:IsOneButtonAkimbo() then
+		if self:GetMaxBurst() > 1 then
+			self:Weapon_Attack( false )
+			self:Weapon_Attack( true )
+		else
+			local active
+			if self:A_GetBurstCount( false ) ~= self:A_GetBurstCount( true ) then
+				active = self:A_GetBurstCount( false ) < self:A_GetBurstCount( true )
+			else
+				active = self:A_GetClip( false ) < self:A_GetClip( true )
+			end
+			self:Weapon_Attack( active )
+		end
+	else
+		self:Weapon_Attack(false)
+	end
 end
 
 function SWEP:Player_Secondary()
@@ -719,8 +734,58 @@ function SWEP:Player_Secondary()
 	return
 end
 
+function SWEP:ThinkBurst()
+	local max_burst = self:GetMaxBurst()
+	local owner = self:GetOwner()
+	if not IsValid(owner) then
+		owner = nil
+	end
+	
+	for i=1, self:GetValue("DualAkimbo") and 2 or 1 do
+		local gun2 = i == 2
+		local key = gun2 and IN_ATTACK2 or IN_ATTACK
+		if self:IsOneButtonAkimbo() then
+			key = IN_ATTACK
+		end
+		local attack_down = owner and owner:KeyDown( key ) or false
+		local burst_count = self:A_GetBurstCount( gun2 )
+		local dryfire = self:A_GetClip( gun2 ) < self:GetValue("AmmoPerShot") or self:GetJammed()
+		local max_burst = dryfire and 1 or max_burst
+		local burst_mode = max_burst ~= math.huge and max_burst ~= 1
+		
+		if burst_count == 0 then
+			continue
+		end
+
+		-- automatic weapons can have the "runaway burst" stat :v
+		if not burst_mode then
+			if not attack_down then
+				self:A_SetBurstCount( gun2, 0 )
+			end
+			continue
+		end
+			
+		if self:GetValue("RunawayBurst") then
+			if burst_count < max_burst then
+				self:Weapon_Attack( gun2 )
+			elseif not attack_down then
+				self:A_SetBurstCount( gun2, 0 )
+			end
+		else
+			if not attack_down then
+				if burst_count ~= max_burst then
+					self:A_SetNextFire( gun2, math.max(
+						self:A_GetNextFire( gun2 ),
+						CurTime() + self:GetValue("PostBurstDelay")
+					) )
+				end
+				self:A_SetBurstCount( gun2, 0 )
+			end
+		end
+	end
+end
+
 function SWEP:Weapon_Dryfire( gun2 )
-	print( debug.Trace() )
 	local ret = self:RunHook("Hook_PreDryfire")
 	if ret == true then
 		return
@@ -781,10 +846,8 @@ function SWEP:Weapon_Attack( gun2 )
 		return
 	end
 
-	if SINGLEPLAYER then
-		if SERVER then
-			self:PlayShootSound()
-		end
+	if SINGLEPLAYER and ct - self:A_GetLastShot( not gun2 ) < 0.01 then
+		timer.Simple( 0.03, function() self:PlayShootSound() end)
 	else
 		self:PlayShootSound()
 	end
@@ -816,10 +879,9 @@ function SWEP:Weapon_Attack( gun2 )
 				self:A_SetBurstCount( gun2, 0 )
 			end
 		end
-	end
-
-	if self:A_GetClip( gun2 ) == 0 then
-		self:A_SetBurstCount( gun2, 0 )
+		if self:A_GetClip( gun2 ) == 0 then
+			self:A_SetBurstCount( gun2, 0 )
+		end
 	end
 
 	self:A_SetNthShot( gun2, self:A_GetNthShot( gun2 ) + 1 )
