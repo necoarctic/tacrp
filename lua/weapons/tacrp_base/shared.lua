@@ -564,6 +564,10 @@ SWEP.AccurateCrosshair = true
 SWEP.DrawWeaponInfoBox = false
 SWEP.UseHands = true
 
+SWEP.Grenade_Delay = 1.5
+SWEP.Grenade_ThrowDelay = 0.75
+SWEP.Grenade_AnimLockTime = 1
+
 SWEP.Shields = {}
 
 SWEP.CurrentAnimation = ""
@@ -635,8 +639,8 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Float", "SprintLockTime")
     self:NetworkVar("Float", "LastScopeTime")
     self:NetworkVar("Float", "LastMeleeTime")
-    self:NetworkVar("Float", "PrimedGrenadeTime")
-    self:NetworkVar("Float", "StartPrimedGrenadeTime")
+    self:NetworkVar("Float", "NextGrenadeTime")
+    self:NetworkVar("Float", "ThrowGrenadeTime")
     self:NetworkVar("Float", "ReloadFinishTime")
     self:NetworkVar("Float", "NWSightAmount")
     self:NetworkVar("Float", "BlindFireFinishTime")
@@ -644,6 +648,7 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Float", "NWHoldBreathAmount")
     self:NetworkVar("Float", "Breath")
     self:NetworkVar("Float", "LockOnStartTime")
+    self:NetworkVar("Float", "NextMeleeTime")
 
     self:NetworkVar("Int", "BurstCount")
     self:NetworkVar("Int", "ScopeLevel")
@@ -696,6 +701,14 @@ function SWEP:SetupDataTables()
     self:SetHoldingBreath(false)
     self:SetLockOnEntity(NULL)
     self:SetLockOnStartTime(0)
+end
+
+SWEP.StartPrimedGrenadeTime = 0
+function SWEP:GetStartPrimedGrenadeTime()
+    return self.StartPrimedGrenadeTime
+end
+function SWEP:SetStartPrimedGrenadeTime( value )
+    self.StartPrimedGrenadeTime = value
 end
 
 SWEP.LastProceduralFireTime = 0

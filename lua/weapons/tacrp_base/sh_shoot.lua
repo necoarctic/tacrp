@@ -1,9 +1,17 @@
-function SWEP:StillWaiting(cust, reload, gun2)
-	if self:A_GetNextFire( gun2 ) > CurTime() then return true end
-	if self:GetAnimLockTime() > CurTime() then return true end
-	if !cust and self:GetBlindFireFinishTime() > CurTime() then return true end
-	if !cust and self:GetCustomize() then return true end
+-- states you DEFINITELY would not want to do anything else in
+function SWEP:StillWaitingSuper()
+	if self:GetHolsterTime() ~= 0 then return true end
+	if self:GetCustomize() then return true end
 	if self:GetPrimedGrenade() then return true end
+
+	return false
+end
+
+function SWEP:StillWaiting()
+	if self:StillWaitingSuper() then return true end
+	if self:A_GetNextFire( false ) > CurTime() then return true end
+	if self:A_GetNextFire( true ) > CurTime() then return true end
+	if self:GetAnimLockTime() > CurTime() then return true end
 
 	return false
 end
@@ -721,7 +729,7 @@ function SWEP:Weapon_Attack( gun2 )
 		self:A_SetBurstCount( gun2, 0 )
 	end
 
-	self:SetNthShot( self:GetNthShot() + 1 )
+	self:A_SetNthShot( gun2, self:A_GetNthShot( gun2 ) + 1 )
 end
 
 function SWEP:Weapon_FireBullet()
@@ -871,6 +879,9 @@ end
 function SWEP:A_GetMaxClip( gun2 )
 	return gun2 and self:GetMaxClip2() or self:GetMaxClip1()
 end
+function SWEP:A_GetNthShot( gun2 )
+	return gun2 and self:GetNthShot2() or self:GetNthShot()
+end
 
 function SWEP:A_SetNextFire( gun2, value )
 	if gun2 then
@@ -891,5 +902,12 @@ function SWEP:A_SetClip( gun2, value )
 		self:SetClip2( value )
 	else
 		self:SetClip1( value )
+	end
+end
+function SWEP:A_SetNthShot( gun2, value )
+	if gun2 then
+		self:SetNthShot2( value )
+	else
+		self:SetNthShot( value )
 	end
 end

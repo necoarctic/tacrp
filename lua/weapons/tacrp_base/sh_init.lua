@@ -198,9 +198,10 @@ function SWEP:Holster(wep)
             reverse = -1
         end
 
-        local animation = self:PlayAnimation(anim, self:GetValue("HolsterTimeMult") * reverse, true, true)
+        local animation = self:PlayAnimation(anim, self:GetValue("HolsterTimeMult") * reverse, false, true)
         self:SetHolsterTime(CurTime() + (animation or 0))
         self:SetHolsterEntity(wep)
+        self:SetAnimLockTime( math.huge )
 
         self:SetScopeLevel(0)
         self:KillTimers()

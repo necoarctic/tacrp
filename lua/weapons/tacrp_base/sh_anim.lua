@@ -39,14 +39,8 @@ function SWEP:PlayAnimation(seq, mult, lock, doidle)
 
     if lock then
         self:SetAnimLockTime(CurTime() + time)
-        if self:GetValue("DualAkimbo") then
-            self:SetNextSecondaryFire(CurTime() + time)
-        end
     else
         self:SetAnimLockTime(0)
-        if self:GetValue("DualAkimbo") then
-            self:SetNextSecondaryFire(0)
-        end
     end
 
     if doidle and !self.NoIdle then
