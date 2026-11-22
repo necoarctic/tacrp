@@ -627,7 +627,7 @@ function SWEP:PlayShootAnim( gun2 )
 	end
 
 	local procedural_iron = self:DoProceduralIrons()
-	if self:GetScopeLevel() > 0 and ( procedural_iron or self:HasSequence(seq .. "_iron") ) and !self:GetPeeking() then
+	if self:GetScopeLevel() ~= 0 and not self:GetPeeking() then
 		if procedural_iron then
 			if self:GetValue("LastShot") and self:Clip1() == self:GetValue("AmmoPerShot") then
 				self:PlayAnimation( self:TranslateSequence("dryfire"), mult, false )
@@ -637,17 +637,23 @@ function SWEP:PlayShootAnim( gun2 )
 			elseif IsFirstTimePredicted() then
 				self:SetLastProceduralFireTime(UnPredictedCurTime())
 			end
-		else
+			return
+		elseif self:HasSequence(seq .. "_iron") then
 			self:PlayAnimation(seq .. "_iron", mult, false, idle)
+			return
 		end
-		return
 	end
 
-	local best_seq = seq .. self:A_GetBurstCount( false )+1
+	local best_seq = seq .. 1
+	if not self:InBipod() and (self:GetScopeLevel() == 0 or self:GetPeeking()) then
+		best_seq = seq .. self:A_GetBurstCount(gun2)+1
+	end
+	best_seq = self:TranslateSequence(best_seq)
 	if not self:HasSequence(best_seq) then
 		best_seq = nil
-		for i=1, self:A_GetBurstCount( false ) do
+		for i=1, self:A_GetBurstCount(gun2) do
 			local test_seq = seq .. i
+			test_seq = self:TranslateSequence(test_seq)
 			if self:HasSequence(test_seq) then
 				best_seq = test_seq
 			else
