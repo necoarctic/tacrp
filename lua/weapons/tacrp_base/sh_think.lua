@@ -1,3 +1,4 @@
+local SINGLEPLAYER = game.SinglePlayer()
 function SWEP:Think()
     local ct = CurTime()
     local owner = self:GetOwner()
@@ -126,11 +127,14 @@ function SWEP:Think()
     self:RunHook("Hook_PostThink")
 
     -- Replace engine calls of PrimaryAttack cause they don't run due to NextPrimaryFire
-    if owner:KeyDown(IN_ATTACK) then
-        self:Player_Primary()
-    end
-    if owner:KeyDown(IN_ATTACK2) then
-        self:Player_Secondary()
+    -- they don't run on the CLIENT in singleplayer
+    if SINGLEPLAYER and SERVER or not SINGLEPLAYER then
+        if owner:KeyDown(IN_ATTACK) then
+            self:Player_Primary()
+        end
+        if owner:KeyDown(IN_ATTACK2) then
+            self:Player_Secondary()
+        end
     end
 
     if owner:GetInfoNum("tacrp_autoreload", 0) ~= 0 then
