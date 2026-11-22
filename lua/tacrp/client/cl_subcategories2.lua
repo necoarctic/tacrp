@@ -19,7 +19,7 @@ local COLOR_FILTERED_ICON = Color( 0, 0, 0, 100 )
 local icon_cache = {}
 
 hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree, p_node)
-	if not TacRP.ConVars["h2_enable"]:GetBool() then
+	if not TacRP.ConVars["s2_enable"]:GetBool() then
 		return
 	end
 	local success, failure = pcall(function()
