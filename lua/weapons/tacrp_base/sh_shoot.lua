@@ -494,44 +494,122 @@ local SINGLEPLAYER = game.SinglePlayer()
 
 function SWEP:PlayShootSound()
 	local pvar = self:GetValue("ShootPitchVariance")
-	local sshoot = self:GetValue("Sound_Shoot")
-	if self:GetValue("Silencer") then
-		sshoot = self:GetValue("Sound_Shoot_Silenced")
-	end
+	local sshoot = self:GetValue("Silencer") and self:GetValue("Sound_Shoot_Silenced") or self:GetValue("Sound_Shoot")
 	if istable(sshoot) then
 		sshoot = table.Random(sshoot)
 	end
-	if self:GetValue("Sound_ShootAdd") then
-		self:EmitSound(self:GetValue("Sound_ShootAdd"), self:GetValue("Vol_Shoot"), self:GetValue("Pitch_Shoot") + util.SharedRandom("TacRP_sshoot", -pvar, pvar), self:GetValue("Loudness_Shoot"), CHAN_BODY)
+	local volume = self:GetValue("Vol_Shoot")
+	local pitch = self:GetValue("Pitch_Shoot") + util.SharedRandom("TacRP_sshoot", -pvar, pvar)
+	local loudness = self:GetValue("Loudness_Shoot")
+
+	local sshoot_add = self:GetValue("Sound_ShootAdd")
+	if sshoot_add then
+		self:EmitSound(
+			sshoot_add,
+			volume,
+			pitch,
+			loudness,
+			CHAN_BODY
+		)
 	end
-	-- if we die from suicide, EmitSound will not play, so do this instead
-	if self:GetBlindFireMode() == TacRP.BLINDFIRE_KYS then
-		if SERVER then
-			sound.Play(sshoot, self:GetMuzzleOrigin(), self:GetValue("Vol_Shoot"), self:GetValue("Pitch_Shoot") + util.SharedRandom("TacRP_sshoot", -pvar, pvar), self:GetValue("Loudness_Shoot"))
-		end
-	else
-		self:EmitSound(sshoot, self:GetValue("Vol_Shoot"), self:GetValue("Pitch_Shoot") + util.SharedRandom("TacRP_sshoot", -pvar, pvar), self:GetValue("Loudness_Shoot"), CHAN_WEAPON)
-	end
+	self:EmitSound(
+		sshoot,
+		volume,
+		pitch,
+		loudness,
+		CHAN_WEAPON
+	)
 end
+
+local CLOSE_SIMULT = 0.1
+local CLOSE_RECENT = 0.5
+local LEFT, RIGHT = false, true
+
+local anim_akimbo = {
+	["normal"] = {
+		[RIGHT] = "shoot_right",
+		[LEFT] = "shoot_left",
+	},
+	["this_last"] = {
+		[RIGHT] = "shoot_right_second_2_lastshot",
+		[LEFT] = "shoot_left_second_2_lastshot",
+	},
+	["this_last_other_empty"] = {
+		[RIGHT] = "shoot_right_lastshot",
+		[LEFT] = "shoot_left_lastshot",
+	},
+	["this_normal_other_empty"] = {
+		[RIGHT] = "shoot_right_second_empty",
+		[LEFT] = "shoot_left_second_empty",
+	},
+	["this_normal_other_recent"] = {
+		[RIGHT] = "shoot_right_cooling",
+		[LEFT] = "shoot_left_cooling",
+	},
+	-- simulataneous
+	["both"] = {
+		[RIGHT] = "shoot_both",
+		[LEFT] = "shoot_both",
+	},
+	["both_empty"] = {
+		[RIGHT] = "shoot_both_lastshot",
+		[LEFT] = "shoot_both_lastshot",
+	},
+	["both_this_empty"] = {
+		[RIGHT] = "shoot_both_right_lastshot",
+		[LEFT] = "shoot_both_left_lastshot",
+	},
+	-- dryfire
+	["dryfire"] = {
+		[RIGHT] = "dryfire_right",
+		[LEFT] = "dryfire_left",
+	},
+	["dryfire_both"] = {
+		[RIGHT] = "dryfire",
+		[LEFT] = "dryfire",
+	},
+}
 
 function SWEP:PlayShootAnim( gun2 )
 	local seq = "fire"
 	local idle = true
 	local mult = self:GetValue("ShootTimeMult")
+	local ct = CurTime()
+
+	if self:GetValue("DualAkimbo") then
+		local ammo_per_shot = self:GetValue("AmmoPerShot")
+		local empty_other = self:A_GetClip( not gun2 ) < ammo_per_shot
+		local empty_current = self:A_GetClip( gun2 ) <= ammo_per_shot
+
+		if ct - self:A_GetLastShot( not gun2 ) < CLOSE_SIMULT then -- opposite gun fired simulataneously
+			if empty_current and empty_other then -- were dry
+				seq = anim_akimbo["both_empty"][gun2]
+			elseif empty_current then -- im dry
+				seq = anim_akimbo["both_this_empty"][gun2]
+			else
+				seq = anim_akimbo["both"][gun2]
+			end
+
+		elseif empty_current and empty_other then -- this gun fired its last shot and now both guns are empty
+			seq = anim_akimbo["this_last_other_empty"][gun2]
+		elseif empty_current then -- this gun just fired it's last shot
+			seq = anim_akimbo["this_last"][gun2]
+		elseif empty_other then -- opposite gun is empty while we are firing
+			seq = anim_akimbo["this_normal_other_empty"][gun2]
+		elseif ct - self:A_GetLastShot( not gun2 ) < CLOSE_RECENT then -- opposite gun was fired recently
+			seq = anim_akimbo["this_normal_other_recent"][gun2]
+		else
+			seq = anim_akimbo["normal"][gun2]
+		end
+		self:PlayAnimation(seq, mult, false, idle)
+		return
+	end
 
 	if self:GetValue("Akimbo") then
-		if self:GetValue("DualAkimbo") then
-			if gun2 then
-				seq = "shoot_right"
-			else
-				seq = "shoot_left"
-			end
+		if self:GetNthShot() % 2 == 0 then
+			seq = "shoot_left"
 		else
-			if self:GetNthShot() % 2 == 0 then
-				seq = "shoot_left"
-			else
-				seq = "shoot_right"
-			end
+			seq = "shoot_right"
 		end
 		self:PlayAnimation(seq, mult, false, idle)
 		return
@@ -554,7 +632,7 @@ function SWEP:PlayShootAnim( gun2 )
 			end
 			if SINGLEPLAYER then
 				self:CallOnClient("SetLastProceduralFireTime", UnPredictedCurTime())
-			else
+			elseif IsFirstTimePredicted() then
 				self:SetLastProceduralFireTime(UnPredictedCurTime())
 			end
 		else
@@ -641,23 +719,22 @@ function SWEP:Player_Secondary()
 	return
 end
 
-local COOLING_TIME = 0.5
 function SWEP:Weapon_Dryfire( gun2 )
+	print( debug.Trace() )
 	local ret = self:RunHook("Hook_PreDryfire")
 	if ret == true then
 		return
 	end
 	
 	if self:GetValue("DualAkimbo") then
-		// Don't play dryfire animation while the other gun is cooling
-		local rightCooling = self.LastSecondaryFireTime and CurTime() - self.LastSecondaryFireTime < COOLING_TIME
-		if !rightCooling then
-			local rightEmpty = self:Clip2() < self:GetValue("AmmoPerShot")
-			if rightEmpty then
-				self:PlayAnimation("dryfire")
-			elseif self:HasSequence("dryfire_left") then
-				self:PlayAnimation("dryfire_left")
+		if not (CurTime() - self:A_GetLastShot( not gun2 ) < CLOSE_RECENT) then -- opposite gun was fired recently
+			local seq
+			if self:A_GetClip( not gun2 ) == 0 then
+				seq = anim_akimbo["dryfire_both"][gun2]
+			else
+				seq = anim_akimbo["dryfire"][gun2]
 			end
+			self:PlayAnimation( seq )
 		end
 	else
 		if self:GetBlindFire() then
@@ -671,6 +748,7 @@ function SWEP:Weapon_Dryfire( gun2 )
 end
 
 function SWEP:Weapon_Attack( gun2 )
+	local ct = CurTime()
 	if self:StillWaitingSuper() then
 		return
 	end
@@ -691,19 +769,25 @@ function SWEP:Weapon_Attack( gun2 )
 		return
 	end
 
-	local dryfire = self:A_GetClip( gun2 ) < self:GetValue( "AmmoPerShot" ) or self:GetJammed()
+	local dryfire = self:A_GetClip( gun2 ) < self:GetValue("AmmoPerShot") or self:GetJammed()
 	local max_burst = dryfire and 1 or self:GetMaxBurst()
 	if self:A_GetBurstCount( gun2 ) >= max_burst then
 		return
 	end
-
+	
 	if dryfire then
 		self:Weapon_Dryfire( gun2 )
 		self:A_SetBurstCount( gun2, 1 )
 		return
 	end
 
-	self:PlayShootSound()
+	if SINGLEPLAYER then
+		if SERVER then
+			self:PlayShootSound()
+		end
+	else
+		self:PlayShootSound()
+	end
 	self:PlayShootAnim( gun2 )
 
 	self:ApplyRecoil()
@@ -919,4 +1003,9 @@ function SWEP:A_SetNthShot( gun2, value )
 	else
 		self:SetNthShot( value )
 	end
+end
+
+-- this one is just used by the akimbo firing animation
+function SWEP:A_GetLastShot( gun2 )
+	return self:A_GetNextFire( gun2 ) - (60/self:GetRPM())
 end
