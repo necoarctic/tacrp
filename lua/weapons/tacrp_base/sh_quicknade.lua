@@ -7,7 +7,8 @@ end
 
 function SWEP:PrimeGrenade()
     if !self:IsQuickNadeAllowed() and !self:GetValue("PrimaryGrenade") then return end
-    if self:StillWaiting(nil, true) then return end
+    if self:A_GetNextFire( false ) > CurTime() then return end
+    if self:A_GetNextFire( true ) > CurTime() then return end
     if self:GetPrimedGrenade() then return end
 
     if engine.ActiveGamemode() == "terrortown" and GetRoundState() == ROUND_PREP and ((TTT2 and !GetConVar("ttt_nade_throw_during_prep"):GetBool()) or (!TTT2 and GetConVar("ttt_no_nade_throw_during_prep"):GetBool())) then
@@ -328,7 +329,7 @@ function SWEP:ThinkGrenade()
     end
 
     local ply = self:GetOwner()
-    if ply:KeyPressed(IN_GRENADE1) then
+    if ply:KeyDown(IN_GRENADE1) then
         self:PrimeGrenade()
     elseif !tobool(ply:GetInfo("tacrp_nademenu")) and ply:KeyPressed(self.GrenadeMenuKey) then
         local selected_nade = self:GetGrenadeIndex()

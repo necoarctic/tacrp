@@ -667,6 +667,10 @@ function SWEP:Weapon_Attack( gun2 )
 		return
 	end
 
+	if self:GetBiocodeLocked() then
+		return
+	end
+
 	local dryfire = self:A_GetClip( gun2 ) < self:GetValue( "AmmoPerShot" ) or self:GetJammed()
 	local max_burst = dryfire and 1 or self:GetMaxBurst()
 	if self:A_GetBurstCount( gun2 ) >= max_burst then

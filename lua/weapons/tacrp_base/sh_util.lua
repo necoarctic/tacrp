@@ -89,3 +89,7 @@ function SWEP:UseAltRecoil(base)
     if valfunc(self, "NeverAltRecoil") then return false end
     return TacRP.ConVars["altrecoil"]:GetBool()
 end
+
+function SWEP:GetBiocodeLocked()
+	return DarkRP and self:GetNWBool("TacRP_PoliceBiocode") and !self:GetOwner():isCP()
+end
