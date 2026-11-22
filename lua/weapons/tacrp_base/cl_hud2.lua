@@ -78,7 +78,7 @@ local function H2_DrawAmmo( ply, wep )
 	)
 
 	-- firemode
-	if tacrp then
+	if tacrp and not wep:GetValue("PrimaryMelee") and not wep:GetValue("PrimaryGrenade") then
 		local safety = wep:GetSafe()
 		local fm_text = safety and "Safety" or get_firemode_text( wep, wep:GetCurrentFiremode() )
 		local different = safety or (wep:GetCurrentFiremode() ~= wep:GetNextFiremode())
