@@ -96,7 +96,7 @@ ENT.TopAttacking = false
 ENT.StartSuperSteerTime = 0
 
 function ENT:SetupDataTables()
-    self:NetworkVar("Entity", 0, "Weapon")
+    self:NetworkVar("Entity", "Weapon")
 end
 
 function ENT:Initialize()
