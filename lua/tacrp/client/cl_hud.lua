@@ -75,7 +75,7 @@ hook.Add("HUDShouldDraw", "TacRP_HideHUD", function(name)
     local wpn = LocalPlayer():GetActiveWeapon()
 
     if IsValid(wpn) and wpn.ArcticTacRP and
-            ((TacRP.ConVars["drawhud"]:GetBool() and TacRP.ConVars["hud"]:GetBool()) or wpn:GetCustomize()) and hide[name]  then
+            ((TacRP.ConVars["drawhud"]:GetBool() and not TacRP.ConVars["h2_enable"]:GetBool() and TacRP.ConVars["hud"]:GetBool()) or wpn:GetCustomize()) and hide[name]  then
         return false
     end
 end)

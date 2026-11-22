@@ -421,7 +421,7 @@ function SWEP:DrawHUDBackground()
     end
 
     if !self:GetCustomize() then
-        if TacRP.ConVars["hud"]:GetBool() and TacRP.ConVars["drawhud"]:GetBool() and engine.ActiveGamemode() != "terrortown" then
+        if not TacRP.ConVars["h2_enable"]:GetBool() and TacRP.ConVars["hud"]:GetBool() and TacRP.ConVars["drawhud"]:GetBool() and engine.ActiveGamemode() != "terrortown" then
 
             local w = TacRP.SS(110)
             local h = TacRP.SS(40)
