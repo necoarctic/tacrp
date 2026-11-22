@@ -1,13 +1,17 @@
 function SWEP:Reload()
-    if self:GetOwner():IsNPC() then
+    local owner = self:GetOwner()
+    if owner:IsNPC() then
         self:NPC_Reload()
         return
     end
 
-    if self:GetOwner():KeyDown(IN_USE) and self:GetOwner():KeyPressed(IN_RELOAD)
+    if owner:KeyDown(IN_USE) and owner:KeyDown(IN_RELOAD)
         and self:GetValue("Firemodes") and self:GetFiremodeAmount() > 1 then
-        self:SwitchFiremode()
-        self:EmitSound("tacrp/weapons/pdw/fire_select-1.wav", 75, 100, 1, CHAN_ITEM)
+        if owner:KeyPressed(IN_RELOAD) then
+            self:SwitchFiremode()
+            self:EmitSound("tacrp/weapons/pdw/fire_select-1.wav", 75, 100, 1, CHAN_ITEM)
+            self:SetAnimLockTime( CurTime() + 0.2 )
+        end
         return
     end
 
@@ -18,7 +22,7 @@ function SWEP:Reload()
 
     if self:GetJammed() then
         local t = self:PlayAnimation("jam", 0.75, true, true) or 0
-        self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_CANCEL_RELOAD, t * 1000)
+        owner:DoCustomAnimEvent(PLAYERANIMEVENT_CANCEL_RELOAD, t * 1000)
         self:SetJammed(false)
         return
     end
@@ -56,7 +60,7 @@ function SWEP:Reload()
     
     local t = self:PlayAnimation(anim, mult, true, true)
     
-    self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD, t * 1000)
+    owner:DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD, t * 1000)
     
     if SERVER then
         self:SetTimer(self.DropMagazineTime * mult, function()
