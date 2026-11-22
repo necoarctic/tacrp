@@ -458,11 +458,27 @@ function SWEP:C2_Open()
 								surface.SetDrawColor( COLOR_OUTLINE )
 								C2_Gradient_Left( 0, 0, w, 1 )
 							end
+						elseif data.Stat_Pro or data.Stat_Con then
+							local detail = p_hint:Add("Panel")
+							detail:Dock( TOP )
+							detail:SetTall( s(size) )
+							local col = data.Stat_Pro and COLOR_POSITIVE or COLOR_NEGATIVE
+							function detail:Paint( w, h )
+								surface.SetDrawColor( col )
+								surface.DrawRect( h/2 - 4/2, h/2 - 4/2, 4, 4 )
+								C2_DrawText(
+									data.Text,
+									"TacRP_STD_"..size,
+									h/2 + 4/2 + s(4), 0,
+									col
+								)
+							end
 						else
 							local detail = p_hint:Add("Panel")
 							detail:Dock( TOP )
 							local lines = TacRP.MultiLineText(data.Text, s(wide - 4 - 4), "TacRP_STD_"..size )
 							detail:SetTall( s(#lines * size) )
+							detail:DockMargin( 0, 0, 0, s(1) )
 							function detail:Paint( w, h )
 								for i, line in ipairs(lines) do
 									i = i - 1
@@ -960,6 +976,18 @@ local pres = {
 		["tacrp_c2_2_s"]	= 0.8,
 		["tacrp_c2_2_v"]	= 1,
 		["tacrp_c2_2_a"]	= 0.15,
+		["tacrp_c2_graddown"]	= false,
+		["tacrp_c2_classic"]	= false,
+	},
+	["Pink Peony"] = {
+		["tacrp_c2_1_h"]	= 36,
+		["tacrp_c2_1_s"]	= 0.16,
+		["tacrp_c2_1_v"]	= 1,
+		["tacrp_c2_1_a"]	= 0.24,
+		["tacrp_c2_2_h"]	= 300,
+		["tacrp_c2_2_s"]	= 0.5,
+		["tacrp_c2_2_v"]	= 0.75,
+		["tacrp_c2_2_a"]	= 0.4,
 		["tacrp_c2_graddown"]	= false,
 		["tacrp_c2_classic"]	= false,
 	},

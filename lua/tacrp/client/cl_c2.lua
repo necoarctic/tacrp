@@ -27,14 +27,16 @@ function TacRP.C2.GetTargetDataForAttachment( adata )
 	if adata.Pros then
 		for _, text in ipairs(adata.Pros) do
 			table.insert( tdata, {
-				Text = "+ " .. TacRP:TryTranslate( text ),
+				Text = TacRP:TryTranslate( text ),
+				Stat_Pro = true,
 			})
 		end
 	end
 	if adata.Cons then
 		for _, text in ipairs(adata.Cons) do
 			table.insert( tdata, {
-				Text = "- " .. TacRP:TryTranslate( text ),
+				Text = TacRP:TryTranslate( text ),
+				Stat_Con = true,
 			})
 		end
 	end
