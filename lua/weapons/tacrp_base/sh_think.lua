@@ -1,79 +1,38 @@
 function SWEP:Think()
+    local ct = CurTime()
     local owner = self:GetOwner()
 
     local stop = self:RunHook("Hook_PreThink")
     if stop then return end
 
-    local cfm = self:GetCurrentFiremode()
-    if self:GetValue("RunawayBurst") and cfm < 0 then
-        if self:GetBurstCount() >= -cfm then
-            self:SetBurstCount(0)
-            self:SetNextPrimaryFire(CurTime() + self:GetValue("PostBurstDelay"))
-        elseif self:GetBurstCount() > 0 and self:GetBurstCount() < -cfm then
-            self:PrimaryAttack()
-        end
-    else
-        if (owner:KeyReleased(IN_ATTACK) or (cfm < 0 and self:GetBurstCount() >= -cfm)) then
-            if cfm < 0 and self:GetBurstCount() > 1 then
-                if !self:GetValue("AutoBurst") then
-                    self.Primary.Automatic = false
+    local current_firemode = self:GetCurrentFiremode()
+    for i=1, 2 do
+        local gun2 = i == 2
+        local key = gun2 and IN_ATTACK2 or IN_ATTACK
+        local burst_count = self:A_GetBurstCount( gun2 )
+        if burst_count > 0 then
+            if current_firemode >= 0 then -- automatic weapons can have the "runaway burst" stat :v
+                if not owner:KeyDown( key ) then
+                    self:A_SetBurstCount( gun2, 0 )
                 end
-                local add = 0
-                if self:GetBurstCount() >= -cfm then
-                    add = 60 / self:GetValue("RPM")
-                end
-                self:SetNextPrimaryFire(CurTime() + self:GetValue("PostBurstDelay") + add)
-            end
-            self:SetBurstCount(0)
-        end
-    end
-
-    // Secondary attack burst tracking for DualAkimbo
-    if self:GetValue("DualAkimbo") then
-        if self:GetValue("RunawayBurst") and cfm < 0 then
-            if self:GetBurstCount2() >= -cfm then
-                self:SetBurstCount2(0)
-                self:SetNextSecondaryFire(CurTime() + self:GetValue("PostBurstDelay"))
-            elseif self:GetBurstCount2() > 0 and self:GetBurstCount2() < -cfm then
-                self:SecondaryShoot()
-            end
-        else
-            // One-Button Akimbo routing for the right gun.
-            local oba = self:IsOneButtonAkimbo()
-            local aps = self:GetValue("AmmoPerShot")
-            if oba and cfm == 2
-                    and owner:KeyDown(IN_ATTACK)
-                    and self:Clip1() < aps
-                    and self:GetNextSecondaryFire() <= CurTime()
-                    and self:Clip2() >= aps then
-                // Full-auto: left gun is dry but right still has ammo, keep firing right.
-                self:SecondaryShoot()
-            elseif oba and cfm != 2
-                    and owner:KeyPressed(IN_ATTACK)
-                    and self:GetNextPrimaryFire() > CurTime()
-                    and self:GetOBANextRight()
-                    and self:GetNextSecondaryFire() <= CurTime()
-                    and self:Clip2() >= aps
-                    and self:GetBurstCount() == 0
-                    and self:GetBurstCount2() == 0 then
-                // Semi/burst: catch fast alt-clicks that the engine primary-side rate-limit drops.
-                self:SetOBANextRight(false)
-                self:SecondaryShoot()
-            end
-
-            local releaseKey = oba and IN_ATTACK or IN_ATTACK2
-            if (owner:KeyReleased(releaseKey) or (cfm < 0 and self:GetBurstCount2() >= -cfm)) then
-                if cfm < 0 and self:GetBurstCount2() > 1 then
-                    if !self:GetValue("AutoBurst") then
-                        self.Secondary.Automatic = false
+            elseif self:GetValue("RunawayBurst") then
+                if burst_count < -current_firemode then
+                    self:Weapon_Attack( gun2 )
+                else
+                    if self:GetValue("AutoBurst") or not owner:KeyDown( key ) then
+                        self:A_SetBurstCount( gun2, 0 )
                     end
-                    local add = 0
-                    if self:GetBurstCount2() >= -cfm then
-                        add = 60 / self:GetValue("RPM")
-                    end
-                    self:SetNextSecondaryFire(CurTime() + self:GetValue("PostBurstDelay") + add)
                 end
-                self:SetBurstCount2(0)
+            else
+                if not owner:KeyDown(key) then
+                    if burst_count ~= -current_firemode then
+                        self:A_SetNextFire( gun2, math.max(
+                            self:A_GetNextFire( gun2 ),
+                            ct + self:GetValue("PostBurstDelay")
+                        ) )
+                    end
+                    self:A_SetBurstCount( gun2, 0 )
+                end
             end
         end
     end

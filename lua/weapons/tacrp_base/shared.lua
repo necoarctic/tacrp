@@ -568,7 +568,7 @@ SWEP.Shields = {}
 
 SWEP.CurrentAnimation = ""
 
-SWEP.Primary.Automatic = false
+SWEP.Primary.Automatic = true
 SWEP.Primary.ClipSize = 0
 SWEP.Primary.Ammo = ""
 SWEP.Primary.DefaultClip = 0
@@ -704,26 +704,6 @@ function SWEP:OnDrop(owner)
         owner:SetCanZoom(true)
     end
     self:SetReady(false)
-end
-
-function SWEP:IsOneButtonAkimbo()
-    if !self:GetValue("DualAkimbo") then return false end
-    local owner = self:GetOwner()
-    return TacRP.ConVars["onebutton_akimbo"]:GetBool() or owner:GetInfoNum("tacrp_onebutton_akimbo_client", 0) != 0
-end
-
-function SWEP:SecondaryAttack()
-    if self:GetValue("DualAkimbo") and !self:IsOneButtonAkimbo() then
-        self:SecondaryShoot()
-        return
-    end
-    if self:IsOneButtonAkimbo() and self:GetValue("CanMeleeAttack") then
-        self:SetSafe(false)
-        self:Melee()
-        return
-    end
-    self:RunHook("Hook_SecondaryAttack")
-    return
 end
 
 local function clunpredictvar(tbl, name, varname, default)

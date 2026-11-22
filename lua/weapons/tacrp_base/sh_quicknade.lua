@@ -6,8 +6,6 @@ function SWEP:IsQuickNadeAllowed()
 end
 
 function SWEP:PrimeGrenade()
-    self.Primary.Automatic = true
-
     if !self:IsQuickNadeAllowed() and !self:GetValue("PrimaryGrenade") then return end
     if self:StillWaiting(nil, true) then return end
     if self:GetPrimedGrenade() then return end

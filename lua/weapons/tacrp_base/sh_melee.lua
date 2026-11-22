@@ -20,9 +20,6 @@ function SWEP:Melee(alt)
     if DarkRP and self:GetNWBool("TacRP_PoliceBiocode") and !self:GetOwner():isCP() then return end
     -- if self:SprintLock() then return end
 
-    self.Primary.Automatic = true
-    self.Secondary.Automatic = true
-
     self:SetCharge(false)
 
     self:CancelReload()

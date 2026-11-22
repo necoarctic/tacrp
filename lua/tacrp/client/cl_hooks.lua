@@ -141,21 +141,6 @@ hook.Add("CreateMove", "TacRP_CreateMove", function(cmd)
     if !IsValid(wpn) then return end
     if !wpn.ArcticTacRP then return end
 
-    if TacRP.ConVars["autoreload"]:GetBool() then
-        // For DualAkimbo, only auto-reload when BOTH clips are empty
-        local bothEmpty = wpn:Clip1() == 0 and (!wpn:GetValue("DualAkimbo") or wpn:Clip2() == 0)
-        if wpn:GetMaxClip1() > 0 and bothEmpty and (wpn:Ammo1() > 0 or wpn:GetInfiniteAmmo())
-                and wpn:GetNextPrimaryFire() + 0.5 < CurTime()
-                and wpn:GetNextSecondaryFire() + 0.5 < CurTime()
-                and wpn:ShouldAutoReload() then
-            local buttons = cmd:GetButtons()
-
-            buttons = buttons + IN_RELOAD
-
-            cmd:SetButtons(buttons)
-        end
-    end
-
     local grenade1bind = input.LookupBinding("+grenade1")
 
     if !grenade1bind then

@@ -290,20 +290,7 @@ function SWEP:SetBaseSettings()
         self:CallOnClient("SetBaseSettings")
     end
 
-    local fm = self:GetCurrentFiremode()
-    if fm != 1 then
-        if self:GetValue("RunawayBurst") and fm < 0 and !self:GetValue("AutoBurst") then
-            self.Primary.Automatic = false
-        else
-            self.Primary.Automatic = true
-        end
-    else
-        self.Primary.Automatic = false
-    end
-
-    // DualAkimbo: Secondary.Automatic mirrors Primary.Automatic
     if self:GetValue("DualAkimbo") then
-        self.Secondary.Automatic = self.Primary.Automatic
         self.Secondary.ClipSize = self:GetCapacity2()
     end
 

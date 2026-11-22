@@ -18,8 +18,6 @@ function SWEP:NPC_PrimaryAttack()
     self:SetBaseSettings()
     self:SetShouldHoldType()
 
-    self.Primary.Automatic = true
-
     local pvar = self:GetValue("ShootPitchVariance")
 
     local sshoot = self:GetValue("Sound_Shoot")

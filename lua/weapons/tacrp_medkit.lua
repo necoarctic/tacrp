@@ -39,8 +39,6 @@ SWEP.ClipSize = 30
 
 // handling
 
-SWEP.NoBuffer = true
-
 SWEP.Firemode = 0
 
 SWEP.MoveSpeedMult = 1

@@ -326,6 +326,14 @@ function SWEP:GetCapacity(base)
     end
 end
 
+function SWEP:GetCapacity2(base)
+    if base then
+        return self:GetBaseValue("ClipSize2")
+    else
+        return self:GetValue("ClipSize2")
+    end
+end
+
 function SWEP:GetAmmoType(base)
     local valfunc = base and self.GetBaseValue or self.GetValue
     if self.Ammo_Expanded and TacRP.ConVars["expandedammotypes"]:GetBool() then
