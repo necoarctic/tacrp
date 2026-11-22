@@ -120,7 +120,6 @@ function SWEP:PrimaryAttack()
     end
 
     if self:StillWaiting() then return end
-    if self:GetCharge() then return end
     if TacRP.ConVars["medkit_heal_others"]:GetInt() <= 0 then return end
 
     local tr = util.TraceLine({
@@ -142,8 +141,6 @@ function SWEP:PrimaryAttack()
 
     self:PlayAnimation("unzip", 1, true)
 
-    self:SetCharge(true)
-
     if self.LoopSound then
         self.LoopSound:Stop()
         self.LoopSound = nil
@@ -163,7 +160,7 @@ function SWEP:OnRemove()
 end
 
 function SWEP:SecondaryAttack()
-    if self:StillWaiting() or !IsFirstTimePredicted() or self:GetCharge() then return end
+    if self:StillWaiting() or !IsFirstTimePredicted() then return end
 
     if self:GetOwner():Health() >= self:GetOwner():GetMaxHealth() then return end
     if TacRP.ConVars["medkit_heal_self"]:GetInt() <= 0 then return end
@@ -175,8 +172,6 @@ function SWEP:SecondaryAttack()
 
     self:PlayAnimation("unzip", 1, true)
 
-    self:SetCharge(true)
-
     if self.LoopSound then
         self.LoopSound:Stop()
         self.LoopSound = nil
@@ -187,7 +182,7 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:Think()
-    if IsFirstTimePredicted() and self:GetCharge() and self:GetNextPrimaryFire() < CurTime() then
+    if IsFirstTimePredicted() and self:GetNextPrimaryFire() < CurTime() then
         if !IsValid(self.HealTarget) or
         self:Clip1() <= 0 or
         (self.HealTarget:GetPos() - self:GetOwner():GetPos()):Length() > 64
@@ -195,7 +190,6 @@ function SWEP:Think()
         (self.HealTarget:Health() >= self.HealTarget:GetMaxHealth()) or
         !(self:GetOwner():KeyDown(IN_ATTACK) or self:GetOwner():KeyDown(IN_ATTACK2)) then
             self.HealTarget = nil
-            self:SetCharge(false)
             self:PlayAnimation("draw", 1, true)
 
             if self.LoopSound then
@@ -240,7 +234,6 @@ function SWEP:Holster(wep)
         self.LoopSound = nil
     end
 
-    self:SetCharge(false)
     self.HealTarget = nil
 
     return BaseClass.Holster(self, wep)
@@ -264,8 +257,6 @@ function SWEP:Initialize()
     self.ClipSize = TacRP.ConVars["medkit_clipsize"]:GetInt()
 
     self:SetClip1(self:GetValue("ClipSize"))
-
-    self:SetCharge(false)
 
     timer.Create("medkit_ammo" .. self:EntIndex(), TacRP.ConVars["medkit_regen_delay"]:GetFloat(), 0, function()
         if !IsValid(self) then

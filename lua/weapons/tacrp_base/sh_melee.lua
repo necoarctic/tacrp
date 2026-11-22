@@ -21,7 +21,6 @@ function SWEP:Melee(alt)
     if self:GetNextMeleeTime() > CurTime() then return end
     -- if self:SprintLock() then return end
 
-    self:SetCharge(false)
     self:CancelReload()
     self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
     self:ScopeToggle(0)
