@@ -9,9 +9,10 @@ end
 
 function SWEP:StillWaiting()
 	if self:StillWaitingSuper() then return true end
-	if self:A_GetNextFire( false ) > CurTime() then return true end
-	if self:A_GetNextFire( true ) > CurTime() then return true end
-	if self:GetAnimLockTime() > CurTime() then return true end
+	local ct = CurTime()
+	if self:A_GetNextFire( false ) > ct then return true end
+	if self:A_GetNextFire( true ) > ct then return true end
+	if self:GetAnimLockTime() > ct then return true end
 
 	return false
 end
@@ -678,16 +679,9 @@ end
 
 -- these functions are called at the whim at the engine and so i won't deal with them
 function SWEP:PrimaryAttack()
-	if self:GetOwner():IsNPC() then
-		self:NPC_PrimaryAttack()
-	end
-
-	return
+	if self:GetOwner():IsNPC() then self:NPC_PrimaryAttack() end
 end
-
-function SWEP:SecondaryAttack()
-	return
-end
+function SWEP:SecondaryAttack() end
 
 function SWEP:Player_Primary()
 	if self:GetOwner():KeyDown(IN_USE) then
@@ -813,26 +807,12 @@ function SWEP:Weapon_Dryfire( gun2 )
 end
 
 function SWEP:Weapon_Attack( gun2 )
+	if self:StillWaitingSuper() then return end
 	local ct = CurTime()
-	if self:StillWaitingSuper() then
-		return
-	end
-
-	if self:GetAnimLockTime() > CurTime() then
-		return
-	end
-
-	if self:A_GetNextFire( gun2 ) > CurTime() then
-		return
-	end
-
-	if self:GetSafe() then
-		return
-	end
-
-	if self:GetBiocodeLocked() then
-		return
-	end
+	if self:GetAnimLockTime() > ct then return end
+	if self:A_GetNextFire( gun2 ) > ct then return end
+	if self:GetSafe() then return end
+	if self:GetBiocodeLocked() then return end
 
 	local dryfire = self:A_GetClip( gun2 ) < self:GetValue("AmmoPerShot") or self:GetJammed()
 	local max_burst = dryfire and 1 or self:GetMaxBurst()
@@ -852,21 +832,22 @@ function SWEP:Weapon_Attack( gun2 )
 		self:PlayShootSound()
 	end
 	self:PlayShootAnim( gun2 )
-
+	self:Weapon_Effects( gun2 )
 	self:ApplyRecoil()
 	self:Weapon_FireBullet()
-
+	
 	-- Jane's fix
 	local curatt = self:A_GetNextFire( gun2 )
-	local diff = CurTime() - curatt
+	local diff = ct - curatt
 	if diff > TICK_INTERVAL or diff < 0 then
-		curatt = CurTime()
+		curatt = ct
 	end
 	
 	self:A_SetClip( gun2, math.max( 0, self:A_GetClip( gun2 ) - self:GetValue("AmmoPerShot") ) )
 	self:A_SetNextFire( gun2, curatt + 60/self:GetValue("RPM") )
 	self:A_SetBurstCount( gun2, self:A_GetBurstCount( gun2 ) + 1 )
 	self:SetPatternCount( self:GetPatternCount() + 1 )
+	self:DoBulletBodygroups()
 
 	local burst_mode = max_burst ~= math.huge and max_burst >= 2
 	if burst_mode then
@@ -1018,6 +999,49 @@ function SWEP:Weapon_FireBullet()
 				end
 			end
 		})
+	end
+end
+
+function SWEP:Weapon_Effects( gun2 )
+	local dualakimbo = self:GetValue("DualAkimbo")
+	local owner = self:GetOwner()
+	owner:DoCustomAnimEvent(PLAYERANIMEVENT_ATTACK_PRIMARY, 0)
+
+	if CLIENT and owner == LocalPlayer() then
+		self:DoMuzzleLight()
+	elseif game.SinglePlayer() then
+		self:CallOnClient("DoMuzzleLight")
+	end
+
+	local force_right = nil
+	if dualakimbo then
+		force_right = gun2
+	end
+
+	-- ejection
+	local ejectdelay = self:GetValue("EjectDelay")
+	if ejectdelay == 0 then
+		self:DoEject(nil, force_right)
+	else
+		self:SetTimer(ejectdelay, function()
+			self:DoEject(nil, force_right)
+		end)
+	end
+
+	local effect_right = nil
+	if dualakimbo then
+		effect_right = gun2
+	end
+	self:DoEffects(nil, effect_right)
+	if self:GetValue("EffectsDoubled") then
+		self:DoEffects(true, force_right)
+		if ejectdelay == 0 then
+			self:DoEject(true, force_right)
+		else
+			self:SetTimer(ejectdelay, function()
+				self:DoEject(true, force_right)
+			end)
+		end
 	end
 end
 
