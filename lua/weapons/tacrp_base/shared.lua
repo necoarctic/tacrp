@@ -670,7 +670,6 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Bool", "NWPeeking")
     self:NetworkVar("Bool", "BlindFireRight") // bleh, but actually less networking load than using an integer (32 bit)
     self:NetworkVar("Bool", "Jammed")
-    self:NetworkVar("Bool", "Ready")
     self:NetworkVar("Bool", "InBipod")
     self:NetworkVar("Bool", "OutOfBreath")
     self:NetworkVar("Bool", "HoldingBreath")
@@ -693,7 +692,6 @@ function SWEP:SetupDataTables()
     self:SetLastAimAngle(Angle())
     self:SetFiremode(1)
     self:SetTactical(true)
-    self:SetReady(false)
     self:SetBreath(1)
     self:SetHoldBreathAmount(0)
     self:SetLastWasSprinting(false)
@@ -722,7 +720,6 @@ function SWEP:OnDrop(owner)
     if self.PreviousZoom and IsValid(owner) then
         owner:SetCanZoom(true)
     end
-    self:SetReady(false)
 end
 
 local function clunpredictvar(tbl, name, varname, default)
