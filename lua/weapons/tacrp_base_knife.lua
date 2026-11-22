@@ -9,8 +9,8 @@ SWEP.Category = "Tactical RP (Special)"
 
 SWEP.NoAimAssist = true
 
-SWEP.SubCatTier = "9Special"
-SWEP.SubCatType = "8Melee Weapon"
+SWEP.SubCatTier = "Special"
+SWEP.SubCatType = "Melee Weapon"
 
 SWEP.ViewModel = "models/weapons/tacint/v_knife.mdl"
 SWEP.WorldModel = "models/weapons/tacint/w_knife.mdl"

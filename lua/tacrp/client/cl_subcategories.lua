@@ -130,6 +130,11 @@ hook.Add("PopulateWeapons", "zzz_TacRP_SubCategories", function(pnlContent, tree
     local cvar = TacRP.ConVars["spawnmenu_subcats"]:GetInt()
     -- if cvar == 0 then return end
 
+    -- disable if using spawnmenu v2
+    if TacRP.ConVars["s2_enable"]:GetBool() then
+        return
+    end
+
     local sortbytiers = TacRP.ConVars["spawnmenu_sortbytiers"]:GetBool()
 
     timer.Simple(0, function()
@@ -157,7 +162,7 @@ hook.Add("PopulateWeapons", "zzz_TacRP_SubCategories", function(pnlContent, tree
                 if WepTable != nil and WepTable.SubCatTier != nil then
                     SubCategory = WepTable.SubCatTier
 
-                    if SubCategory == "9Special" then
+                    if SubCategory == "Special" then
                         SubCategory = WepTable.SubCatType
                     end
 
@@ -209,7 +214,7 @@ hook.Add("PopulateWeapons", "zzz_TacRP_SubCategories", function(pnlContent, tree
                     -- Create the subcategory header, if more than one exists for this category
                     if table.Count(catSubcats) > 1 then
                         local label = vgui.Create("ContentHeader", container)
-                        label:SetText(string.sub(TacRP:TryTranslate(subcatName), 2))
+                        label:SetText(TacRP:TryTranslate(subcatName))
                         self.PropPanel:Add(label)
                     end
 

@@ -72,9 +72,11 @@ end
 
 function TacRP.FormatTierType(wtype, wtier, use_tiers)
     if wtype then
-        local type_txt = string.sub(TacRP:TryTranslate(wtype), 2)
+        local type_txt = TacRP:TryTranslate(wtype)
         if use_tiers and wtier and wtier != "9Special" then
-            type_txt = TacRP:GetPhrase("cust.type_tier", {tier = string.sub(TacRP:TryTranslate(wtier), 2), type = type_txt})
+            type_txt = TacRP:GetPhrase("cust.type_tier", {
+                tier = TacRP:TryTranslate(wtier), type = type_txt
+            })
         end
         return type_txt
     end
@@ -118,3 +120,91 @@ end
 function TacRP.Developer(i)
     return (SERVER or (CLIENT and IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin())) and GetConVar("developer"):GetInt() >= (i or 1)
 end
+
+TacRP.Type_Fix = {
+    ["1Pistol"]         = "Pistol",
+    ["2Magnum Pistol"]  = "Magnum Pistol",
+    ["3Akimbo"]         = "Akimbo",
+    ["3Machine Pistol"] = "Machine Pistol",
+    ["3Submachine Gun"] = "Submachine Gun",
+    ["4Assault Rifle"]  = "Assault Rifle",
+    ["5Battle Rifle"]   = "Battle Rifle",
+    ["5Machine Gun"]    = "Machine Gun",
+    ["5Shotgun"]        = "Shotgun",
+    ["5Sporter"]        = "Sporter",
+    ["6Marksman Rifle"] = "Marksman Rifle",
+    ["7Sniper Rifle"]   = "Sniper Rifle",
+    
+    ["6Launcher"]       = "Launcher",
+    ["7Special Weapon"] = "Special Weapon",
+    ["8Bladed Melee"]   = "Bladed Melee",
+    ["8Blunt Melee"]    = "Blunt Melee",
+    ["8Melee Weapon"]   = "Melee Weapon",
+    ["9Equipment"]      = "Equipment",
+    ["9Throwable"]      = "Throwable",
+}
+
+TacRP.Tier_Fix = {
+    ["0Exotic"]         = "Exotic",
+    ["1Elite"]          = "Elite",
+    ["2Operator"]       = "Operator",
+    ["3Security"]       = "Security",
+    ["4Consumer"]       = "Consumer",
+    ["5Value"]          = "Value",
+    ["9Special"]        = "Special",
+}
+
+TacRP.Tier_SortOrder = {
+    ["Exotic"] = 1,
+    ["Elite"] = 2,
+    ["Operator"] = 3,
+    ["Security"] = 4,
+    ["Consumer"] = 5,
+    ["Value"] = 6,
+    ["Special"] = 7,
+}
+
+TacRP.Type_SortOrder = {
+	["Pistol"]			= 101,
+	["Magnum Pistol"]	= 102,
+	["Akimbo"]			= 103,
+	["Machine Pistol"]	= 104,
+	["Submachine Gun"]	= 105,
+	["Assault Rifle"]	= 106,
+	["Battle Rifle"]	= 107,
+	["Machine Gun"]		= 108,
+	["Shotgun"]			= 109,
+	["Sporter"]			= 110,
+	["Marksman Rifle"]	= 111,
+	["Sniper Rifle"]	= 112,
+	["Launcher"]		= 201,
+	["Special Weapon"]	= 202,
+	["Bladed Melee"]	= 203,
+	["Blunt Melee"]		= 204,
+	["Melee Weapon"]	= 205,
+	["Equipment"]		= 206,
+	["Throwable"]		= 207,
+}
+
+hook.Add( "PreRegisterSWEP", "TacRP_PreRegisterSWEP", function( swep, class )
+    -- needs special logic
+    if class:StartsWith("tacrp_nade") then
+        swep.SubCatType = "Throwable"
+        swep.SubCatTier = "Special"
+    end
+    if swep.Base:StartsWith("tacrp_") then
+        swep.Category = "Tactical RP"
+
+        local fixed_type = TacRP.Type_Fix[swep.SubCatType]
+        if fixed_type then
+            swep.SubCatType = fixed_type
+        end
+
+        local fixed_tier = TacRP.Tier_Fix[swep.SubCatTier]
+        if fixed_tier then
+            swep.SubCatTier = fixed_tier
+        end
+
+        swep.SubCategory = swep.SubCatType
+    end
+end )

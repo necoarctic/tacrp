@@ -383,6 +383,11 @@ local conVars = {
         client = true,
     },
     {
+        name = "hudscale_simres",
+        default = "0",
+        client = true,
+    },
+    {
         name = "language",
         default = "",
         replicated = true,
@@ -1192,6 +1197,86 @@ local conVars = {
         default = "1",
         client = true,
     },
+
+    -- Cust v2
+    {
+        name = "c2_enable",
+        default = "1",
+        client = true,
+    },
+    {
+        name = "c2_1_h",
+        default = "340",
+        client = true,
+    },
+    {
+        name = "c2_1_s",
+        default = "0.20",
+        client = true,
+    },
+    {
+        name = "c2_1_v",
+        default = "0.40",
+        client = true,
+    },
+    {
+        name = "c2_1_a",
+        default = "0.20",
+        client = true,
+    },
+    {
+        name = "c2_2_h",
+        default = "290",
+        client = true,
+    },
+    {
+        name = "c2_2_s",
+        default = "0.20",
+        client = true,
+    },
+    {
+        name = "c2_2_v",
+        default = "1.00",
+        client = true,
+    },
+    {
+        name = "c2_2_a",
+        default = "0.1",
+        client = true,
+    },
+    {
+        name = "c2_graddown",
+        default = "0",
+        client = true,
+    },
+    {
+        name = "c2_classic",
+        default = "0",
+        client = true,
+    },
+
+    -- HUD v2
+    {
+        name = "h2_enable",
+        default = "1",
+        client = true,
+    },
+    {
+        name = "h2_enable_health",
+        default = "1",
+        client = true,
+    },
+    {
+        name = "h2_enable_ammo",
+        default = "1",
+        client = true,
+    },
+    -- Spawnmenu v2
+    {
+        name = "s2_enable",
+        default = "1",
+        client = true,
+    },
 }
 
 TacRP.ConVars = {}
@@ -1231,20 +1316,21 @@ local flags = {
 for _, var in pairs(conVars) do
     local convar_name = prefix .. var.name
 
-    if var.client and CLIENT then
-        TacRP.ConVars[var.name] = CreateClientConVar(convar_name, var.default, !var.noarchive, var.userinfo)
-    elseif !var.client then
+    if var.client then
+        if CLIENT then
+            TacRP.ConVars[var.name] = CreateClientConVar(convar_name, var.default, !var.noarchive, var.userinfo)
+        end
+    else
         local flag = FCVAR_ARCHIVE
         for k, v in pairs(flags) do if var[k] then flag = flag + v end end
         TacRP.ConVars[var.name] = CreateConVar(convar_name, var.default, flag, var.help, var.min, var.max)
-    end
 
-    if var.callback then
-        cvars.AddChangeCallback(convar_name, var.callback, "tacrp")
-    end
-
-    if CLIENT then
-        cvars.AddChangeCallback(convar_name, TacRP.NetworkConvar, "tacrp_onchange")
+        if var.callback then
+            cvars.AddChangeCallback(convar_name, var.callback, "tacrp")
+        end
+        if CLIENT then
+            cvars.AddChangeCallback(convar_name, TacRP.NetworkConvar, "tacrp_onchange")
+        end
     end
 end
 
@@ -1328,9 +1414,10 @@ local function menu_client_ti(panel)
         label = "#tacrp.client.hudscale", -- HUD Scale
         command = "tacrp_hudscale",
         type = "float",
-        min = 0.25,
-        max = 1.5,
-    })
+        min = 0.8,
+        max = 1.3,
+        
+    }):SetDecimals(1)
     panel:ControlHelp("#tacrp.client.hudscale.desc")
 
     header(panel, "#tacrp.client.hints") -- \nHints

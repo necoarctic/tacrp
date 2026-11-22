@@ -1,14 +1,36 @@
 function SWEP:ShouldDrawCrosshair()
-    if !TacRP.ConVars["crosshair"]:GetBool() then
-        return self:DoLowerIrons() and self:GetSightAmount() > 0 and !self:GetPeeking() and !self:GetReloading()
+    if not TacRP.ConVars["crosshair"]:GetBool() then
+        return false
     end
-    return !self:GetReloading() and !self:GetCustomize() and !self:GetSafe() and self:GetBlindFireMode() == TacRP.BLINDFIRE_NONE
-        and !(self:SprintLock() and !self.DrawCrosshairInSprint)
-        and !(self:DoForceSightsBehavior() and !self:GetPeeking())
-        and !self:GetJammed()
-        and (self:GetSightAmount() <= 0.5 or (self:GetPeeking() and !self:GetValue("ThermalCamera")) or self:DoLowerIrons())
-        and !(self:IsQuickNadeAllowed() and tobool(self:GetOwner():GetInfo("tacrp_nademenu")) and self:GetOwner():KeyDown(IN_GRENADE2))
-        and !(self:GetValue("CanBlindFire") and tobool(self:GetOwner():GetInfo("tacrp_blindfiremenu")) and (self:GetOwner():KeyDown(IN_ZOOM) or self:GetOwner().TacRPBlindFireDown))
+    if self:GetBlindFireMode() ~= TacRP.BLINDFIRE_NONE then
+        return false
+    end
+    if not self:DoLowerIrons() and self:GetSightAmount() > 0.3 and self:GetScopeLevel() > 0 and not self:GetPeeking() then
+        return false
+    end
+    if self:GetReloading() or self:GetSafe() or self:GetCustomize() then
+        return false
+    end
+    if self:SprintLock() and not self.DrawCrosshairInSprint then
+        return false
+    end
+    if self:GetJammed() then
+        return false
+    end
+    if self:GetPeeking() and self:GetValue("ThermalCamera") then
+        return false
+    end
+
+    local p = self:GetOwner()
+    if (p:KeyDown(IN_ZOOM) or p.TacRPBlindFireDown)
+        and self:GetValue("CanBlindFire") and TacRP.ConVars["blindfiremenu"]:GetBool() then
+        return false
+    end
+    if p:KeyDown(IN_GRENADE2) and self:IsQuickNadeAllowed() and TacRP.ConVars["nademenu"]:GetBool() then
+        return false
+    end
+
+    return true
 end
 
 function SWEP:DoDrawCrosshair(x, y)

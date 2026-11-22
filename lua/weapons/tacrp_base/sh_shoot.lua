@@ -886,15 +886,15 @@ function SWEP:GetSpread(baseline)
 end
 
 local type_to_cvar = {
-    ["2Magnum Pistol"] = "mult_damage_magnum",
-    ["7Sniper Rifle"] = "mult_damage_sniper",
+    ["Magnum Pistol"] = "mult_damage_magnum",
+    ["Sniper Rifle"] = "mult_damage_sniper",
     -- ["5Shotgun"] = "mult_damage_shotgun",
 
-    ["6Launcher"] = "",
-    ["7Special Weapon"] = "",
-    ["8Melee Weapon"] = "",
-    ["9Equipment"] = "",
-    ["9Throwable"] = "",
+    ["Launcher"] = "",
+    ["Special Weapon"] = "",
+    ["Melee Weapon"] = "",
+    ["Equipment"] = "",
+    ["Throwable"] = "",
 }
 function SWEP:GetConfigDamageMultiplier()
     if self:IsShotgun() then

@@ -46,9 +46,9 @@ L["unit.meter"] = "m"
 L["unit.second"] = "s"
 L["unit.persecond"] = "/s"
 L["unit.mps"] = "m/s" -- meters per second
-L["unit.damage"] = " DMG"
-L["unit.stk"] = " STK" -- shots to kill
-L["unit.ptk"] = " PTK" -- pellets to kill
+L["unit.damage"] = "DMG"
+L["unit.stk"] = "STK" -- shots to kill
+L["unit.ptk"] = "PTK" -- pellets to kill
 L["unit.percentpersecond"] = "%/s"
 
 L["slot.default"] = "Slot"

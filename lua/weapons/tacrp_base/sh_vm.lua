@@ -29,8 +29,8 @@ local function LerpMod(usrobj, to, dlt, clamp_ang)
     end
 end
 
-SWEP.BenchPos = SWEP.BenchPos or Vector(0, 0, 0)
-SWEP.BenchAng = SWEP.BenchAng or Angle(0, 0, 0)
+local BenchPos = BenchPos or Vector(0, 0, 0)
+local BenchAng = BenchAng or Angle(0, 0, 0)
 
 SWEP.ViewModelPos = Vector(0, 0, 0)
 SWEP.ViewModelAng = Angle(0, 0, 0)
@@ -41,10 +41,8 @@ function SWEP:GetViewModelPosition(pos, ang)
     end
 
     if TacRP.ConVars["dev_benchgun"]:GetBool() then
-        return self.BenchPos, self.BenchAng
+        return BenchPos, BenchAng
     end
-    self.BenchPos = pos
-    self.BenchAng = ang
 
     local vm = self:GetOwner():GetViewModel()
     local FT = self:DeltaSysTime() -- FrameTime()
@@ -105,7 +103,8 @@ function SWEP:GetViewModelPosition(pos, ang)
     -- Aiming & Peeking
     ---------------------------------------------
     local ads = self:GetAimDownSightsTime()
-    if self:GetScopeLevel() > 0 then
+    local scoped = self:GetScopeLevel() > 0
+    if scoped then
         if self:GetSprintLockTime() > CurTime() then
             ads = ads + self:GetSprintToFireTime()
         end
@@ -122,7 +121,10 @@ function SWEP:GetViewModelPosition(pos, ang)
         end
     -- end
 
-    local curvedsightdelta = self:Curve(sightdelta)
+    local worksightdelta = scoped and math.Remap( sightdelta, 0, 0.7, 0, 1 ) or sightdelta
+    worksightdelta = math.Clamp( worksightdelta, 0, 1 )
+
+    local curvedsightdelta = self:Curve(worksightdelta)
     local curvedpeekdelta = self:Curve(peekdelta)
 
     -- cor_val = Lerp(sightdelta, cor_val, 1)
@@ -313,7 +315,7 @@ function SWEP:GetViewModelPosition(pos, ang)
         extra_offsetang:Add(sprang)
     end
 
-    self.SwayScale = f_lerp(sightdelta, 1, 0.1)
+    self.SwayScale = f_lerp(curvedsightdelta, 1, 0.1)
     self.BobScale = 0
 
     local speed = 15 * FT * (game.SinglePlayer() and 1 or 2)
@@ -342,12 +344,14 @@ function SWEP:GetViewModelPosition(pos, ang)
     ang:RotateAroundAxis(oldang:Forward(), extra_offsetang[3])
 
     pos, ang = self:GetViewModelBob(pos, ang)
-    pos, ang = self:GetViewModelSway(pos, ang)
 
     self.ViewModelPos = pos
     self.ViewModelAng = ang
 
     self.LastSysTime = SysTime()
+
+    BenchPos = pos
+    BenchAng = ang
     return pos, ang
 end
 

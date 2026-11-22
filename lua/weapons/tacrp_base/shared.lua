@@ -227,13 +227,13 @@ SWEP.HolsterAng = Angle(0, 0, 0)
 SWEP.HolsterModel = nil // string, model.
 
 SWEP.SightMidPoint = {
-    Pos = Vector(-1, 15, -6),
-    Ang = Angle(0, 0, -45)
+    Pos = Vector(-1, -2, -2),
+    Ang = Angle(6, 0, 12)
 }
 
 SWEP.SprintMidPoint = {
-    Pos = Vector(4, 10, 2),
-    Ang = Angle(0, -10, -45)
+    Pos = Vector(4, 4, 8),
+    Ang = Angle(22, -23, -22)
 }
 
 SWEP.NearWallPos = Vector(0, 6, 0)
