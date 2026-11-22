@@ -821,15 +821,19 @@ function SWEP:Weapon_Attack( gun2 )
 	if self:A_GetBurstCount( gun2 ) >= max_burst then
 		return
 	end
-	
+
 	if dryfire then
 		self:Weapon_Dryfire( gun2 )
 		self:A_SetBurstCount( gun2, 1 )
 		return
 	end
 
+	if self:Weapon_JamLogic( gun2 ) then
+		return
+	end
+
 	if SINGLEPLAYER and ct - self:A_GetLastShot( not gun2 ) < 0.01 then
-		timer.Simple( 0.03, function() self:PlayShootSound() end)
+		timer.Simple( 0.03, function() if self:IsValid() then self:PlayShootSound() end end)
 	else
 		self:PlayShootSound()
 	end
@@ -845,7 +849,7 @@ function SWEP:Weapon_Attack( gun2 )
 		curatt = ct
 	end
 	
-	self:A_SetClip( gun2, math.max( 0, self:A_GetClip( gun2 ) - self:GetValue("AmmoPerShot") ) )
+	self:A_TakeAmmo( gun2, self:GetValue("AmmoPerShot") )
 	self:A_SetNextFire( gun2, curatt + 60/self:GetValue("RPM") )
 	self:A_SetBurstCount( gun2, self:A_GetBurstCount( gun2 ) + 1 )
 	self:SetPatternCount( self:GetPatternCount() + 1 )
@@ -1004,6 +1008,44 @@ function SWEP:Weapon_FireBullet()
 	end
 end
 
+function SWEP:Weapon_JamLogic( gun2 )
+	if util.SharedRandom("tacRP_shootChance", 0, 1) > self:GetJamChance(false) then
+		return
+	end
+
+	local ret = self:RunHook("Hook_PreJam")
+	if ret == true then
+		return
+	end
+
+	local ammo_per_shot = self:GetValue("AmmoPerShot")
+	if self:GetValue("DualAkimbo") then
+		if self:A_GetClip( not gun2 ) < ammo_per_shot then
+			self:PlayAnimation( anim_akimbo["this_last_other_empty"][gun2] )
+		else
+			self:PlayAnimation( anim_akimbo["this_last"][gun2] )
+		end
+	elseif self:GetBlindFire() then
+		self:PlayAnimation("blind_dryfire")
+	else
+		self:PlayAnimation("dryfire")
+	end
+
+	self:EmitSound(self:GetValue("Sound_Jam"), 75, 100, 1, CHAN_ITEM)
+	self:A_SetBurstCount( gun2, 0 )
+	self:SetPatternCount( 0 )
+	self:A_SetNextFire( gun2, CurTime() + self:GetValue("JamWaitTime") )
+	if self:GetValue("JamTakesRound") then
+		self:A_TakeAmmo( gun2, self:GetValue("AmmoPerShot") )
+	end
+	if self:A_GetClip( gun2 ) > 0 and not self:GetValue("JamSkipFix") then
+		self:SetJammed(true)
+	end
+	self:RunHook("Hook_PostJam")
+
+	return true
+end
+
 function SWEP:Weapon_Effects( gun2 )
 	local dualakimbo = self:GetValue("DualAkimbo")
 	local owner = self:GetOwner()
@@ -1091,6 +1133,10 @@ function SWEP:A_SetNthShot( gun2, value )
 	else
 		self:SetNthShot( value )
 	end
+end
+
+function SWEP:A_TakeAmmo( gun2, value )
+	self:A_SetClip( gun2, math.max( 0, self:A_GetClip( gun2 ) - value ) )
 end
 
 -- this one is just used by the akimbo firing animation

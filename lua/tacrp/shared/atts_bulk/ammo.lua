@@ -1427,7 +1427,7 @@ ATT.Hook_PreShoot = function(wep)
         wep:SetNextPrimaryFire(CurTime() + math.max(60 / wep:GetValue("RPM"), 1))
         wep:GetOwner():DoAnimationEvent(ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL)
 
-        wep:TakePrimaryAmmo(wep:GetValue("AmmoPerShot"))
+        wep:A_TakeAmmo( false, wep:GetValue("AmmoPerShot") )
 
         return true
     else
