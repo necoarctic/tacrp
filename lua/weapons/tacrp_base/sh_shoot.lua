@@ -816,10 +816,11 @@ end
 function SWEP:Weapon_Attack( gun2 )
 	if self:StillWaitingSuper() then return end
 	local ct = CurTime()
-	if self:GetAnimLockTime() > ct then return end
+
 	if self:A_GetNextFire( gun2 ) > ct then return end
 	if self:GetNextMeleeTime() > ct then return end
 	if self:GetSafe() then return end
+	if self:SprintLock() then return end
 	if self:GetBiocodeLocked() then return end
 
 	local dryfire = self:A_GetClip( gun2 ) < self:GetValue("AmmoPerShot") or self:GetJammed()
@@ -827,6 +828,16 @@ function SWEP:Weapon_Attack( gun2 )
 	if self:A_GetBurstCount( gun2 ) >= max_burst then
 		return
 	end
+	
+	if !dryfire and self:GetReloading() and self:GetValue("ShotgunReload") then
+		if TacRP.ConVars["reload_sg_cancel"]:GetBool() and not self:GetValue("ShotgunFullCancel") then
+			self:CancelReload(false)
+			self:Idle()
+		else
+			self:CancelReload(true)
+		end
+	end
+	if self:GetAnimLockTime() > ct then return end
 
 	if dryfire then
 		self:Weapon_Dryfire( gun2 )
@@ -837,6 +848,9 @@ function SWEP:Weapon_Attack( gun2 )
 	if self:Weapon_JamLogic( gun2 ) then
 		return
 	end
+
+	local stop = self:RunHook("Hook_PreShoot")
+	if stop then return end
 
 	if SINGLEPLAYER and ct - self:A_GetLastShot( not gun2 ) < 0.01 then
 		timer.Simple( 0.03, function() if self:IsValid() then self:PlayShootSound() end end)
