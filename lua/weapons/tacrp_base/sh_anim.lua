@@ -94,4 +94,6 @@ function SWEP:Idle()
             self:PlayAnimation("idle")
         end
     end
+
+    self:SetAnimLockTime(0)
 end

@@ -28,7 +28,7 @@ function SWEP:Reload()
     end
 
     if !self:CanReloadInSprint() and self:GetIsSprinting() then return end
-    
+
     if self:GetValue("DualAkimbo") then
         if self:GetCapacity2() <= 0 and self:GetCapacity() <= 0 then return end
         if self:Clip1() >= self:GetCapacity() and self:Clip2() >= self:GetCapacity2() then return end
@@ -38,10 +38,10 @@ function SWEP:Reload()
     end
     if self:Ammo1() <= 0 and !self:GetInfiniteAmmo() then return end
 
-    
+
     local mult = self:GetValue("ReloadTimeMult") / TacRP.ConVars["mult_reloadspeed"]:GetFloat()
     local anim = "reload"
-    
+
     if self:GetValue("ShotgunReload") then
         anim = "reload_start"
     else
@@ -57,17 +57,17 @@ function SWEP:Reload()
             end, "ReloadUpIn")
         end
     end
-    
+
     local t = self:PlayAnimation(anim, mult, true, true)
-    
+
     owner:DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD, t * 1000)
-    
+
     if SERVER then
         self:SetTimer(self.DropMagazineTime * mult, function()
             self:DropMagazine()
         end, "DropMagazine")
     end
-    
+
     self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
     self:SetLoadedRounds(self:Clip1())
     self:SetBurstCount( 0 )
@@ -282,10 +282,10 @@ function SWEP:CancelReload(doanims, keeptime)
             self:KillTimer("ReloadUpIn")
             self:KillTimer("DropMagazine")
             self:SetReloading(false)
-            self:SetEndReload(false)
             self:SetNthShot(0)
             self:DoBulletBodygroups()
             if !keeptime then
+                self:SetEndReload(false)
                 self:SetReloadFinishTime(0)
             end
         end

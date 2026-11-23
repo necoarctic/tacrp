@@ -21,7 +21,7 @@ function SWEP:Melee(alt)
     if self:GetNextMeleeTime() > CurTime() then return end
     -- if self:SprintLock() then return end
 
-    self:CancelReload()
+    self:CancelReload(nil, true)
     self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
     self:ScopeToggle(0)
 
@@ -29,12 +29,12 @@ function SWEP:Melee(alt)
     local range = self:GetValue("MeleeRange")
     local delay = self:GetValue("MeleeDelay")
     if alt then
-        self:PlayAnimation("melee2", 1, false, true)
+        self:PlayAnimation("melee2", 1, true, true)
         -- self:GetOwner():DoAnimationEvent(self:GetValue("GestureBash2") or self:GetValue("GestureBash"))
         -- range = self:GetValue("Melee2Range") or range
         dmg = self:GetHeavyAttackDamage() * self:GetConfigDamageMultiplier()
     else
-        self:PlayAnimation("melee", 1, false, true)
+        self:PlayAnimation("melee", 1, true, true)
         -- self:GetOwner():DoAnimationEvent(self:GetValue("GestureBash"))
     end
 
@@ -125,6 +125,12 @@ function SWEP:Melee(alt)
                 tr.Entity:DispatchTraceAttack(dmginfo, tr)
             end
 
+            if self:GetJammed() then
+                local t2 = self:PlayAnimation("jam", 1 / 3, false, true) or 0
+                self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_CANCEL_RELOAD, t2 * 1000)
+                self:SetJammed(false)
+            end
+
             self:FireBullets({
                 Attacker = self:GetOwner(),
                 Damage = 0,
@@ -150,6 +156,9 @@ function SWEP:Melee(alt)
                 self:EmitSound(self:ChooseSound(self:GetValue("Sound_MeleeSwing")), 75, 100, 1)
             end
         end
+
+        self:SetReloadFinishTime(0)
+        self:SetEndReload(false)
 
         self:GetOwner():LagCompensation(false)
     end, "Melee")
