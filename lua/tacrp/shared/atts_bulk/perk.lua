@@ -75,14 +75,16 @@ ATT = {}
 ATT.PrintName = "att.perk_melee.name"
 ATT.Icon = Material("entities/tacrp_att_acc_melee.png", "mips smooth")
 ATT.Description = "att.perk_melee.desc"
-ATT.Pros = {"stat.meleedamage", "att.procon.meleeslow"}
+ATT.Pros = {"stat.meleedamage", "stat.meleespeed", "att.procon.meleeslow"}
 
 ATT.Category = "perk_melee"
 ATT.Free = true
 
 ATT.SortOrder = 2
 
-ATT.Mult_MeleeDamage = 35 / 25
+ATT.Add_MeleeDamage = 10
+ATT.Override_MeleeSpeedMult = 1
+
 ATT.MeleeSlow = true
 
 TacRP.LoadAtt(ATT, "perk_melee")
