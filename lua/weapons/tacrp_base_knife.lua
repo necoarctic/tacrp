@@ -130,11 +130,16 @@ SWEP.DrawCrosshair = true
 SWEP.DrawCrosshairInSprint = true
 SWEP.CrosshairStatic = true
 
-function SWEP:PrimaryAttack()
+function SWEP:PrimaryAttack() end
+
+function SWEP:Player_Primary()
     local stop = self:RunHook("Hook_PreShoot")
     if stop then return end
     if self:GetAnimLockTime() > CurTime() then return end
     self:Melee()
+end
+
+function SWEP:Player_Secondary()
 end
 
 function SWEP:ThinkSprint()

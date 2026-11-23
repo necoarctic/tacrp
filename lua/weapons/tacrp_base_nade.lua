@@ -105,8 +105,11 @@ function SWEP:ThinkGrenade()
     end
 end
 
-function SWEP:PrimaryAttack()
 
+function SWEP:PrimaryAttack() end
+function SWEP:SecondaryAttack() end
+
+function SWEP:Player_Primary()
     if engine.ActiveGamemode() == "terrortown" and GetRoundState() == ROUND_PREP and
     ((TTT2 and !GetConVar("ttt_nade_throw_during_prep"):GetBool()) or (!TTT2 and GetConVar("ttt_no_nade_throw_during_prep"):GetBool())) then
         return
@@ -138,9 +141,7 @@ function SWEP:PrimaryAttack()
 
     if game.SinglePlayer() and SERVER then self:CallOnClient("PrimaryAttack") end
 end
-
-function SWEP:SecondaryAttack()
-
+function SWEP:Player_Secondary()
     if engine.ActiveGamemode() == "terrortown" and GetRoundState() == ROUND_PREP and GetConVar("ttt_no_nade_throw_during_prep"):GetBool() then
         return
     end

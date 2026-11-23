@@ -1313,6 +1313,17 @@ SWEP.StatDisplayMelee = {
         end,
     },
     {
+        Name = "stat.deploytime",
+        Description = "stat.deploytime.desc",
+        AggregateFunction = function(self, base, val)
+            return math.Round(self:GetDeployTime(base), 2)
+        end,
+        Value = "DeployTimeMult",
+        LowerIsBetter = true,
+        -- HideIfSame = true,
+        Unit = "unit.second",
+    },
+    {
         Name = "stat.meleeattacktime",
         Description = "stat.meleeattacktime.desc",
         Value = "MeleeAttackTime",

@@ -39,8 +39,6 @@ function SWEP:PlayAnimation(seq, mult, lock, doidle)
 
     if lock then
         self:SetAnimLockTime(CurTime() + time)
-    else
-        self:SetAnimLockTime(0)
     end
 
     if doidle and !self.NoIdle then
