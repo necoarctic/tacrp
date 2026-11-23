@@ -129,6 +129,7 @@ SWEP.FreeAim = false
 SWEP.DrawCrosshair = true
 SWEP.DrawCrosshairInSprint = true
 SWEP.CrosshairStatic = true
+SWEP.DeployEarlyFraction = 0.5
 
 function SWEP:PrimaryAttack() end
 

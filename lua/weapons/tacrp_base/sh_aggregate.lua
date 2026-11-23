@@ -44,7 +44,7 @@ function SWEP:GetDeployTime(base)
     local seq = vm:LookupSequence(self:TranslateSequence(anim))
     local basetime = vm:SequenceDuration(seq)
 
-    return basetime * mult
+    return basetime * mult * self.DeployEarlyFraction
 end
 
 function SWEP:CalcHolsterTime(base)
@@ -61,7 +61,7 @@ function SWEP:CalcHolsterTime(base)
     local seq = vm:LookupSequence(self:TranslateSequence(anim))
     local basetime = vm:SequenceDuration(seq)
 
-    return basetime * mult
+    return basetime * mult * self.HolsterEarlyFraction
 end
 
 function SWEP:GetMuzzleVelocity(base)

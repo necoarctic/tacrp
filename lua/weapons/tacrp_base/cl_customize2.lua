@@ -1127,6 +1127,7 @@ local pres = {
 
 hook.Add( "PopulateToolMenu", "CustomMenuSettings", function()
 	spawnmenu.AddToolMenuOption( "Options", "Tactical RP Weapons", "TacRP_C2", "Anniversary Beta", "", "", function( panel )
+		panel:CheckBox( "Customize v2", "tacrp_c2_enable" )
 		panel:CheckBox( "Spawnmenu v2", "tacrp_s2_enable" )
 		panel:CheckBox( "HUD v2", "tacrp_h2_enable" )
 		panel:CheckBox( "Enable Health", "tacrp_h2_enable_health" )

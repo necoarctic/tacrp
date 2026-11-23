@@ -1,17 +1,20 @@
 local SINGLEPLAYER = game.SinglePlayer()
 function SWEP:DoDeployAnimation()
+    local ct = CurTime()
+    local t = 0
     if self:GetReloading() and self:GetValue("MidReload") and !self:GetValue("ShotgunReload") and self:HasSequence("midreload") then
-        local t = self:PlayAnimation("midreload", self:GetValue("ReloadTimeMult"), true, true)
+        t = self:PlayAnimation("midreload", self:GetValue("ReloadTimeMult"), false, true)
 
-        self:SetReloadFinishTime(CurTime() + t)
+        self:SetReloadFinishTime( ct + t )
     else
         self:SetReloading(false)
         if self:GetValue("TryUnholster") then
-            self:PlayAnimation("unholster", self:GetValue("DeployTimeMult") * self:GetValue("UnholsterTimeMult"), true, true)
+            t = self:PlayAnimation("unholster", self:GetValue("DeployTimeMult") * self:GetValue("UnholsterTimeMult"), false, true)
         else
-            self:PlayAnimation("deploy", self:GetValue("DeployTimeMult"), true, true)
+            t = self:PlayAnimation("deploy", self:GetValue("DeployTimeMult"), false, true)
         end
     end
+    self:SetAnimLockTime( ct + t * self.DeployEarlyFraction )
 end
 
 function SWEP:Deploy()
@@ -192,8 +195,8 @@ function SWEP:Holster(wep)
             reverse = -1
         end
 
-        local animation = self:PlayAnimation(anim, self:GetValue("HolsterTimeMult") * reverse, false, true)
-        self:SetHolsterTime(CurTime() + (animation or 0))
+        local t = self:PlayAnimation(anim, self:GetValue("HolsterTimeMult") * reverse, false, true) or 0
+        self:SetHolsterTime(CurTime() + t * self.HolsterEarlyFraction)
         self:SetHolsterEntity(wep)
         self:SetAnimLockTime( math.huge )
 

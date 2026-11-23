@@ -307,6 +307,8 @@ SWEP.SupplyAmmoAmount = false // overrides clipsize/ammo for ammo pickups
 SWEP.SupplyLimit = 1 // Multiplier for supply ammo
 
 SWEP.TryUnholster = false // if we have an "unholster" animation use it instead of "deploy"
+SWEP.DeployEarlyFraction = 0.9
+SWEP.HolsterEarlyFraction = 0.5
 
 SWEP.ShotgunReload = false
 SWEP.ShotgunThreeload = true // use those stupid 3 shot reload animations
