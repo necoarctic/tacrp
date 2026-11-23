@@ -6,10 +6,9 @@ function SWEP:IsQuickNadeAllowed()
 end
 
 function SWEP:PrimeGrenade()
-    self.Primary.Automatic = true
-
     if !self:IsQuickNadeAllowed() and !self:GetValue("PrimaryGrenade") then return end
-    if self:StillWaiting(nil, true) then return end
+    if self:StillWaitingSuper() then return end
+    if self:GetNextGrenadeTime() > CurTime() then return end
     if self:GetPrimedGrenade() then return end
 
     if engine.ActiveGamemode() == "terrortown" and GetRoundState() == ROUND_PREP and ((TTT2 and !GetConVar("ttt_nade_throw_during_prep"):GetBool()) or (!TTT2 and GetConVar("ttt_no_nade_throw_during_prep"):GetBool())) then
@@ -40,19 +39,17 @@ function SWEP:PrimeGrenade()
         rate = rate * 1.5
     end
 
-    local t = self:PlayAnimation("prime_grenade", rate, true)
-
     self:SetPrimedGrenade(true)
     self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
     self:ScopeToggle(0)
-
+    
     local ct = CurTime()
-
-    self:SetStartPrimedGrenadeTime(ct)
-    self:SetAnimLockTime(ct + (t * 0.75))
-    self:SetNextPrimaryFire(ct + (t * 1.1))
-
-    self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_ATTACK_SECONDARY, t * 1000)
+    self:SetStartPrimedGrenadeTime( ct )
+    self:PlayAnimation("prime_grenade", rate, true)
+    self:SetNextGrenadeTime( ct + self.Grenade_Delay * rate )
+    self:SetThrowGrenadeTime( ct + self.Grenade_ThrowDelay * rate )
+    self:SetAnimLockTime( ct + self.Grenade_AnimLockTime * rate )
+    self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_ATTACK_SECONDARY, rate * 1000)
 
     if !nade.NoSounds then
         self:EmitSound(nade.PullSound or ("TacRP/weapons/grenade/pullpin-" .. math.random(1, 2) .. ".wav"), 65)
@@ -330,7 +327,7 @@ function SWEP:ThinkGrenade()
     end
 
     local ply = self:GetOwner()
-    if ply:KeyPressed(IN_GRENADE1) then
+    if ply:KeyDown(IN_GRENADE1) then
         self:PrimeGrenade()
     elseif !tobool(ply:GetInfo("tacrp_nademenu")) and ply:KeyPressed(self.GrenadeMenuKey) then
         local selected_nade = self:GetGrenadeIndex()
@@ -353,7 +350,7 @@ function SWEP:ThinkGrenade()
         self.GrenadeWaitSelect = nil
     end
 
-    if self:GetPrimedGrenade() and self:GetAnimLockTime() < CurTime() then
+    if self:GetPrimedGrenade() and self:GetThrowGrenadeTime() <= CurTime() then
         self:ThrowGrenade()
         self:SetPrimedGrenade(false)
     end

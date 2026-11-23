@@ -192,11 +192,6 @@ function SWEP:ThinkSights()
     local ftp = IsFirstTimePredicted()
     local ftsp = IsFirstTimePredicted() or !game.SinglePlayer()
 
-    if self:GetOwner():KeyDown(IN_USE) and self:GetOwner():KeyPressed(IN_ATTACK2) and ftsp then
-        self:ToggleSafety()
-        return
-    end
-
     if ftp and self:GetValue("Bipod") and self:GetOwner():KeyPressed(IN_ATTACK2)
             and !self:GetInBipod() and self:CanBipod() and ftsp then
         self:EnterBipod()

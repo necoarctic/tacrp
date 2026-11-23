@@ -228,8 +228,6 @@ function SWEP:SetBlindFireMode(mode)
     self:SetBlindFire(bfmode[mode][1])
     self:SetBlindFireLeft(bfmode[mode][2])
     self:SetBlindFireRight(bfmode[mode][3])
-
-    self:SetCharge(false)
 end
 
 function SWEP:CheckBlindFire(suicide)
@@ -253,7 +251,6 @@ function SWEP:ToggleBlindFire(bf)
     if diff then
         self:ToggleCustomize(false)
         self:ScopeToggle(0)
-        self:SetBlindFireFinishTime(CurTime() + (bf == TacRP.BLINDFIRE_KYS and 1 or 0.3))
     end
 
     self:SetBlindFireMode(bf)

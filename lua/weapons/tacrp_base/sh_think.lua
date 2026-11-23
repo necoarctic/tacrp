@@ -1,82 +1,11 @@
+local SINGLEPLAYER = game.SinglePlayer()
 function SWEP:Think()
     local owner = self:GetOwner()
 
     local stop = self:RunHook("Hook_PreThink")
     if stop then return end
 
-    local cfm = self:GetCurrentFiremode()
-    if self:GetValue("RunawayBurst") and cfm < 0 then
-        if self:GetBurstCount() >= -cfm then
-            self:SetBurstCount(0)
-            self:SetNextPrimaryFire(CurTime() + self:GetValue("PostBurstDelay"))
-        elseif self:GetBurstCount() > 0 and self:GetBurstCount() < -cfm then
-            self:PrimaryAttack()
-        end
-    else
-        if (owner:KeyReleased(IN_ATTACK) or (cfm < 0 and self:GetBurstCount() >= -cfm)) then
-            if cfm < 0 and self:GetBurstCount() > 1 then
-                if !self:GetValue("AutoBurst") then
-                    self.Primary.Automatic = false
-                end
-                local add = 0
-                if self:GetBurstCount() >= -cfm then
-                    add = 60 / self:GetValue("RPM")
-                end
-                self:SetNextPrimaryFire(CurTime() + self:GetValue("PostBurstDelay") + add)
-            end
-            self:SetBurstCount(0)
-        end
-    end
-
-    // Secondary attack burst tracking for DualAkimbo
-    if self:GetValue("DualAkimbo") then
-        if self:GetValue("RunawayBurst") and cfm < 0 then
-            if self:GetBurstCount2() >= -cfm then
-                self:SetBurstCount2(0)
-                self:SetNextSecondaryFire(CurTime() + self:GetValue("PostBurstDelay"))
-            elseif self:GetBurstCount2() > 0 and self:GetBurstCount2() < -cfm then
-                self:SecondaryShoot()
-            end
-        else
-            // One-Button Akimbo routing for the right gun.
-            local oba = self:IsOneButtonAkimbo()
-            local aps = self:GetValue("AmmoPerShot")
-            if oba and cfm == 2
-                    and owner:KeyDown(IN_ATTACK)
-                    and self:Clip1() < aps
-                    and self:GetNextSecondaryFire() <= CurTime()
-                    and self:Clip2() >= aps then
-                // Full-auto: left gun is dry but right still has ammo, keep firing right.
-                self:SecondaryShoot()
-            elseif oba and cfm != 2
-                    and owner:KeyPressed(IN_ATTACK)
-                    and self:GetNextPrimaryFire() > CurTime()
-                    and self:GetOBANextRight()
-                    and self:GetNextSecondaryFire() <= CurTime()
-                    and self:Clip2() >= aps
-                    and self:GetBurstCount() == 0
-                    and self:GetBurstCount2() == 0 then
-                // Semi/burst: catch fast alt-clicks that the engine primary-side rate-limit drops.
-                self:SetOBANextRight(false)
-                self:SecondaryShoot()
-            end
-
-            local releaseKey = oba and IN_ATTACK or IN_ATTACK2
-            if (owner:KeyReleased(releaseKey) or (cfm < 0 and self:GetBurstCount2() >= -cfm)) then
-                if cfm < 0 and self:GetBurstCount2() > 1 then
-                    if !self:GetValue("AutoBurst") then
-                        self.Secondary.Automatic = false
-                    end
-                    local add = 0
-                    if self:GetBurstCount2() >= -cfm then
-                        add = 60 / self:GetValue("RPM")
-                    end
-                    self:SetNextSecondaryFire(CurTime() + self:GetValue("PostBurstDelay") + add)
-                end
-                self:SetBurstCount2(0)
-            end
-        end
-    end
+    self:ThinkBurst()
 
     if self:GetPatternCount() > 0 and (self:GetRecoilAmount() == 0 or self:GetReloading()) then
         self:SetPatternCount(0)
@@ -195,4 +124,27 @@ function SWEP:Think()
     end
 
     self:RunHook("Hook_PostThink")
+
+    -- Replace engine calls of PrimaryAttack cause they don't run due to NextPrimaryFire
+    -- they don't run on the CLIENT in singleplayer
+    if SINGLEPLAYER and SERVER or not SINGLEPLAYER then
+        if owner:KeyDown(IN_ATTACK) then
+            self:Player_Primary()
+        end
+        if owner:KeyDown(IN_ATTACK2) then
+            self:Player_Secondary()
+        end
+    end
+
+    if owner:GetInfoNum("tacrp_autoreload", 0) ~= 0 then
+        if self:GetValue("DualAkimbo") then
+            if self:A_GetClip( false ) == 0 and self:A_GetClip( true ) == 0 then
+                self:Reload()
+            end
+        else
+            if self:A_GetClip( false ) == 0 then
+                self:Reload()
+            end
+        end
+    end
 end

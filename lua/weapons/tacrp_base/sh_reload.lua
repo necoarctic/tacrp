@@ -1,52 +1,47 @@
-function SWEP:Reload(force)
-    force = force or false
-
-    if self:GetOwner():IsNPC() then
+function SWEP:Reload()
+    local owner = self:GetOwner()
+    if owner:IsNPC() then
         self:NPC_Reload()
         return
     end
 
-    if self:GetValue("Firemodes") and self:GetOwner():KeyDown(IN_USE) and self:GetOwner():KeyPressed(IN_RELOAD) and self:GetFiremodeAmount() > 1 and !self:GetSafe() then
-        self:SwitchFiremode()
-        self:EmitSound("tacrp/weapons/pdw/fire_select-1.wav", 75, 100, 1, CHAN_ITEM)
+    if owner:KeyDown(IN_USE) and owner:KeyDown(IN_RELOAD)
+        and self:GetValue("Firemodes") and self:GetFiremodeAmount() > 1 then
+        if owner:KeyPressed(IN_RELOAD) then
+            self:SwitchFiremode()
+            self:EmitSound("tacrp/weapons/pdw/fire_select-1.wav", 75, 100, 1, CHAN_ITEM)
+            self:SetAnimLockTime( CurTime() + 0.2 )
+        end
         return
     end
 
     local stop = self:RunHook("Hook_PreReload")
     if stop then return end
 
-    if !self:GetOwner():KeyPressed(IN_RELOAD) and !force then
-        return
-    end
-
-    if self:StillWaiting(true) then return end
+    if self:StillWaiting() then return end
 
     if self:GetJammed() then
         local t = self:PlayAnimation("jam", 0.75, true, true) or 0
-        self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_CANCEL_RELOAD, t * 1000)
+        owner:DoCustomAnimEvent(PLAYERANIMEVENT_CANCEL_RELOAD, t * 1000)
         self:SetJammed(false)
-        self:SetCharge(false)
         return
     end
 
     if !self:CanReloadInSprint() and self:GetIsSprinting() then return end
-    if self:GetCapacity() <= 0 then return end
-
-    // For DualAkimbo, check if both magazines are full
+    
     if self:GetValue("DualAkimbo") then
+        if self:GetCapacity2() <= 0 and self:GetCapacity() <= 0 then return end
         if self:Clip1() >= self:GetCapacity() and self:Clip2() >= self:GetCapacity2() then return end
     else
+        if self:GetCapacity() <= 0 then return end
         if self:Clip1() >= self:GetCapacity() then return end
     end
-
     if self:Ammo1() <= 0 and !self:GetInfiniteAmmo() then return end
 
-    self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
-
+    
     local mult = self:GetValue("ReloadTimeMult") / TacRP.ConVars["mult_reloadspeed"]:GetFloat()
-
     local anim = "reload"
-
+    
     if self:GetValue("ShotgunReload") then
         anim = "reload_start"
     else
@@ -62,28 +57,26 @@ function SWEP:Reload(force)
             end, "ReloadUpIn")
         end
     end
-
+    
     local t = self:PlayAnimation(anim, mult, true, true)
-
-    self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD, t * 1000)
-
+    
+    owner:DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD, t * 1000)
+    
     if SERVER then
         self:SetTimer(self.DropMagazineTime * mult, function()
             self:DropMagazine()
         end, "DropMagazine")
     end
-
+    
+    self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
     self:SetLoadedRounds(self:Clip1())
-
+    self:SetBurstCount( 0 )
+    self:SetBurstCount2( 0 )
     self:SetReloading(true)
     self:SetEndReload(false)
-
     self:SetEmptyReload(self:GetValue("ShotgunNoReverseStart") or self:Clip1() == 0)
-
     self:DoBulletBodygroups()
-
     self:RunHook("Hook_StartReload")
-
     self:SetReloadFinishTime(CurTime() + (t * 0.95))
 end
 
@@ -323,6 +316,14 @@ function SWEP:GetCapacity(base)
         return self:GetBaseValue("ClipSize")
     else
         return self:GetValue("ClipSize")
+    end
+end
+
+function SWEP:GetCapacity2(base)
+    if base then
+        return self:GetBaseValue("ClipSize2")
+    else
+        return self:GetValue("ClipSize2")
     end
 end
 

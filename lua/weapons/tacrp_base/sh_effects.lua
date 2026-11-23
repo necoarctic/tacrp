@@ -67,10 +67,9 @@ end
 function SWEP:GetTracerOrigin()
     local ow = self:GetOwner()
     local wm = !IsValid(ow) or !ow:IsPlayer() or !ow:GetViewModel():IsValid() or (ow != LocalPlayer() and ow != LocalPlayer():GetObserverTarget()) or (ow == LocalPlayer() and ow:ShouldDrawLocalPlayer())
-    // For DualAkimbo, use LastFiredRight NWVar to determine which muzzle to use
     local forceRight = nil
     if self:GetValue("DualAkimbo") then
-        forceRight = self:GetLastFiredRight()
+        forceRight = self:A_GetLastShot( false ) < self:A_GetLastShot( true )
     end
     local att = self:GetQCAMuzzle(nil, forceRight)
     local muzz = self

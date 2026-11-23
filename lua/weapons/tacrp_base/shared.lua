@@ -564,11 +564,15 @@ SWEP.AccurateCrosshair = true
 SWEP.DrawWeaponInfoBox = false
 SWEP.UseHands = true
 
+SWEP.Grenade_Delay = 1.5
+SWEP.Grenade_ThrowDelay = 0.75
+SWEP.Grenade_AnimLockTime = 1
+
 SWEP.Shields = {}
 
 SWEP.CurrentAnimation = ""
 
-SWEP.Primary.Automatic = false
+SWEP.Primary.Automatic = true
 SWEP.Primary.ClipSize = 0
 SWEP.Primary.Ammo = ""
 SWEP.Primary.DefaultClip = 0
@@ -635,16 +639,15 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Float", "SprintLockTime")
     self:NetworkVar("Float", "LastScopeTime")
     self:NetworkVar("Float", "LastMeleeTime")
-    self:NetworkVar("Float", "PrimedGrenadeTime")
-    self:NetworkVar("Float", "StartPrimedGrenadeTime")
+    self:NetworkVar("Float", "NextGrenadeTime")
+    self:NetworkVar("Float", "ThrowGrenadeTime")
     self:NetworkVar("Float", "ReloadFinishTime")
     self:NetworkVar("Float", "NWSightAmount")
-    self:NetworkVar("Float", "BlindFireFinishTime")
     self:NetworkVar("Float", "HolsterTime")
-    self:NetworkVar("Float", "NWLastProceduralFireTime")
     self:NetworkVar("Float", "NWHoldBreathAmount")
     self:NetworkVar("Float", "Breath")
     self:NetworkVar("Float", "LockOnStartTime")
+    self:NetworkVar("Float", "NextMeleeTime")
 
     self:NetworkVar("Int", "BurstCount")
     self:NetworkVar("Int", "ScopeLevel")
@@ -663,18 +666,14 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Bool", "Safe")
     self:NetworkVar("Bool", "BlindFireLeft")
     self:NetworkVar("Bool", "Tactical")
-    self:NetworkVar("Bool", "Charge")
     self:NetworkVar("Bool", "NWPeeking")
     self:NetworkVar("Bool", "BlindFireRight") // bleh, but actually less networking load than using an integer (32 bit)
     self:NetworkVar("Bool", "Jammed")
-    self:NetworkVar("Bool", "Ready")
     self:NetworkVar("Bool", "InBipod")
     self:NetworkVar("Bool", "OutOfBreath")
     self:NetworkVar("Bool", "HoldingBreath")
     self:NetworkVar("Bool", "LastWasSprinting")
     self:NetworkVar("Bool", "EmptyReload")
-    self:NetworkVar("Bool", "LastFiredRight") // For DualAkimbo tracer origin prediction
-    self:NetworkVar("Bool", "OBANextRight") // One-Button Akimbo alternating state (semi/burst)
 
     self:NetworkVar("Angle", "FreeAimAngle")
     self:NetworkVar("Angle", "LastAimAngle")
@@ -690,7 +689,6 @@ function SWEP:SetupDataTables()
     self:SetLastAimAngle(Angle())
     self:SetFiremode(1)
     self:SetTactical(true)
-    self:SetReady(false)
     self:SetBreath(1)
     self:SetHoldBreathAmount(0)
     self:SetLastWasSprinting(false)
@@ -699,31 +697,26 @@ function SWEP:SetupDataTables()
     self:SetLockOnStartTime(0)
 end
 
+SWEP.StartPrimedGrenadeTime = 0
+function SWEP:GetStartPrimedGrenadeTime()
+    return self.StartPrimedGrenadeTime
+end
+function SWEP:SetStartPrimedGrenadeTime( value )
+    self.StartPrimedGrenadeTime = value
+end
+
+SWEP.LastProceduralFireTime = 0
+function SWEP:GetLastProceduralFireTime()
+    return self.LastProceduralFireTime
+end
+function SWEP:SetLastProceduralFireTime( value )
+    self.LastProceduralFireTime = value
+end
+
 function SWEP:OnDrop(owner)
     if self.PreviousZoom and IsValid(owner) then
         owner:SetCanZoom(true)
     end
-    self:SetReady(false)
-end
-
-function SWEP:IsOneButtonAkimbo()
-    if !self:GetValue("DualAkimbo") then return false end
-    local owner = self:GetOwner()
-    return TacRP.ConVars["onebutton_akimbo"]:GetBool() or owner:GetInfoNum("tacrp_onebutton_akimbo_client", 0) != 0
-end
-
-function SWEP:SecondaryAttack()
-    if self:GetValue("DualAkimbo") and !self:IsOneButtonAkimbo() then
-        self:SecondaryShoot()
-        return
-    end
-    if self:IsOneButtonAkimbo() and self:GetValue("CanMeleeAttack") then
-        self:SetSafe(false)
-        self:Melee()
-        return
-    end
-    self:RunHook("Hook_SecondaryAttack")
-    return
 end
 
 local function clunpredictvar(tbl, name, varname, default)
@@ -744,5 +737,4 @@ end
 
 clunpredictvar(SWEP, "SightAmount", "NWSightAmount", 0)
 -- clunpredictvar(SWEP, "SprintAmount", "NWSprintAmount", 0)
-clunpredictvar(SWEP, "LastProceduralFireTime", "NWLastProceduralFireTime", 0)
 clunpredictvar(SWEP, "HoldBreathAmount", "NWHoldBreathAmount", 0)

@@ -112,8 +112,6 @@ function SWEP:PrimaryAttack()
         return
     end
 
-    self.Primary.Automatic = false
-    self.Secondary.Automatic = false
     self.GrenadeDownKey = IN_ATTACK
     self.GrenadeThrowOverride = false
     self.GrenadeThrowCharge = 0

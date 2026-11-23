@@ -136,6 +136,9 @@ local function H2_DrawAmmo( ply, wep )
 			if fm < 0 then
 				burst_length = -fm
 			end
+			if burst_count == burst_length then
+				burst_count = 0
+			end
 		end
 
 		-- theoretically customizable

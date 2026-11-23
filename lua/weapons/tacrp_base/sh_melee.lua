@@ -16,20 +16,14 @@ SWEP._Sound_MeleeHitBody = {
 
 function SWEP:Melee(alt)
     if !self:GetValue("CanMeleeAttack") then return end
-    if self:StillWaiting(false, true, true) then return end
-    if DarkRP and self:GetNWBool("TacRP_PoliceBiocode") and !self:GetOwner():isCP() then return end
+    if self:GetBiocodeLocked() then return end
+    if self:StillWaitingSuper() then return end
+    if self:GetNextMeleeTime() > CurTime() then return end
     -- if self:SprintLock() then return end
 
-    self.Primary.Automatic = true
-    self.Secondary.Automatic = true
-
-    self:SetCharge(false)
-
     self:CancelReload()
-
     self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
     self:ScopeToggle(0)
-
 
     local dmg = self:GetValue("MeleeDamage") * self:GetConfigDamageMultiplier()
     local range = self:GetValue("MeleeRange")
@@ -161,8 +155,7 @@ function SWEP:Melee(alt)
     end, "Melee")
 
     self:SetLastMeleeTime(CurTime())
-    self:SetNextPrimaryFire(CurTime() + t)
-    self:SetNextSecondaryFire(CurTime() + t)
+    self:SetNextMeleeTime(CurTime() + t)
 end
 
 function SWEP:GetHeavyAttackDamage(base)
