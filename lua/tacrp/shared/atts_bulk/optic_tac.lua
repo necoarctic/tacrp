@@ -1078,7 +1078,7 @@ ATT.FullName = "att.tac_bullet.name"
 ATT.PrintName = "att.tac_bullet.name.full"
 ATT.Icon = Material("entities/tacrp_att_tac_bullet.png", "mips smooth")
 ATT.Description = "att.tac_bullet.desc"
-ATT.Pros = {"att.procon.bullet"}
+ATT.Pros = {"att.procon.bullet", "att.procon.explosive"}
 ATT.Cons = {}
 
 ATT.Category = "tactical_ebullet"
@@ -1103,20 +1103,81 @@ ATT.Hook_ToggleTactical = function(wep)
 
     if wep:GetCapacity() <= 0 then return end
 
+    if (wep:GetNWInt("TacRP_SpecialRounds", 0) > 0) then return end
+
     local loadamt = math.min(wep:GetCapacity() - wep:Clip1(), ((wep:GetValue("Akimbo") and !wep:GetValue("DualAkimbo")) and 2 or 1) * wep:GetValue("AmmoPerShot"))
 
     if loadamt <= 0 then return end
     if wep:Ammo1() < loadamt and !wep:GetInfiniteAmmo() then return end
 
     -- wep:SetNextPrimaryFire(CurTime() + 1)
-    local t = wep:PlayAnimation("jam", 0.667, true, true)
+    local t = wep:PlayAnimation("jam", 1 / 2, true, true)
     wep:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD_LOOP, t * 1000)
     -- wep:GetOwner():DoAnimationEvent(ACT_HL2MP_GESTURE_RELOAD_PISTOL)
     wep:RestoreClip(loadamt)
     wep:DoBulletBodygroups()
     wep:SetJammed(false)
 
+    wep:SetNWInt("TacRP_SpecialRounds", math.min(wep:GetNWInt("TacRP_SpecialRounds", 0) + 1, wep:GetCapacity()))
+
     return true
+end
+
+ATT.Hook_StartReload = function(wep)
+    wep:SetNWInt("TacRP_SpecialRounds", 0)
+end
+
+ATT.Hook_PostShoot = function(wep)
+    if IsFirstTimePredicted() then
+        timer.Simple(0, function() if IsValid(wep) then wep:SetNWInt("TacRP_SpecialRounds", math.max(wep:GetNWInt("TacRP_SpecialRounds", 0) - 1, 0)) end end)
+    end
+end
+
+ATT.Func_ExplosiveEffect = function(wep, data)
+    if wep:GetNWInt("TacRP_SpecialRounds", 0) > 0 then
+        data.set = "StunstickImpact"
+        data.prio = 2
+    end
+end
+ATT.Func_ExplosiveDamage = function(wep, data)
+    if wep:GetNWInt("TacRP_SpecialRounds", 0) > 0 then
+        data.set = 25
+        data.prio = 2
+    end
+end
+ATT.Func_ExplosiveRadius = function(wep, data)
+    if wep:GetNWInt("TacRP_SpecialRounds", 0) > 0 then
+        data.set = 96
+        data.prio = 2
+    end
+end
+ATT.Func_AlwaysHitscan = function(wep, data)
+    if wep:GetNWInt("TacRP_SpecialRounds", 0) > 0 then
+        data.set = true
+        data.prio = 2
+    end
+end
+ATT.Func_RecoilKick = function(wep, data)
+    if wep:GetNWInt("TacRP_SpecialRounds", 0) > 0 then
+        data.add = 5
+    end
+end
+ATT.Func_RecoilVisualKick = function(wep, data)
+    if wep:GetNWInt("TacRP_SpecialRounds", 0) > 0 then
+        data.set = 5
+        data.prio = 2
+    end
+end
+ATT.Func_Pitch_Shoot = function(wep, data)
+    if wep:GetNWInt("TacRP_SpecialRounds", 0) > 0 then
+        data.add = -30
+    end
+end
+ATT.Func_RPM = function(wep, data)
+    if wep:GetNWInt("TacRP_SpecialRounds", 0) > 0 and wep:GetBaseValue("RPM") >= 90 then
+        data.set = 90
+        data.prio = 2
+    end
 end
 
 TacRP.LoadAtt(ATT, "tac_bullet")
