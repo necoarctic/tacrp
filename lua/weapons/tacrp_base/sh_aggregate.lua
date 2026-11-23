@@ -971,7 +971,7 @@ SWEP.StatDisplay = {
         Name = "stat.recoilmaximum",
         Description = "stat.recoilmaximum.desc",
         Value = "RecoilMaximum",
-        LowerIsBetter = true,
+        LowerIsBetter = false,
     },
     {
         Name = "stat.recoilfirstshot",

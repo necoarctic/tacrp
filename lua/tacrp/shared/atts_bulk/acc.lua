@@ -160,15 +160,14 @@ ATT.PrintName = "att.acc_quickdraw.name"
 ATT.FullName = "att.acc_quickdraw.name.full"
 ATT.Icon = Material("entities/tacrp_att_acc_quickdraw.png", "mips smooth")
 ATT.Description = "att.acc_quickdraw.name.desc"
-ATT.Pros = {"stat.deploytime", "stat.reloadtime"}
+ATT.Pros = {"stat.deploytime"}
 
 ATT.Category = "acc_holster"
 
 ATT.SortOrder = 4
 
---ATT.Mult_DeployTimeMult = 0.6
+ATT.Mult_DeployTimeMult = 0.85
 ATT.Mult_HolsterTimeMult = 0.5
-ATT.Mult_ReloadTimeMult = 0.925
 
 ATT.TryUnholster = true
 
@@ -704,15 +703,14 @@ ATT = {}
 ATT.PrintName = "att.acc_sling.name"
 ATT.Icon = Material("entities/tacrp_att_acc_sling.png", "mips smooth")
 ATT.Description = "att.acc_sling.desc"
-ATT.Pros = {"stat.deploytime", "stat.reloadtime"}
+ATT.Pros = {"stat.deploytime"}
 
 ATT.Category = {"acc_sling", "acc_slingonly"}
 
 ATT.SortOrder = 5
 
-ATT.Mult_DeployTimeMult = 0.75
-ATT.Mult_HolsterTimeMult = 0.75
-ATT.Mult_ReloadTimeMult = 0.925
+ATT.Mult_DeployTimeMult = 2 / 3
+ATT.Mult_HolsterTimeMult = 2 / 3
 
 TacRP.LoadAtt(ATT, "acc_sling")
 -- #endregion

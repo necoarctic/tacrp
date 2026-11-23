@@ -653,8 +653,8 @@ L["att.acc_dual_ergo.desc"] = "Grooved grip makes it easier to move while shooti
 L["att.acc_quickdraw.name.full"] = "Quickdraw Holster"
 L["att.acc_dual_quickdraw.name.full"] = "Quickdraw Holsters"
 L["att.acc_quickdraw.name"] = "Quickdraw"
-L["att.acc_quickdraw.desc"] = "Strapless holster with magazine pouches for quick drawing and loading."
-L["att.acc_dual_quickdraw.desc"] = "A pair of strapless holster to quickly draw the weapons and hasten loading."
+L["att.acc_quickdraw.desc"] = "Strapless holster for quick drawing and holstering."
+L["att.acc_dual_quickdraw.desc"] = "A pair of strapless holsters to quickly draw and holster the weapons."
 
 L["att.acc_skel.name.full"] = "Lightweight Grip"
 L["att.acc_skel.name"] = "Light Grip"
@@ -686,7 +686,7 @@ L["att.acc_pad.name"] = "Recoil Pad"
 L["att.acc_pad.desc"] = "Rubber pad attached to the end of the stock."
 
 L["att.acc_sling.name"] = "Sling"
-L["att.acc_sling.desc"] = "Attach a strap to the weapon, making it easier to draw and reload."
+L["att.acc_sling.desc"] = "Attach a strap to the weapon, making it easier to draw and holster."
 
 -- Attachments (ammo)
 L["att.ammo_40mm_3gl.name.full"] = "40mm Cluster Grenades"
@@ -871,7 +871,7 @@ L["att.ammo_r700_300wm.desc"] = "Magnum cartridge with higher close range damage
 -- Attachments (bolt_trigger)
 L["att.bolt_fine.name.full"] = "Refined Bolt"
 L["att.bolt_fine.name"] = "Refined"
-L["att.bolt_fine.desc"] = "A delicate bolt suitable for short bursts."
+L["att.bolt_fine.desc"] = "A delicate bolt that straightens but increases recoil."
 
 L["att.bolt_greased.name.full"] = "Greased Bolt"
 L["att.bolt_greased.name"] = "Greased"
@@ -887,7 +887,7 @@ L["att.bolt_light.desc"] = "Increase fire rate at the cost of recoil."
 
 L["att.bolt_rough.name.full"] = "Rugged Bolt"
 L["att.bolt_rough.name"] = "Rugged"
-L["att.bolt_rough.desc"] = "A durable bolt suitable for long bursts."
+L["att.bolt_rough.desc"] = "A durable bolt reducing but destabilizing recoil."
 
 L["att.bolt_surplus.name.full"] = "Surplus Bolt"
 L["att.bolt_surplus.name"] = "Surplus"
@@ -912,7 +912,7 @@ L["att.trigger_burstauto.desc"] = "Trigger that allows continuous burst fire whi
 
 L["att.trigger_comp.name.full"] = "Competition Trigger"
 L["att.trigger_comp.name"] = "Competition"
-L["att.trigger_comp.desc"] = "Lightweight trigger for sports shooting."
+L["att.trigger_comp.desc"] = "Lightweight trigger with high first shot performance."
 L["att.trigger_comp2.desc"] = "Lightweight trigger that recovers from accuracy faster."
 
 L["att.trigger_frcd.name.full"] = "Forced Reset Trigger"
@@ -926,7 +926,7 @@ L["att.trigger_hair_akimbo.desc"] = "Very sensitive trigger for rapid akimbo fir
 
 L["att.trigger_heavy.name.full"] = "Weighted Trigger"
 L["att.trigger_heavy.name"] = "Weighted"
-L["att.trigger_heavy.desc"] = "Heavy trigger for sustained fire."
+L["att.trigger_heavy.desc"] = "Heavy trigger with improved sustained fire performance."
 L["att.trigger_heavy2.desc"] = "Heavy trigger that reduces mobility impact from shooting."
 
 L["att.trigger_semi.name.full"] = "Marksman Trigger"
@@ -938,7 +938,7 @@ L["att.trigger_slam.name"] = "Slamfire"
 
 L["att.trigger_straight.name.full"] = "Straight Trigger"
 L["att.trigger_straight.name"] = "Straight"
-L["att.trigger_straight.desc"] = "Narrow trigger with superior recoil performance."
+L["att.trigger_straight.desc"] = "Narrow trigger sacrficing mobility for recoil performance."
 
 L["att.trigger_akimbo.name.full"] = "Akimbo Trigger"
 L["att.trigger_akimbo.name"] = "Akimbo"

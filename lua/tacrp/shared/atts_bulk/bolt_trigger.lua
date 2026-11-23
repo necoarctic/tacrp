@@ -11,16 +11,15 @@ ATT.PrintName = "att.bolt_fine.name"
 ATT.FullName = "att.bolt_fine.name.full"
 ATT.Icon = Material("entities/tacrp_att_bolt_fine.png", "mips smooth")
 ATT.Description = "att.bolt_fine.desc"
-ATT.Pros = {"stat.recoildissipation"}
-ATT.Cons = {"stat.recoilpershot"}
+ATT.Pros = {"stat.recoilstability"}
+ATT.Cons = {"stat.recoilkick"}
 
 ATT.Category = "bolt_automatic"
 
 ATT.SortOrder = 3
 
-ATT.Mult_RecoilDissipationRate = 1.25
--- ATT.Mult_RecoilSpreadPenalty = 1.175
-ATT.Mult_RecoilPerShot = 1.1
+ATT.Add_RecoilStability = 0.1
+ATT.Mult_RecoilKick = 1.15
 
 TacRP.LoadAtt(ATT, "bolt_fine")
 -- #endregion
@@ -71,9 +70,9 @@ ATT.Category = "bolt_automatic"
 ATT.SortOrder = 2
 
 ATT.Mult_RPM = 0.85
-ATT.Mult_RecoilVisualKick = 0.7
+ATT.Mult_RecoilVisualKick = 0.5
 ATT.Mult_RecoilKick = 0.7
-ATT.Mult_RecoilSpreadPenalty = 0.9
+ATT.Mult_RecoilSpreadPenalty = 0.85
 
 TacRP.LoadAtt(ATT, "bolt_heavy")
 -- #endregion
@@ -96,7 +95,8 @@ ATT.SortOrder = 1
 
 ATT.Mult_RPM = 1.15
 ATT.Mult_RecoilKick = 1.25
-ATT.Mult_RecoilSpreadPenalty = 1.1
+ATT.Mult_RecoilVisualKick = 1.15
+ATT.Mult_RecoilSpreadPenalty = 1.15
 
 TacRP.LoadAtt(ATT, "bolt_light")
 -- #endregion
@@ -110,16 +110,15 @@ ATT.PrintName = "att.bolt_rough.name"
 ATT.FullName = "att.bolt_rough.name.full"
 ATT.Icon = Material("entities/tacrp_att_bolt_rough.png", "mips smooth")
 ATT.Description = "att.bolt_rough.desc"
-ATT.Pros = {"stat.recoilpershot"}
-ATT.Cons = {"stat.recoildissipation"}
+ATT.Pros = {"stat.recoilkick"}
+ATT.Cons = {"stat.recoilstability"}
 
 ATT.Category = "bolt_automatic"
 
 ATT.SortOrder = 4
 
-ATT.Mult_RecoilDissipationRate = 0.75
--- ATT.Mult_RecoilSpreadPenalty = 0.825
-ATT.Mult_RecoilPerShot = 0.9
+ATT.Add_RecoilStability = -0.1
+ATT.Mult_RecoilKick = 0.8
 
 TacRP.LoadAtt(ATT, "bolt_rough")
 -- #endregion
@@ -383,16 +382,15 @@ ATT.PrintName = "att.trigger_comp.name"
 ATT.FullName = "att.trigger_comp.name.full"
 ATT.Icon = Material("entities/tacrp_att_trigger_comp.png", "mips smooth")
 ATT.Description = "att.trigger_comp.desc"
-ATT.Pros = {"stat.recoilfirstshot", "stat.recoilstability"}
-ATT.Cons = {"stat.recoilmaximum"}
+ATT.Pros = {"stat.recoilfirstshot"}
+ATT.Cons = {"stat.recoilpershot"}
 
 ATT.Category = {"trigger_semi", "trigger_auto", "trigger_burst", "trigger_akimbo", "trigger_revolver", "trigger", "trigger_4pos"}
 
 ATT.SortOrder = 2
 
-ATT.Mult_RecoilFirstShotMult = 0.75
-ATT.Mult_RecoilMaximum = 1.5
-ATT.Add_RecoilStability = 0.1
+ATT.Mult_RecoilFirstShotMult = 0.75 / 1.25
+ATT.Mult_RecoilPerShot = 1.25
 
 TacRP.LoadAtt(ATT, "trigger_comp")
 -- #endregion
@@ -417,7 +415,7 @@ ATT.SortOrder = 2
 
 ATT.Mult_RecoilDissipationRate = 1.25
 ATT.Mult_ShootingSpeedMult = 0.75
-ATT.Add_RecoilStability = 0.15
+ATT.Add_RecoilStability = -0.15
 
 TacRP.LoadAtt(ATT, "trigger_comp2")
 -- #endregion
@@ -484,14 +482,14 @@ ATT.FullName = "att.trigger_hair.name.full"
 ATT.Icon = Material("entities/tacrp_att_trigger_hair.png", "mips smooth")
 ATT.Description = "att.trigger_hair.desc"
 ATT.Pros = {"stat.rpm"}
-ATT.Cons = {"stat.recoilmaximum", "stat.recoilstability", "stat.hipfirespread"}
+ATT.Cons = {"stat.recoilpershot", "stat.recoilstability", "stat.hipfirespread"}
 
 ATT.Category = {"trigger_semi", "trigger_revolver"}
 
 ATT.SortOrder = 4
 
 ATT.Mult_RPMMultSemi = 1.2
-ATT.Mult_RecoilMaximum = 1.25
+ATT.Mult_RecoilPerShot = 1.333
 ATT.Mult_RecoilStability = 0.5
 ATT.Mult_HipFireSpreadPenalty = 1.15
 
@@ -508,7 +506,7 @@ ATT.FullName = "att.trigger_hair.name.full"
 ATT.Icon = Material("entities/tacrp_att_trigger_hair.png", "mips smooth")
 ATT.Description = "att.trigger_hair_akimbo.desc"
 ATT.Pros = {"stat.rpm", "stat.postburstdelay"}
-ATT.Cons = {"stat.recoilmaximum", "stat.recoil"}
+ATT.Cons = {"stat.recoilpershot", "stat.recoil"}
 
 ATT.Category = {"trigger_akimbo"}
 ATT.InvATt = "trigger_hair"
@@ -519,7 +517,7 @@ ATT.Mult_PostBurstDelay = 0.5
 
 ATT.Mult_RPMMultSemi = 1.2
 ATT.Mult_RPMMultBurst = 1.2
-ATT.Mult_RecoilMaximum = 1.25
+ATT.Mult_RecoilPerShot = 1.333
 ATT.Mult_RecoilStability = 0.5
 ATT.Mult_RecoilKick = 1.2
 
@@ -534,16 +532,15 @@ ATT.PrintName = "att.trigger_heavy.name"
 ATT.FullName = "att.trigger_heavy.name.full"
 ATT.Icon = Material("entities/tacrp_att_trigger_heavy.png", "mips smooth")
 ATT.Description = "att.trigger_heavy.desc"
-ATT.Pros = {"stat.recoilmaximum"}
-ATT.Cons = {"stat.recoilfirstshot", "stat.recoilstability"}
+ATT.Pros = {"stat.recoilpershot"}
+ATT.Cons = {"stat.recoilfirstshot"}
 
 ATT.Category = {"trigger_semi", "trigger_auto", "trigger_burst", "trigger_akimbo", "trigger_revolver", "trigger", "trigger_4pos"}
 
 ATT.SortOrder = 3
 
-ATT.Mult_RecoilFirstShotMult = 1.5
-ATT.Mult_RecoilMaximum = 0.75
-ATT.Add_RecoilStability = -0.1
+ATT.Add_RecoilFirstShotMult = 0.5 / 0.75
+ATT.Mult_RecoilPerShot = 0.75
 
 TacRP.LoadAtt(ATT, "trigger_heavy")
 -- #endregion
@@ -568,7 +565,7 @@ ATT.SortOrder = 3
 
 ATT.Mult_RecoilDissipationRate = 0.85
 ATT.Mult_ShootingSpeedMult = 1.25
-ATT.Add_RecoilStability = -0.15
+ATT.Add_RecoilStability = 0.15
 
 TacRP.LoadAtt(ATT, "trigger_heavy2")
 -- #endregion
@@ -621,7 +618,7 @@ ATT.SortOrder = 1
 ATT.Override_Firemodes = {2}
 ATT.Mult_RecoilKick = 1.25
 ATT.Mult_RecoilSpreadPenalty = 1.25
-ATT.Add_RecoilMaximum = 0.5
+ATT.Mult_RecoilPerShot = 1.25
 
 ATT.Mult_RPM = 1.15
 ATT.Mult_ShootTimeMult = 1.25
@@ -650,7 +647,7 @@ ATT.SortOrder = 1
 ATT.Override_Firemodes = {2}
 ATT.Mult_RecoilKick = 1.25
 ATT.Mult_RecoilSpreadPenalty = 1.25
-ATT.Add_RecoilMaximum = 0.5
+ATT.Mult_RecoilPerShot = 1.25
 
 ATT.Mult_RPM = 1.15
 ATT.Mult_ShootTimeMult = 1.4
@@ -675,11 +672,11 @@ ATT.Category = {"trigger_auto", "trigger_straight", "trigger_4pos"}
 
 ATT.SortOrder = 5.5
 
-ATT.Mult_RecoilDissipationRate = 1.15
+ATT.Mult_RecoilDissipationRate = 1.25
 ATT.Mult_RecoilSpreadPenalty = 0.85
 
 ATT.Add_RecoilResetTime = 0.075
-ATT.Add_ShootingSpeedMult = -0.08
+ATT.Add_ShootingSpeedMult = -0.1
 
 TacRP.LoadAtt(ATT, "trigger_straight")
 -- #endregion
@@ -702,7 +699,7 @@ ATT.Category = {"trigger_auto", "trigger_semi", "trigger_burst", "trigger_4pos"}
 
 ATT.Func_RPM = function(wep, data)
     if wep:GetScopeLevel() > 0 and not wep:GetPeeking() then
-        data.mul = data.mul * 0.7
+        data.mul = data.mul * 0.75
     end
 end
 

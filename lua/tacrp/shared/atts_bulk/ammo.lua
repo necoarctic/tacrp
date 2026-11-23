@@ -1319,14 +1319,14 @@ ATT.FullName = "att.ammo_tmj.name.full"
 ATT.Icon = Material("entities/tacrp_att_acc_tmj.png", "mips smooth")
 ATT.Description = "att.ammo_tmj.desc"
 ATT.Pros = {"att.procon.armor", "stat.penetration"}
-ATT.Cons = {"stat.recoilfirstshot", "stat.recoilmaximum"}
+ATT.Cons = {"stat.recoilfirstshot", "stat.recoilstability"}
 ATT.Category = {"ammo_rifle", "ammo_sniper", "ammo_amr", "ammo_rifle_sub"}
 
 ATT.SortOrder = 1.5
 
 ATT.Add_Penetration = 10
-ATT.Add_RecoilFirstShotMult = 1
-ATT.Add_RecoilMaximum = 2
+ATT.Mult_RecoilFirstShotMult = 1.5
+ATT.Add_RecoilStability = -0.05
 ATT.Add_ArmorPenetration = 0.05
 
 TacRP.LoadAtt(ATT, "ammo_tmj")

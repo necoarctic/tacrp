@@ -286,10 +286,10 @@ ATT.ModelOffset = Vector(-5.0, 0, 0)
 
 ATT.Category = {"silencer", "brake"}
 
-ATT.Add_ShootingSpeedMult = 0.05
+ATT.Add_ShootingSpeedMult = 0.06
 ATT.Mult_RecoilStability = 0.9
-ATT.Mult_Spread = 1.15
-ATT.Add_Vol_Shoot = 5
+ATT.Mult_Spread = 1.25
+ATT.Add_Vol_Shoot = 10
 
 ATT.SortOrder = 100
 
@@ -306,7 +306,7 @@ ATT.FullName = "att.muzz_brake_breaching.name.full"
 ATT.Icon = Material("entities/tacrp_att_muzz_brake_breaching.png", "mips smooth")
 ATT.Description = "att.muzz_brake_breaching.desc"
 ATT.Pros = {"stat.meleedamage", "stat.recoilstability"}
-ATT.Cons = {"stat.spread"}
+ATT.Cons = {"stat.spread", "stat.vol_shoot"}
 
 ATT.Model = "models/weapons/tacint_extras/addons/brake_breacher.mdl"
 ATT.Scale = 1.25
@@ -315,9 +315,10 @@ ATT.ModelOffset = Vector(-5.4, 0, 0)
 
 ATT.Category = {"silencer", "brake"}
 
-ATT.Mult_MeleeDamage = 1.4
+ATT.Mult_MeleeDamage = 1.6
 ATT.Mult_Spread = 1.25
-ATT.Mult_RecoilStability = 1.15
+ATT.Mult_RecoilStability = 1.05
+ATT.Add_Vol_Shoot = 5
 
 ATT.SortOrder = 101
 
@@ -343,11 +344,11 @@ ATT.ModelOffset = Vector(-5.4, 0, 0)
 
 ATT.Category = {"silencer", "brake"}
 
-ATT.Mult_RecoilKick = 0.6
--- ATT.Mult_RecoilStability = 1.1
+ATT.Mult_RecoilKick = 0.65
+ATT.Mult_RecoilVisualKick = 0.5
 
 ATT.Add_ShootingSpeedMult = -0.4
-ATT.Mult_Spread = 1.2
+ATT.Mult_Spread = 1.25
 
 ATT.Add_Vol_Shoot = 15
 ATT.Mult_Pitch_Shoot = 0.9
