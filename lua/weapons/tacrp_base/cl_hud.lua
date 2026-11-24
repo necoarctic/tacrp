@@ -385,7 +385,7 @@ function SWEP:DrawHUDBackground()
 
     self:DrawCustomizeHUD()
 
-    if !self:GetCustomize() and TacRP.ConVars["hints"]:GetBool() then
+    if !self:GetCustomize() and TacRP.ConVars["hints"]:GetBool() and not TacRP.ConVars["h2_enable"]:GetBool() then
         self:DrawHints()
     end
 

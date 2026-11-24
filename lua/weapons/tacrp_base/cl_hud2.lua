@@ -553,7 +553,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 	end
 
 	-- hints
-	if wep and h2_enable:GetBool() then
+	if wep and h2_enable:GetBool() and TacRP.ConVars["hints"]:GetBool() then
 		local push_y = 0
 		local caps = wep:GetHintCapabilities()
 
