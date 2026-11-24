@@ -437,114 +437,117 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 			Hx, Hy, Hw, Hh = H2_DrawAmmo( ply, wep )
 		end
 
-		-- grenades
-		if wep and tacrp then
-			local def = wep:GetGrenade()
-			local qty
-			if def.Singleton then
-				qty = ply:HasWeapon(def.GrenadeWep) and 1 or 0
-			elseif !TacRP.IsGrenadeInfiniteAmmo(def.Index) then
-				qty = ply:GetAmmoCount(def.Ammo)
-			end
-			local panel_w, panel_h = s(56), s(20)
-			local panel_x = Hx - panel_w - s(MARGIN_S)--sw/2 - panel_w/2
-			local panel_y = sh - panel_h - s(MARGIN_L)
-
-			local icon_size = panel_h
-			local icon_x = panel_x + panel_w - icon_size
-			local icon_y = panel_y
-
-			C2_FullBox( panel_x, panel_y, panel_w, panel_h )
-
-			C2_DrawText(
-				def.PrintName,
-				"TacRP_STD_10I",
-				panel_x + s(MARGIN_S),
-				panel_y + panel_h/2 - s(qty and 4 or 0),
-				color_white,
-				TEXT_ALIGN_LEFT,
-				TEXT_ALIGN_CENTER
-			)
-			if qty then
-				C2_DrawText(
-					"×" .. qty,
-					"TacRP_STD_8",
-					panel_x + s(MARGIN_S),
-					panel_y + panel_h/2 + s(4),
-					color_white,
-					TEXT_ALIGN_LEFT,
-					TEXT_ALIGN_CENTER
-				)
-			end
-
-			surface.SetMaterial( def.Icon )
-			surface.SetDrawColor( COLOR_SHADOW )
-
-			surface.DrawTexturedRect( icon_x + 2, icon_y + 1, icon_size, icon_size )
-			surface.DrawTexturedRect( icon_x + 2, icon_y + 2, icon_size, icon_size )
-			surface.SetDrawColor( color_white )
-			surface.DrawTexturedRect( icon_x, icon_y, icon_size, icon_size )
-		end
-
-		-- halo style grenades
-		if wep and tacrp then
-			local origin_x = sw - s(MARGIN_L)
-			local origin_y = s(MARGIN_L)
-			local panel_y = origin_y
-			local shift_x = 0
-			local panel_w, panel_h = s(23), s(16)
-
-			for index=TacRP.QuickNades_Count, 1, -1 do
-				local grenade_class = TacRP.QuickNades_Index[index]
-				local selected = wep:GetGrenadeIndex() == index
-
-				if not selected and not wep:CheckGrenade(index, checkammo) then
-					continue
-				end
-				local def = TacRP.QuickNades[grenade_class]
-
+		local grenade_style = TacRP.ConVars["h2_enable_grenade"]:GetInt()
+		if grenade_style ~= 0 and wep and tacrp then
+			-- grenades
+			if (grenade_style ~= 2) then
+				local def = wep:GetGrenade()
 				local qty
 				if def.Singleton then
 					qty = ply:HasWeapon(def.GrenadeWep) and 1 or 0
 				elseif !TacRP.IsGrenadeInfiniteAmmo(def.Index) then
 					qty = ply:GetAmmoCount(def.Ammo)
 				end
-				if not selected and qty and qty == 0 then
-					continue
-				end
-				shift_x = shift_x - panel_w
-				
-				local panel_x = origin_x + shift_x
-				
-				surface.SetAlphaMultiplier( (qty and qty==0) and 0.5 or 1 )
-				if selected then
-					C2_FullBox( panel_x, panel_y, panel_w, panel_h )
-				end
-				
-				surface.SetMaterial( def.Icon )
-				surface.SetDrawColor( COLOR_SHADOW )
-				surface.DrawTexturedRect( panel_x+2, panel_y+1, panel_h, panel_h )
-				surface.DrawTexturedRect( panel_x+2, panel_y+2, panel_h, panel_h )
-				surface.SetDrawColor( color_white )
-				surface.DrawTexturedRect( panel_x, panel_y, panel_h, panel_h )
+				local panel_w, panel_h = s(56), s(20)
+				local panel_x = Hx - panel_w - s(MARGIN_S)--sw/2 - panel_w/2
+				local panel_y = sh - panel_h - s(MARGIN_L)
 
-				if qty and qty > 99 then
-					qty = "99+"
-				end
+				local icon_size = panel_h
+				local icon_x = panel_x + panel_w - icon_size
+				local icon_y = panel_y
+
+				C2_FullBox( panel_x, panel_y, panel_w, panel_h )
+
 				C2_DrawText(
-					qty or "∞",
-					"TacRP_STD_10",
-					panel_x + panel_w - s(3),
-					-- panel_x + (panel_h) + (panel_w-panel_h)/2 - s(2),
-					panel_y + panel_h/2,
+					def.PrintName,
+					"TacRP_STD_10I",
+					panel_x + s(MARGIN_S),
+					panel_y + panel_h/2 - s(qty and 4 or 0),
 					color_white,
-					-- TEXT_ALIGN_CENTER,
-					TEXT_ALIGN_RIGHT,
+					TEXT_ALIGN_LEFT,
 					TEXT_ALIGN_CENTER
 				)
-				shift_x = shift_x - s(1)
+				if qty then
+					C2_DrawText(
+						"×" .. qty,
+						"TacRP_STD_8",
+						panel_x + s(MARGIN_S),
+						panel_y + panel_h/2 + s(4),
+						color_white,
+						TEXT_ALIGN_LEFT,
+						TEXT_ALIGN_CENTER
+					)
+				end
+
+				surface.SetMaterial( def.Icon )
+				surface.SetDrawColor( COLOR_SHADOW )
+
+				surface.DrawTexturedRect( icon_x + 2, icon_y + 1, icon_size, icon_size )
+				surface.DrawTexturedRect( icon_x + 2, icon_y + 2, icon_size, icon_size )
+				surface.SetDrawColor( color_white )
+				surface.DrawTexturedRect( icon_x, icon_y, icon_size, icon_size )
 			end
-			surface.SetAlphaMultiplier( 1 )
+
+			-- halo style grenades
+			if (grenade_style ~= 1) then
+				local origin_x = sw - s(MARGIN_L)
+				local origin_y = s(MARGIN_L)
+				local panel_y = origin_y
+				local shift_x = 0
+				local panel_w, panel_h = s(23), s(16)
+
+				for index=TacRP.QuickNades_Count, 1, -1 do
+					local grenade_class = TacRP.QuickNades_Index[index]
+					local selected = wep:GetGrenadeIndex() == index
+
+					if not selected and not wep:CheckGrenade(index, checkammo) then
+						continue
+					end
+					local def = TacRP.QuickNades[grenade_class]
+
+					local qty
+					if def.Singleton then
+						qty = ply:HasWeapon(def.GrenadeWep) and 1 or 0
+					elseif !TacRP.IsGrenadeInfiniteAmmo(def.Index) then
+						qty = ply:GetAmmoCount(def.Ammo)
+					end
+					if not selected and qty and qty == 0 then
+						continue
+					end
+					shift_x = shift_x - panel_w
+					
+					local panel_x = origin_x + shift_x
+					
+					surface.SetAlphaMultiplier( (qty and qty==0) and 0.5 or 1 )
+					if selected then
+						C2_FullBox( panel_x, panel_y, panel_w, panel_h )
+					end
+					
+					surface.SetMaterial( def.Icon )
+					surface.SetDrawColor( COLOR_SHADOW )
+					surface.DrawTexturedRect( panel_x+2, panel_y+1, panel_h, panel_h )
+					surface.DrawTexturedRect( panel_x+2, panel_y+2, panel_h, panel_h )
+					surface.SetDrawColor( color_white )
+					surface.DrawTexturedRect( panel_x, panel_y, panel_h, panel_h )
+
+					if qty and qty > 99 then
+						qty = "99+"
+					end
+					C2_DrawText(
+						qty or "∞",
+						"TacRP_STD_10",
+						panel_x + panel_w - s(3),
+						-- panel_x + (panel_h) + (panel_w-panel_h)/2 - s(2),
+						panel_y + panel_h/2,
+						color_white,
+						-- TEXT_ALIGN_CENTER,
+						TEXT_ALIGN_RIGHT,
+						TEXT_ALIGN_CENTER
+					)
+					shift_x = shift_x - s(1)
+				end
+				surface.SetAlphaMultiplier( 1 )
+			end
 		end
 	end
 

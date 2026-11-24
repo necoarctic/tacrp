@@ -1272,6 +1272,11 @@ local conVars = {
         default = "1",
         client = true,
     },
+    {
+        name = "h2_enable_grenade",
+        default = "1",
+        client = true,
+    },
     -- Spawnmenu v2
     {
         name = "s2_enable",

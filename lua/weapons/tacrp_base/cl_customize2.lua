@@ -1132,6 +1132,13 @@ hook.Add( "PopulateToolMenu", "CustomMenuSettings", function()
 		panel:CheckBox( "HUD v2", "tacrp_h2_enable" )
 		panel:CheckBox( "Enable Health", "tacrp_h2_enable_health" )
 		panel:CheckBox( "Enable Ammo", "tacrp_h2_enable_ammo" )
+
+		local combo = panel:ComboBox("Enable Grenade", "tacrp_h2_enable_grenade")
+		combo:AddChoice("Disabled", 0)
+		combo:AddChoice("Single", 1)
+		combo:AddChoice("Multiple", 2)
+		combo:AddChoice("Both", 3)
+
 		panel:Help( "press WALK + CUSTOMIZE to use old customize menu" )
 		
 		panel:Help("Presets")
