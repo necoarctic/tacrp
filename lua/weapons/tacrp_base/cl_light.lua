@@ -314,6 +314,7 @@ function SWEP:DoMuzzleLight()
         lamp:SetFOV(val2)
     end
 
+    lamp:SetNearZ(48)
     lamp:SetFarZ(600)
     lamp:SetPos(self:GetMuzzleOrigin() + self:GetShootDir():Forward() * 8)
     lamp:SetAngles(self:GetShootDir() + Angle(math.Rand(-1, 1), math.Rand(-1, 1), math.Rand(0, 360)))
