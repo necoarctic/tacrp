@@ -79,7 +79,7 @@ local cats = {
     ["ClassName"] = true,
     ["PrintName"] = true,
     ["SubCatTier"] = function(wep) return TacRP.Tier_SortOrder[wep.SubCatTier] end,
-    ["SubCatType"] = function(wep) return TacRP.Tier_SortOrder[wep.SubCatType] end,
+    ["SubCatType"] = function(wep) return TacRP.Type_SortOrder[wep.SubCatType] end,
     ["Damage_Max"] = true,
     ["Damage_Min"] = true,
     ["Raw DPS"] = function(wep)
@@ -113,7 +113,9 @@ local cats = {
     ["ShootingSpeedMult"] = true,
     ["SightedSpeedMult"] = true,
     ["ReloadSpeedMult"] = true,
-    ["ReloadTime"] = function(wep) return math.Round(wep:GetReloadTime(true), 2) end,
+    ["ReloadTime"] = function(wep)
+        return math.Round(wep:GetReloadTime(true), 2)
+    end,
 
     ["AimDownSightsTime"] = true,
     ["SprintToFireTime"] = true,
@@ -121,34 +123,45 @@ local cats = {
 
 concommand.Add("tacrp_dev_dumpstats", function()
     if !game.SinglePlayer() then return end
-    local str = ""
-    local str_l18n = ""
+    local output = ""
     print("Dumping stats, this may lag a bit...")
+
     -- headers
     for k, v in pairs(cats) do
-        str = str .. k .. ","
+        output = output .. k .. ","
     end
-    str = string.sub(str, 0, -1) .. "\n"
-    timer.Simple(0.1, function()
-        local ply = Entity(1)
-        for _, class in SortedPairs(TacRP.GetWeaponList()) do
-            local wpn = ply:Give(class, true)
-            str_l18n = str_l18n .. "L[\"wep." .. class .. ".name\"] = [[" .. (wpn.PrintName or "") .. "]]" .. "\n"
-            str_l18n = str_l18n .. "L[\"wep." .. class .. ".desc\"] = [[" .. (wpn.Description or "") .. "]]" .. "\n"
-            str_l18n = str_l18n .. "L[\"wep." .. class .. ".desc.quote\"] = [[" .. (wpn.Description_Quote or "") .. "]]" .. "\n\n"
-            for k, v in pairs(cats) do
-                if v == true then
-                    str = str .. (wpn[k] or "") .. ","
-                else
-                    str = str .. v(wpn) .. ","
-                end
-            end
-            ply:StripWeapon(class)
-            str = string.sub(str, 0, -1) .. "\n"
+    output = string.sub(output, 0, -1) .. "\n"
+    
+    local ply = Entity(1)
+    for _, class in SortedPairs(TacRP.GetWeaponList()) do
+        local wpn = ply:GetWeapon(class)
+        if not wpn:IsValid() then
+            wpn = ply:Give(class, true)
         end
-        file.Write("tacrp_dumpstats.csv", str)
-        file.Write("tacrp_l18n.txt", str_l18n)
-
-        print("Dumped stats to tacrp_dumpstats.csv")
-    end)
+        assert( wpn:IsValid(), tostring(class) .. " is not valid" )
+        for k, v in pairs(cats) do
+            if v == true then
+                output = output .. (wpn[k] or "") .. ","
+            else
+                output = output .. tostring(v(wpn)) .. ","
+            end
+        end
+        ply:StripWeapon(class)
+        output = string.sub(output, 0, -1) .. "\n"
+    end
+    file.Write("tacrp_dumpstats.csv", output)
+    print("Dumped stats to tacrp_dumpstats.csv")
 end, nil, "Collects some stats and dumps them to a CSV file. Singleplayer only, may lag a bit.")
+
+concommand.Add("tacrp_dev_dumplang", function()
+    if !game.SinglePlayer() then return end
+    local str_l18n = ""
+    for _, class in SortedPairs(TacRP.GetWeaponList()) do
+        local weapon = weapons.Get( class )
+        str_l18n = str_l18n .. "L[\"wep." .. class .. ".name\"] = [[" .. (weapon.PrintName or "") .. "]]" .. "\n"
+        str_l18n = str_l18n .. "L[\"wep." .. class .. ".desc\"] = [[" .. (weapon.Description or "") .. "]]" .. "\n"
+        str_l18n = str_l18n .. "L[\"wep." .. class .. ".desc.quote\"] = [[" .. (weapon.Description_Quote or "") .. "]]" .. "\n\n"
+    end
+    file.Write("tacrp_l18n.txt", str_l18n)
+    print("Dumped weapon name, description, quotes to tacrp_l18n.txt")
+end, nil, "all weapon name, description, and quotes")
