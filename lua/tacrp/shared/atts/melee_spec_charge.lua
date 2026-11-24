@@ -1,7 +1,7 @@
 ATT.PrintName = "att.melee_spec_charge.name"
 ATT.FullName = "att.melee_spec_charge.name.full"
 ATT.Icon = Material("entities/tacrp_att_melee_spec_charge.png", "mips smooth")
-ATT.Description = "att.melee_spec_charge.name.desc"
+ATT.Description = "att.melee_spec_charge.desc"
 ATT.Pros = { "att.pro.melee_spec_charge1", "att.pro.melee_spec_charge2", "att.pro.melee_spec_charge3", "att.pro.melee_spec_charge4" }
 ATT.Cons = { "stat.meleerechargerate" }
 

@@ -138,7 +138,7 @@ ATT = {}
 ATT.PrintName = "att.acc_ergo.name"
 ATT.FullName = "att.acc_ergo.name.full"
 ATT.Icon = Material("entities/tacrp_att_acc_ergo.png", "mips smooth")
-ATT.Description = "att.acc_dual_ergo.name.desc"
+ATT.Description = "att.acc_dual_ergo.desc"
 
 ATT.Category = "acc_dual"
 ATT.InvAtt = "acc_ergo"
@@ -159,7 +159,7 @@ ATT = {}
 ATT.PrintName = "att.acc_quickdraw.name"
 ATT.FullName = "att.acc_quickdraw.name.full"
 ATT.Icon = Material("entities/tacrp_att_acc_quickdraw.png", "mips smooth")
-ATT.Description = "att.acc_quickdraw.name.desc"
+ATT.Description = "att.acc_quickdraw.desc"
 ATT.Pros = {"stat.deploytime"}
 
 ATT.Category = "acc_holster"
@@ -182,7 +182,7 @@ ATT = {}
 ATT.PrintName = "att.acc_quickdraw.name"
 ATT.FullName = "att.acc_dual_quickdraw.name.full"
 ATT.Icon = Material("entities/tacrp_att_acc_quickdraw.png", "mips smooth")
-ATT.Description = "att.acc_dual_quickdraw.name.desc"
+ATT.Description = "att.acc_dual_quickdraw.desc"
 ATT.Pros = {"stat.deploytime", "stat.reloadtime"}
 
 ATT.Category = "acc_dual"
