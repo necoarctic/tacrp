@@ -773,8 +773,7 @@ function SWEP:DrawBlindFireHUD()
     if !TacRP.ConVars["blindfiremenu"]:GetBool() then lastseenfunnyline = false return end
     local nocenter = TacRP.ConVars["blindfiremenu_nocenter"]:GetBool()
 
-    -- Disabled for Workshop policy compliance
-    local nosuicide = true --nocenter or TacRP.ConVars["idunwannadie"]:GetBool()
+    local nosuicide = nocenter or !TacRP.AllowSelfShoot
 
     -- adapted from tfa vox radial menu
     local ft = FrameTime()

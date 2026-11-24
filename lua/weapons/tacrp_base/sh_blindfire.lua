@@ -220,8 +220,7 @@ function SWEP:SetBlindFireMode(mode)
         mode = 0
     end
 
-    -- Disabled for Workshop policy compliance
-    if mode == TacRP.BLINDFIRE_KYS then
+    if mode == TacRP.BLINDFIRE_KYS and !TacRP.AllowSelfShoot then
         mode = 0
     end
 
@@ -279,9 +278,8 @@ function SWEP:ThinkBlindFire()
             self:ToggleBlindFire(TacRP.BLINDFIRE_LEFT)
         elseif self:GetOwner():KeyDown(IN_MOVERIGHT) and !self:GetOwner():KeyDown(IN_MOVELEFT)  then
             self:ToggleBlindFire(TacRP.BLINDFIRE_RIGHT)
-        -- Disabled for Workshop policy compliance
-        --elseif self:GetOwner():KeyDown(IN_SPEED) and self:GetOwner():KeyDown(IN_WALK) and !tobool(self:GetOwner():GetInfo("tacrp_idunwannadie")) then
-        --    self:ToggleBlindFire(TacRP.BLINDFIRE_KYS)
+        elseif self:GetOwner():KeyDown(IN_SPEED) and self:GetOwner():KeyDown(IN_WALK) and TacRP.AllowSelfShoot then
+            self:ToggleBlindFire(TacRP.BLINDFIRE_KYS)
         elseif self:GetOwner():KeyDown(IN_BACK) then
             self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
         end

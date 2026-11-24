@@ -494,7 +494,7 @@ end
 local TICK_INTERVAL = engine.TickInterval()
 local SINGLEPLAYER = game.SinglePlayer()
 
-function SWEP:PlayShootSound()
+function SWEP:PlayShootSound(force_pos)
     local pvar = self:GetValue("ShootPitchVariance")
     local sshoot = self:GetValue("Silencer") and self:GetValue("Sound_Shoot_Silenced") or self:GetValue("Sound_Shoot")
     if istable(sshoot) then
@@ -506,21 +506,29 @@ function SWEP:PlayShootSound()
 
     local sshoot_add = self:GetValue("Sound_ShootAdd")
     if sshoot_add then
+        if force_pos then
+            EmitSound(sshoot_add, force_pos, 0, CHAN_BODY, loudness, volume, 0, pitch)
+        else
+            self:EmitSound(
+                sshoot_add,
+                volume,
+                pitch,
+                loudness,
+                CHAN_BODY
+            )
+        end
+    end
+    if force_pos then
+        EmitSound(sshoot, force_pos, 0, CHAN_WEAPON, loudness, volume, 0, pitch)
+    else
         self:EmitSound(
-            sshoot_add,
+            sshoot,
             volume,
             pitch,
             loudness,
-            CHAN_BODY
+            CHAN_WEAPON
         )
     end
-    self:EmitSound(
-        sshoot,
-        volume,
-        pitch,
-        loudness,
-        CHAN_WEAPON
-    )
 end
 
 local CLOSE_SIMULT = 0.1
@@ -852,10 +860,13 @@ function SWEP:Weapon_Attack( gun2 )
     local stop = self:RunHook("Hook_PreShoot", gun2)
     if stop then return end
 
+    -- gets around sound not playing when shooter dies
+    local shootsoundpos = self:GetBlindFireMode() == TacRP.BLINDFIRE_KYS and self:GetPos()
+
     if SINGLEPLAYER and ct - self:A_GetLastShot( not gun2 ) < 0.01 then
-        timer.Simple( 0.03, function() if self:IsValid() then self:PlayShootSound() end end)
+        timer.Simple( 0.03, function() if self:IsValid() then self:PlayShootSound(shootsoundpos) end end)
     else
-        self:PlayShootSound()
+        self:PlayShootSound(shootsoundpos)
     end
     self:PlayShootAnim( gun2 )
     self:Weapon_Effects( gun2 )
@@ -1027,6 +1038,26 @@ function SWEP:Weapon_FireBullet()
                 end
             end
         })
+    end
+
+    if self:GetBlindFireMode() == TacRP.BLINDFIRE_KYS then
+        local self_dir = self:GetShootDir(true):Forward()
+        local dmg = DamageInfo()
+        dmg:SetDamage(self:GetValue("Damage_Max") * 2 * (self:GetBodyDamageMultipliers()[HITGROUP_HEAD] or 1))
+        dmg:SetDamageType(self:GetValue("DamageType") or DMG_BULLET)
+        dmg:SetInflictor(self)
+        dmg:SetAttacker(self:GetOwner())
+        dmg:SetDamagePosition(self:GetOwner():GetPos() + Vector(0, 0, 72))
+        dmg:SetDamageForce((self_dir + VectorRand() * 0.5) * math.Rand(1000, 6000))
+        local self_tr = util.TraceLine({
+            start = self:GetMuzzleOrigin(),
+            endpos = self:GetMuzzleOrigin() + self_dir * 16,
+            mask = MASK_SHOT,
+            filter = { self },
+        })
+        self_tr.HitGroup = HITGROUP_HEAD
+        TacRP.CancelBodyDamage(self:GetOwner(), dmg, HITGROUP_HEAD)
+        self:GetOwner():DispatchTraceAttack(dmg, self_tr, self_dir)
     end
 end
 
