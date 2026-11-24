@@ -33,6 +33,10 @@ function SWEP:ShouldDrawCrosshair()
     return true
 end
 
+local function thickrect( x, y, w, h )
+    surface.DrawRect( x-1, y-1, w+2, h+2 )
+end
+
 function SWEP:DoDrawCrosshair(x, y)
     local ft = FrameTime()
     local ply = self:GetOwner()
@@ -121,40 +125,52 @@ function SWEP:DoDrawCrosshair(x, y)
         surface.DrawOutlinedRect(x + 7, y - 1.25, 8, 5, 1)
     elseif TacRP.ConVars["crosshair"]:GetBool() then
         clr = clr or Color(50, 255, 50)
-        surface.SetDrawColor(clr.r, clr.g, clr.b, clr.a * self.CrosshairAlpha)
+        local clr = Color(clr.r, clr.g, clr.b, clr.a * self.CrosshairAlpha)
         
+        local crosshair_length = 4
+
         if not self:UseAltRecoil() then
             local spread = self:GetValue("Spread")
-            spread = spread + (self:GetValue("HipFireSpreadPenalty"))
-            spread = spread + (self:GetValue("RecoilSpreadPenalty") * self:GetValue("RecoilMaximum"))
-            local distance = TacRP.GetFOVAcc(spread)
-            local thickness = 4
+            spread = spread + self:GetValue("HipFireSpreadPenalty")
+            local bloom_spread = self:GetValue("RecoilSpreadPenalty")
+            local gain_mult = self:GetValue("RecoilPerShot")
+            local thickness = 6
             local length = 1
-            surface.DrawRect( x - thickness/2, y + distance, thickness, length )
-            surface.DrawRect( x - thickness/2, y - distance - length, thickness, length )
-            surface.DrawRect( x + distance, y - thickness/2, length, thickness )
-            surface.DrawRect( x - distance - length, y - thickness/2, length, thickness )
+            local spread = spread + (bloom_spread * self:GetValue("RecoilMaximum"))
+            local distance = TacRP.GetFOVAcc(spread)
+            for i=1, 2 do
+                surface.SetDrawColor( i==1 and color_black or clr )
+                local rect = i==1 and thickrect or surface.DrawRect
+                rect( x + distance, y - thickness/2, length, thickness )
+                rect( x - distance - length, y - thickness/2, length, thickness )
+            end
         end
         
         do
             local distance = TacRP.GetFOVAcc(self:GetValue("Spread") + self:GetValue("HipFireSpreadPenalty"))
-            local thickness = 4
+            local thickness = 2
             local length = 1
-            surface.DrawRect( x - thickness/2, y + distance, thickness, length )
-            surface.DrawRect( x - thickness/2, y - distance - length, thickness, length )
-            surface.DrawRect( x + distance, y - thickness/2, length, thickness )
-            surface.DrawRect( x - distance - length, y - thickness/2, length, thickness )
+            for i=1, 2 do
+                surface.SetDrawColor( i==1 and color_black or clr )
+                local rect = i==1 and thickrect or surface.DrawRect
+                rect( x + distance, y - thickness/2, length, thickness )
+                rect( x - distance - length, y - thickness/2, length, thickness )
+            end
         end
         
         do
             local distance = spread
             if self.CrosshairStatic then distance = 16 end
             local thickness = 2
-            local length = 8
-            surface.DrawRect( x - thickness/2, y + distance, thickness, length )
-            surface.DrawRect( x - thickness/2, y - distance - length, thickness, length )
-            surface.DrawRect( x + distance, y - thickness/2, length, thickness )
-            surface.DrawRect( x - distance - length, y - thickness/2, length, thickness )
+            local length = crosshair_length
+            for i=1, 2 do
+                surface.SetDrawColor( i==1 and color_black or clr )
+                local rect = i==1 and thickrect or surface.DrawRect
+                rect( x - thickness/2, y + distance, thickness, length )
+                rect( x - thickness/2, y - distance - length, thickness, length )
+                rect( x + distance, y - thickness/2, length, thickness )
+                rect( x - distance - length, y - thickness/2, length, thickness )
+            end
         end
     end
 
