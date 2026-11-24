@@ -160,7 +160,7 @@ ATT.PrintName = "att.acc_quickdraw.name"
 ATT.FullName = "att.acc_quickdraw.name.full"
 ATT.Icon = Material("entities/tacrp_att_acc_quickdraw.png", "mips smooth")
 ATT.Description = "att.acc_quickdraw.desc"
-ATT.Pros = {"stat.deploytime"}
+ATT.Pros = {"stat.deploytime", "stat.holstertime"}
 
 ATT.Category = "acc_holster"
 
@@ -183,7 +183,7 @@ ATT.PrintName = "att.acc_quickdraw.name"
 ATT.FullName = "att.acc_dual_quickdraw.name.full"
 ATT.Icon = Material("entities/tacrp_att_acc_quickdraw.png", "mips smooth")
 ATT.Description = "att.acc_dual_quickdraw.desc"
-ATT.Pros = {"stat.deploytime", "stat.reloadtime"}
+ATT.Pros = {"stat.deploytime", "stat.holstertime"}
 
 ATT.Category = "acc_dual"
 ATT.InvAtt = "acc_quickdraw"
@@ -192,8 +192,6 @@ ATT.SortOrder = 4
 
 ATT.Mult_DeployTimeMult = 0.75
 ATT.Mult_HolsterTimeMult = 0.5
-
-ATT.Mult_ReloadTimeMult = 0.95
 
 ATT.TryUnholster = true
 
@@ -289,7 +287,6 @@ ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = "extendedbelt"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 25
@@ -308,14 +305,14 @@ ATT.FullName = "att.acc_extmag.name.full"
 ATT.Icon = Material("entities/tacrp_att_acc_extmag_dual.png", "mips smooth")
 ATT.Description = "att.acc_extmag.desc"
 ATT.Pros = {"stat.clipsize"}
+ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = "acc_extmag_dual"
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 4
+ATT.Mult_ReloadTimeMult = 1.05
 
 TacRP.LoadAtt(ATT, "acc_extmag_dual")
 -- #endregion
@@ -330,14 +327,14 @@ ATT.FullName = "att.acc_extmag.name.full"
 ATT.Icon = Material("entities/tacrp_att_acc_extmag_dual.png", "mips smooth")
 ATT.Description = "att.acc_extmag.desc"
 ATT.Pros = {"stat.clipsize"}
+ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = "acc_extmag_dual2"
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 2
+ATT.Mult_ReloadTimeMult = 1.05
 
 TacRP.LoadAtt(ATT, "acc_extmag_dual2")
 -- #endregion
@@ -355,9 +352,7 @@ ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = "acc_extmag_dualsmg"
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 8
@@ -379,13 +374,10 @@ ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = "acc_extmag_pistol"
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 3
-
 ATT.Mult_ReloadTimeMult = 1.03
 
 TacRP.LoadAtt(ATT, "acc_extmag_pistol")
@@ -404,13 +396,10 @@ ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = "acc_extmag_pistol2"
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 2
-
 ATT.Mult_ReloadTimeMult = 1.03
 
 TacRP.LoadAtt(ATT, "acc_extmag_pistol2")
@@ -429,7 +418,6 @@ ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = "perk_extendedmag"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 5
@@ -452,9 +440,7 @@ ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = "acc_extmag_rifle2"
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 4
@@ -469,21 +455,18 @@ TacRP.LoadAtt(ATT, "acc_extmag_rifle2")
 ------------------------------
 ATT = {}
 
-ATT.PrintName = "att.acc_extmag.name"
-ATT.FullName = "att.acc_extmag.name.full"
+ATT.PrintName = "Withered Ext."
+ATT.FullName = "Withered Tube Extender"
 ATT.Icon = Material("entities/tacrp_att_acc_extmag_shotgun.png", "mips smooth")
-ATT.Description = "att.acc_extmag.desc"
+ATT.Description = "Slightly extend weapon magazine capacity. This attachment is old!"
 ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = {"acc_extmag_shotgun"}
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 2
-
 ATT.Mult_ReloadTimeMult = 1.03
 
 TacRP.LoadAtt(ATT, "acc_extmag_shotgun")
@@ -502,13 +485,10 @@ ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = {"acc_extmag_shotgun_mag"}
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 5
-
 ATT.Mult_ReloadTimeMult = 1.05
 
 TacRP.LoadAtt(ATT, "acc_extmag_shotgun_mag")
@@ -527,13 +507,10 @@ ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = {"acc_extmag_shotgun_tube"}
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 2
-
 ATT.Mult_ReloadTimeMult = 1.03
 
 TacRP.LoadAtt(ATT, "acc_extmag_shotgun_tube")
@@ -552,13 +529,10 @@ ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = "acc_extmag_smg"
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 5
-
 ATT.Mult_ReloadTimeMult = 1.05
 
 TacRP.LoadAtt(ATT, "acc_extmag_smg")
@@ -577,13 +551,10 @@ ATT.Pros = {"stat.clipsize"}
 ATT.Cons = {"stat.reloadtime"}
 
 ATT.Category = "acc_extmag_sniper"
-
 ATT.InvAtt = "acc_extmag_rifle"
-
 ATT.SortOrder = 1
 
 ATT.Add_ClipSize = 2
-
 ATT.Mult_ReloadTimeMult = 1.03
 
 TacRP.LoadAtt(ATT, "acc_extmag_sniper")
@@ -703,7 +674,7 @@ ATT = {}
 ATT.PrintName = "att.acc_sling.name"
 ATT.Icon = Material("entities/tacrp_att_acc_sling.png", "mips smooth")
 ATT.Description = "att.acc_sling.desc"
-ATT.Pros = {"stat.deploytime"}
+ATT.Pros = {"stat.deploytime", "stat.holstertime"}
 
 ATT.Category = {"acc_sling", "acc_slingonly"}
 
