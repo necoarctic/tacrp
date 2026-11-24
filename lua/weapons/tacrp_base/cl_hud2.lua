@@ -145,6 +145,7 @@ local function H2_DrawAmmo( ply, wep )
 		local bgap_x = s(4)
 		local bgap_newlinex = s(2)
 		local bgap_line = s(4)
+		local rotation = 0
 
 		if mag_max >= 50 then
 			im_w, im_h = s(6), s(12)
