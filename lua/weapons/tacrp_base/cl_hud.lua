@@ -123,25 +123,38 @@ function SWEP:DoDrawCrosshair(x, y)
         clr = clr or Color(50, 255, 50)
         surface.SetDrawColor(clr.r, clr.g, clr.b, clr.a * self.CrosshairAlpha)
         
-        do
-            local spread_base = TacRP.GetFOVAcc(self:GetValue("Spread") + self:GetValue("HipFireSpreadPenalty"))
+        if not self:UseAltRecoil() then
+            local spread = self:GetValue("Spread")
+            spread = spread + (self:GetValue("HipFireSpreadPenalty"))
+            spread = spread + (self:GetValue("RecoilSpreadPenalty") * self:GetValue("RecoilMaximum"))
+            local distance = TacRP.GetFOVAcc(spread)
             local thickness = 4
             local length = 1
-            surface.DrawRect( x - thickness/2, y + spread_base, thickness, length )
-            surface.DrawRect( x - thickness/2, y - spread_base - length, thickness, length )
-            surface.DrawRect( x + spread_base, y - thickness/2, length, thickness )
-            surface.DrawRect( x - spread_base - length, y - thickness/2, length, thickness )
+            surface.DrawRect( x - thickness/2, y + distance, thickness, length )
+            surface.DrawRect( x - thickness/2, y - distance - length, thickness, length )
+            surface.DrawRect( x + distance, y - thickness/2, length, thickness )
+            surface.DrawRect( x - distance - length, y - thickness/2, length, thickness )
         end
         
         do
-            local spread = spread
-            if self.CrosshairStatic then spread = 16 end
+            local distance = TacRP.GetFOVAcc(self:GetValue("Spread") + self:GetValue("HipFireSpreadPenalty"))
+            local thickness = 4
+            local length = 1
+            surface.DrawRect( x - thickness/2, y + distance, thickness, length )
+            surface.DrawRect( x - thickness/2, y - distance - length, thickness, length )
+            surface.DrawRect( x + distance, y - thickness/2, length, thickness )
+            surface.DrawRect( x - distance - length, y - thickness/2, length, thickness )
+        end
+        
+        do
+            local distance = spread
+            if self.CrosshairStatic then distance = 16 end
             local thickness = 2
             local length = 8
-            surface.DrawRect( x - thickness/2, y + spread, thickness, length )
-            surface.DrawRect( x - thickness/2, y - spread - length, thickness, length )
-            surface.DrawRect( x + spread, y - thickness/2, length, thickness )
-            surface.DrawRect( x - spread - length, y - thickness/2, length, thickness )
+            surface.DrawRect( x - thickness/2, y + distance, thickness, length )
+            surface.DrawRect( x - thickness/2, y - distance - length, thickness, length )
+            surface.DrawRect( x + distance, y - thickness/2, length, thickness )
+            surface.DrawRect( x - distance - length, y - thickness/2, length, thickness )
         end
     end
 
