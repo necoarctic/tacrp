@@ -150,7 +150,7 @@ function ENT:Think()
                         timer.Remove(timername)
                     end
                     timer.Create(timername, ttt and 5 or 1.5, reps, function()
-                        if !IsValid(k) or !k:Alive() or (engine.ActiveGamemode() == "terrortown" and (GetRoundState() == ROUND_PREP or GetRoundState() == ROUND_POST)) then
+                        if !IsValid(k) or !k:Alive() or (engine.ActiveGamemode() == "terrortown" and (GetRoundState() == ROUND_PREP or GetRoundState() == ROUND_POST)) or !IsValid(self) or !IsValid(o) then
                             timer.Remove(timername)
                             return
                         end
