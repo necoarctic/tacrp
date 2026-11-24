@@ -1,5 +1,5 @@
-function SWEP:GetReloadTime(base)
-    local vm = self:GetVM()
+function SWEP:GetReloadTime(base, vm)
+    local vm = vm or self:GetVM()
     local valfunc = base and self.GetBaseValue or self.GetValue
 
     if !valfunc(self, "ShotgunReload") then
@@ -29,8 +29,8 @@ function SWEP:GetReloadTime(base)
     end
 end
 
-function SWEP:GetDeployTime(base)
-    local vm = self:GetVM()
+function SWEP:GetDeployTime(base, vm)
+    local vm = vm or self:GetVM()
     local valfunc = base and self.GetBaseValue or self.GetValue
 
     local anim = "deploy"
@@ -47,8 +47,8 @@ function SWEP:GetDeployTime(base)
     return basetime * mult * self.DeployEarlyFraction
 end
 
-function SWEP:CalcHolsterTime(base)
-    local vm = self:GetVM()
+function SWEP:CalcHolsterTime(base, vm)
+    local vm = vm or self:GetVM()
     local valfunc = base and self.GetBaseValue or self.GetValue
 
     local anim = "holster"

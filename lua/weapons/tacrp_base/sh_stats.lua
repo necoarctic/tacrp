@@ -40,8 +40,8 @@ function SWEP:RunHook(val, data)
     if !self.HookCache[val] then
         self.HookCache[val] = {}
 
-        if self:GetTable()[val] then
-            table.insert(self.HookCache[val], self:GetTable()[val])
+        if self[val] then
+            table.insert(self.HookCache[val], self[val])
         end
 
         for slot, slottbl in pairs(self.Attachments) do
@@ -68,7 +68,7 @@ function SWEP:RunHook(val, data)
 end
 
 function SWEP:GetBaseValue(val)
-    local stat = self:GetTable()[val]
+    local stat = self[val]
 
     if self.BaseOnlyStats[val] then
         return stat
