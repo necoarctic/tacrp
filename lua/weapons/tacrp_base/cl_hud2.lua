@@ -46,7 +46,6 @@ local function get_firemode_text( wep, fm )
 	end
 end
 
-local ROTATION = 14
 local MATERIAL_BULLET = Material("tacrp/h2/bullet.png", "mips smooth")
 local COLOR_NEXT = Color( 255, 200, 60 )
 local COLOR_NEXTBURST = Color( 255, 180, 120 )
@@ -113,7 +112,6 @@ local function H2_DrawAmmo( ply, wep )
 	local t = CurTime()
 	local flash_empty = t % 0.3 < 0.25
 	local flash_lowammo = t % 0.5 < 0.1
-	local flash_lowammo = t % 0.5 < 0.1
 	local o_x = panel_x + panel_w
 	local o_y = panel_y
 	local final_x = 0
@@ -148,6 +146,15 @@ local function H2_DrawAmmo( ply, wep )
 		local bgap_newlinex = s(2)
 		local bgap_line = s(4)
 
+		if mag_max >= 50 then
+			im_w, im_h = s(6), s(12)
+			line_max = 25
+			bgap_x = s(4)
+			bgap_newlinex = s(1)
+			bgap_line = s(2)
+			rotation = 90
+		end
+
 		for bullet = 1, mag_max do
 			local i = bullet - 1
 			local b_x = o_x - s(12) - final_x
@@ -159,8 +166,8 @@ local function H2_DrawAmmo( ply, wep )
 			
 			if bullet <= mag_loaded then -- this round is loaded
 				surface.SetDrawColor( COLOR_SHADOW )
-				surface.DrawTexturedRectRotated( b_x + 2, b_y + 1, im_w, im_h, ROTATION )
-				surface.DrawTexturedRectRotated( b_x + 2, b_y + 2, im_w, im_h, ROTATION )
+				surface.DrawTexturedRectRotated( b_x + 2, b_y + 1, im_w, im_h, rotation )
+				surface.DrawTexturedRectRotated( b_x + 2, b_y + 2, im_w, im_h, rotation )
 				
 				if ( bullet + ammo_per_shot > mag_loaded ) then
 					surface.SetDrawColor( COLOR_NEXT )
@@ -169,14 +176,14 @@ local function H2_DrawAmmo( ply, wep )
 				else
 					surface.SetDrawColor( COLOR_REST )
 				end
-				surface.DrawTexturedRectRotated( b_x, b_y, im_w, im_h, ROTATION )
+				surface.DrawTexturedRectRotated( b_x, b_y, im_w, im_h, rotation )
 			else
 				if mag_loaded == 0 then
 					surface.SetDrawColor( flash_empty and COLOR_LOWAMMO or COLOR_EMPTY )
 				else
 					surface.SetDrawColor( (mag_max * LOW_AMMO_PERCENTAGE >= mag_loaded and flash_lowammo) and COLOR_LOWAMMO or COLOR_EMPTY )
 				end
-				surface.DrawTexturedRectRotated( b_x, b_y, im_w, im_h, ROTATION )
+				surface.DrawTexturedRectRotated( b_x, b_y, im_w, im_h, rotation )
 			end
 			-- surface.SetDrawColor( 255, 0, 0 )
 			-- surface.DrawRect( b_x-1, b_y-1, 2, 2 )
