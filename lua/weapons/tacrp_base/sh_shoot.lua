@@ -856,7 +856,7 @@ function SWEP:Weapon_Attack( gun2 )
         return
     end
 
-    local stop = self:RunHook("Hook_PreShoot", gun2)
+    local stop = self:RunHook("Hook_PreShoot")
     if stop then return end
 
     -- gets around sound not playing when shooter dies
@@ -903,7 +903,7 @@ function SWEP:Weapon_Attack( gun2 )
 
     self:A_SetNthShot( gun2, self:A_GetNthShot( gun2 ) + 1 )
 
-    self:RunHook("Hook_PostShoot", gun2)
+    self:RunHook("Hook_PostShoot")
 end
 
 function SWEP:Weapon_FireBullet()
