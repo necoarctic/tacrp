@@ -29,15 +29,15 @@ function SWEP:Reload()
 
     if !self:CanReloadInSprint() and self:GetIsSprinting() then return end
 
-    if self:GetValue("DualAkimbo") then
-        if self:GetCapacity2() <= 0 and self:GetCapacity() <= 0 then return end
-        if self:Clip1() >= self:GetCapacity() and self:Clip2() >= self:GetCapacity2() then return end
-    else
-        if self:GetCapacity() <= 0 then return end
-        if self:Clip1() >= self:GetCapacity() then return end
+    local akimbo = self:GetValue("DualAkimbo")
+    if akimbo then
+        if self:A_GetMaxClip( true ) <= 0 then return end
+        if self:A_GetClip( true ) >= self:A_GetMaxClip( true ) then return end
     end
+    
+    if self:A_GetMaxClip( false ) <= 0 then return end
+    if self:A_GetClip( false ) >= self:A_GetMaxClip( false ) then return end
     if self:Ammo1() <= 0 and !self:GetInfiniteAmmo() then return end
-
 
     local mult = self:GetValue("ReloadTimeMult") / TacRP.ConVars["mult_reloadspeed"]:GetFloat()
     local anim = "reload"
@@ -64,7 +64,10 @@ function SWEP:Reload()
 
     if SERVER then
         self:SetTimer(self.DropMagazineTime * mult, function()
-            self:DropMagazine()
+            self:DropMagazine( false )
+            if akimbo then
+                self:DropMagazine( true )
+            end
         end, "DropMagazine")
     end
 
@@ -80,71 +83,40 @@ function SWEP:Reload()
     self:SetReloadFinishTime(CurTime() + (t * 0.95))
 end
 
-function SWEP:DropMagazine()
-    -- if !IsFirstTimePredicted() and !game.SinglePlayer() then return end
-    if self:GetValue("DropMagazineModel") and TacRP.ConVars["dropmagazinemodel"]:GetBool() then
-        local isDualAkimbo = self:GetValue("DualAkimbo")
-        local dropamt = math.floor(self:Clip1() / self:GetValue("DropMagazineAmount"))
-        local clip1 = self:Clip1()
-        local clip2 = isDualAkimbo and self:Clip2() or 0
-        for i = 1, self:GetValue("DropMagazineAmount") do
-            local mag = ents.Create("TacRP_droppedmag")
-
-            if IsValid(mag) then
-                local bone = "ValveBiped.Bip01_R_Hand"
-                if i == 2 then bone = "ValveBiped.Bip01_L_Hand" end
-                local matrix = self:GetOwner():GetBoneMatrix(self:GetOwner():LookupBone(bone) or -1)
-                local pos, ang
-                if matrix then
-                    pos = matrix:GetTranslation()
-                    ang = matrix:GetAngles()
-                else
-                    pos = self:GetOwner():EyePos() - (self:GetOwner():EyeAngles():Up() * 8)
-                    ang = self:GetOwner():EyeAngles()
-                end
-
-                mag:SetPos(pos)
-                mag:SetAngles(ang)
-                mag.Model = self:GetValue("DropMagazineModel")
-                mag.ImpactType = self:GetValue("DropMagazineImpact")
-                mag:SetOwner(self:GetOwner())
-                if TacRP.ConVars["reload_dump"]:GetBool() then
-                    // For DualAkimbo: right hand (i=1) drops clip2, left hand (i=2) drops clip1
-                    local amt = 0
-                    if isDualAkimbo then
-                        if i == 1 then
-                            // Right hand drops right gun's magazine (Clip2)
-                            amt = clip2
-                            clip2 = 0
-                        else
-                            // Left hand drops left gun's magazine (Clip1)
-                            amt = clip1
-                            clip1 = 0
-                        end
-                    else
-                        if clip1 > 0 then
-                            amt = (i == self:GetValue("DropMagazineAmount") and clip1) or dropamt
-                            clip1 = clip1 - amt
-                        end
-                    end
-
-                    if amt > 0 and !self:GetInfiniteAmmo() then
-                        mag.AmmoType = self:GetAmmoType()
-                        mag.AmmoCount = amt
-                    end
-                end
-                mag:Spawn()
-
-                local phys = mag:GetPhysicsObject()
-
-                if IsValid(phys) then
-                    phys:AddAngleVelocity(Vector(math.Rand(-300, 300), math.Rand(-300, 300), math.Rand(-300, 300)))
-                end
-            end
+function SWEP:DropMagazine( gun2 )
+    if not TacRP.ConVars["dropmagazinemodel"]:GetBool() then return end
+    local model = self:GetValue("DropMagazineModel")
+    if not model then return end
+    
+    local mag = ents.Create("TacRP_droppedmag")
+    if mag:IsValid() then
+        local bone = gun2 and "ValveBiped.Bip01_L_Hand" or "ValveBiped.Bip01_R_Hand"
+        local matrix = self:GetOwner():GetBoneMatrix(self:GetOwner():LookupBone(bone) or -1)
+        local pos, ang
+        if matrix then
+            pos = matrix:GetTranslation()
+            ang = matrix:GetAngles()
+        else
+            pos = self:GetOwner():EyePos() - (self:GetOwner():EyeAngles():Up() * 8)
+            ang = self:GetOwner():EyeAngles()
         end
-        self:SetClip1(clip1)
-        if isDualAkimbo then
-            self:SetClip2(clip2)
+
+        mag:SetPos(pos)
+        mag:SetAngles(ang)
+        mag.Model = model
+        mag.ImpactType = self:GetValue("DropMagazineImpact")
+        mag:SetOwner(self:GetOwner())
+        if TacRP.ConVars["reload_dump"]:GetBool() then
+            local lose = self:A_GetClip( gun2 )
+            mag.AmmoType = self:GetAmmoType()
+            mag.AmmoCount = lose
+            self:A_SetClip( gun2, 0 )
+        end
+        mag:Spawn()
+
+        local phys = mag:GetPhysicsObject()
+        if phys:IsValid() then
+            phys:AddAngleVelocity(Vector(math.Rand(-300, 300), math.Rand(-300, 300), math.Rand(-300, 300)))
         end
     end
 end
