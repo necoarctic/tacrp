@@ -15,12 +15,12 @@ end)
 
 if CLIENT then
     local no_tiered_random = {
-        ["6Launcher"] = true,
-        ["9Special"] = true,
-        ["8Melee Weapon"] = true,
-        ["7Special Weapon"] = true,
-        ["9Equipment"] = true,
-        ["9Throwable"] = true,
+        ["Launcher"] = true,
+        ["Special"] = true,
+        ["Melee Weapon"] = true,
+        ["Special Weapon"] = true,
+        ["Equipment"] = true,
+        ["Throwable"] = true,
     }
     hook.Add("PopulateMenuBar", "TacRP_NPCWeaponMenu", function (menubar)
         timer.Simple(0.1, function()
@@ -33,11 +33,11 @@ if CLIENT then
             random:SetDeleteSelf(false)
 
             random:AddCVar("[Any TacRP Weapon]", "gmod_npcweapon", "!tacrp|npc|")
-            random:AddCVar("[Value Tier]", "gmod_npcweapon", "!tacrp|npc|5Value")
-            random:AddCVar("[Consumer Tier]", "gmod_npcweapon", "!tacrp|npc|4Consumer")
-            random:AddCVar("[Security Tier]", "gmod_npcweapon", "!tacrp|npc|3Security")
-            random:AddCVar("[Operator Tier]", "gmod_npcweapon", "!tacrp|npc|2Operator")
-            random:AddCVar("[Elite Tier]", "gmod_npcweapon", "!tacrp|npc|1Elite")
+            random:AddCVar("[Value Tier]", "gmod_npcweapon", "!tacrp|npc|Value")
+            random:AddCVar("[Consumer Tier]", "gmod_npcweapon", "!tacrp|npc|Consumer")
+            random:AddCVar("[Security Tier]", "gmod_npcweapon", "!tacrp|npc|Security")
+            random:AddCVar("[Operator Tier]", "gmod_npcweapon", "!tacrp|npc|Operator")
+            random:AddCVar("[Elite Tier]", "gmod_npcweapon", "!tacrp|npc|Elite")
 
             wpns:AddSpacer()
 
@@ -68,16 +68,16 @@ if CLIENT then
             end
 
             for _, cat in SortedPairsByValue(catnames) do
-                cats[cat] = wpns:AddSubMenu(string.sub(cat, 2))
+                cats[cat] = wpns:AddSubMenu(cat)
                 cats[cat]:SetDeleteSelf(false)
 
                 cats[cat]:AddCVar("[Random]", "gmod_npcweapon", "!tacrp|" .. cat .. "|")
                 if !no_tiered_random[cat] then
-                    cats[cat]:AddCVar("[Value Tier]", "gmod_npcweapon", "!tacrp|" .. cat .. "|5Value")
-                    cats[cat]:AddCVar("[Consumer Tier]", "gmod_npcweapon", "!tacrp|" .. cat .. "|4Consumer")
-                    cats[cat]:AddCVar("[Security Tier]", "gmod_npcweapon", "!tacrp|" .. cat .. "|3Security")
-                    cats[cat]:AddCVar("[Operator Tier]", "gmod_npcweapon", "!tacrp|" .. cat .. "|2Operator")
-                    cats[cat]:AddCVar("[Elite Tier]", "gmod_npcweapon", "!tacrp|" .. cat .. "|1Elite")
+                    cats[cat]:AddCVar("[Value Tier]", "gmod_npcweapon", "!tacrp|" .. cat .. "|Value")
+                    cats[cat]:AddCVar("[Consumer Tier]", "gmod_npcweapon", "!tacrp|" .. cat .. "|Consumer")
+                    cats[cat]:AddCVar("[Security Tier]", "gmod_npcweapon", "!tacrp|" .. cat .. "|Security")
+                    cats[cat]:AddCVar("[Operator Tier]", "gmod_npcweapon", "!tacrp|" .. cat .. "|Operator")
+                    cats[cat]:AddCVar("[Elite Tier]", "gmod_npcweapon", "!tacrp|" .. cat .. "|Elite")
                 end
                 cats[cat]:AddSpacer()
 
