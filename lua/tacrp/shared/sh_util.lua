@@ -208,3 +208,74 @@ hook.Add( "PreRegisterSWEP", "TacRP_PreRegisterSWEP", function( swep, class )
         swep.SubCategory = swep.SubCatType
     end
 end )
+
+TacRP.PackCategorization = {}
+
+TacRP.PackCategorization["tacrp"] = {
+	Name = "Tactical RP",
+	Weapons = {
+		tacrp_amd65 = true,
+		tacrp_as50 = true,
+		tacrp_aug = true,
+		tacrp_bekas = true,
+		tacrp_c4_detonator = true,
+		tacrp_ak47 = true,
+		tacrp_dsa58 = true,
+		tacrp_fp6 = true,
+		tacrp_g36k = true,
+		tacrp_gsr1911 = true,
+		tacrp_hk417 = true,
+		tacrp_k1a = true,
+		tacrp_knife = true,
+		tacrp_knife2 = true,
+		tacrp_ks23 = true,
+		tacrp_m1 = true,
+		tacrp_m14 = true,
+		tacrp_m320 = true,
+		tacrp_m4 = true,
+		tacrp_m4star10 = true,
+		tacrp_medkit = true,
+		tacrp_mg4 = true,
+		tacrp_mp5 = true,
+		tacrp_mp7 = true,
+		tacrp_mr96 = true,
+		tacrp_mtx_dual = true,
+		tacrp_nade_charge = true,
+		tacrp_nade_flashbang = true,
+		tacrp_nade_frag = true,
+		tacrp_nade_gas = true,
+		tacrp_nade_heal = true,
+		tacrp_nade_smoke = true,
+		tacrp_nade_thermite = true,
+		tacrp_p2000 = true,
+		tacrp_p250 = true,
+		tacrp_p90 = true,
+		tacrp_pdw = true,
+		tacrp_rpg7 = true,
+		tacrp_sg551 = true,
+		tacrp_skorpion = true,
+		tacrp_sphinx = true,
+		tacrp_spr = true,
+		tacrp_superv = true,
+		tacrp_tgs12 = true,
+		tacrp_uratio = true,
+		tacrp_uzi = true,
+		tacrp_vertec = true,
+		tacrp_xd45 = true,
+	}
+}
+
+TacRP.PackCategorization["ak"] = {
+	Name = "Iron Curtain",
+	Weapons = {
+		tacrp_ak_aek971 = true,
+		tacrp_ak_ak12 = true,
+		tacrp_ak_ak74 = true,
+		tacrp_ak_ak74u = true,
+		tacrp_ak_an94 = true,
+		tacrp_ak_galil_lmg = true,
+		tacrp_ak_galil_sniper = true,
+		tacrp_ak_rk95 = true,
+		tacrp_ak_svd = true,
+	}
+}

@@ -94,20 +94,11 @@ hook.Add("PreGamemodeLoaded", "TacRP_AmmoName", function()
     end
 end)
 
-local gaA = 0
 function TacRP.GetFOVAcc(spread)
-    local raw = isnumber(spread)
-    if !raw and spread:IsWeapon() then spread = spread:GetSpread() end
     cam.Start3D()
-        local lool = ( EyePos() + ( EyeAngles():Forward() ) + ( spread * EyeAngles():Up() ) ):ToScreen()
+        local to_screen = ( EyePos() + ( EyeAngles():Forward() * 10000 ) + ( spread * EyeAngles():Up() * 10000 ) ):ToScreen()
     cam.End3D()
-
-    local gau = ( (ScrH() / 2) - lool.y )
-    if raw then return gau end
-
-    gaA = math.Approach(gaA, gau, (ScrH() / 2) * FrameTime() * 2)
-
-    return gaA
+    return ScrH()/2 - to_screen.y
 end
 
 TacRP.PanelColors = {

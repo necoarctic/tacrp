@@ -67,7 +67,7 @@ function SWEP:DoDrawCrosshair(x, y)
     cam.End3D()
     local x2, y2 = x, y
 
-    local spread = TacRP.GetFOVAcc(self)
+    local spread = TacRP.GetFOVAcc(self:GetSpread())
     local sway = self:IsSwayEnabled() and self:GetSwayAmount() or self:GetForcedSwayAmount()
 
     local truepos = self:GetValue("TacticalCrosshairTruePos")
@@ -89,7 +89,7 @@ function SWEP:DoDrawCrosshair(x, y)
         tacfunc(self, truepos and x2 or x, truepos and y2 or y, spread, sway)
     end
 
-    spread = math.Round( math.max(spread, 2) + TacRP.SS(sway * math.pi))
+    --spread = math.Round( math.max(spread, 2) + TacRP.SS(sway * math.pi))
 
     if !dev and self.CrosshairAlpha <= 0 then return true end
 
@@ -122,14 +122,27 @@ function SWEP:DoDrawCrosshair(x, y)
     elseif TacRP.ConVars["crosshair"]:GetBool() then
         clr = clr or Color(50, 255, 50)
         surface.SetDrawColor(clr.r, clr.g, clr.b, clr.a * self.CrosshairAlpha)
-
-        surface.DrawRect(x, y, 1, 1)
-        if self.CrosshairStatic then spread = 16 end
-        local w = 16
-        surface.DrawLine(x, y - spread - w, x, y - spread)
-        surface.DrawLine(x, y + spread, x, y + spread + w)
-        surface.DrawLine(x - spread - w, y, x - spread, y)
-        surface.DrawLine(x + spread, y, x + spread + w, y)
+        
+        do
+            local spread_base = TacRP.GetFOVAcc(self:GetValue("Spread") + self:GetValue("HipFireSpreadPenalty"))
+            local thickness = 4
+            local length = 1
+            surface.DrawRect( x - thickness/2, y + spread_base, thickness, length )
+            surface.DrawRect( x - thickness/2, y - spread_base - length, thickness, length )
+            surface.DrawRect( x + spread_base, y - thickness/2, length, thickness )
+            surface.DrawRect( x - spread_base - length, y - thickness/2, length, thickness )
+        end
+        
+        do
+            local spread = spread
+            if self.CrosshairStatic then spread = 16 end
+            local thickness = 2
+            local length = 8
+            surface.DrawRect( x - thickness/2, y + spread, thickness, length )
+            surface.DrawRect( x - thickness/2, y - spread - length, thickness, length )
+            surface.DrawRect( x + spread, y - thickness/2, length, thickness )
+            surface.DrawRect( x - spread - length, y - thickness/2, length, thickness )
+        end
     end
 
     -- Developer Crosshair
@@ -142,7 +155,7 @@ function SWEP:DoDrawCrosshair(x, y)
         end
         surface.DrawLine(x2, y2 - 256, x2, y2 + 256)
         surface.DrawLine(x2 - 256, y2, x2 + 256, y2)
-        spread = TacRP.GetFOVAcc(self)
+        spread = TacRP.GetFOVAcc(self:GetSpread())
         local recoil_txt = "Recoil: " .. tostring(math.Round(self:GetRecoilAmount() or 0, 3))
         surface.DrawCircle(x2, y2, spread, 255, 255, 255, 75)
         surface.DrawCircle(x2, y2, spread + 1, 255, 255, 255, 75)
