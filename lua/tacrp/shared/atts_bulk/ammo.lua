@@ -765,9 +765,9 @@ ATT.Hook_PreReload = function(wep)
 
     if SERVER then
         wep:SetNWInt("TacRP_RouletteShot", math.random(1, wep:GetBaseValue("ClipSize")))
-        wep:PlayAnimation("jam", 1, true, true)
-        wep:SetNextPrimaryFire(CurTime() + 1)
-        wep:GetOwner():DoAnimationEvent(ACT_HL2MP_GESTURE_RANGE_ATTACK_SLAM)
+        local t = wep:PlayAnimation("jam", 1, true, true)
+        wep:SetNextPrimaryFire(CurTime() + t)
+        wep:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD_LOOP, t * 1000)
     end
     return true
 end
@@ -790,11 +790,11 @@ ATT.Hook_PreShoot = function(wep)
         else
             wep:PlayAnimation("dryfire")
         end
-        wep:EmitSound(wep:GetValue("Sound_DryFire"), 75, 100, 1, CHAN_BODY)
+        wep:EmitSound(wep:GetValue("Sound_DryFire"), 80, 100, 1, CHAN_WEAPON)
         wep:SetBurstCount(0)
         wep:SetNthShot(wep:GetNthShot() + 1)
-        wep:SetNextPrimaryFire(CurTime() + (60 / wep:GetValue("RPM")))
-        wep:GetOwner():DoAnimationEvent(ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL)
+        wep:SetNextPrimaryFire(CurTime() + (60 / wep:GetRPM()))
+        wep:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_ATTACK_PRIMARY, 0)
 
         return true
     end
