@@ -572,7 +572,11 @@ hook.Add("FinishMove", "TacRP_Charge", function(ply, mv)
                         ent.TacRPNextChargeHit = CurTime() + 0.3
                         ply.TacRPGrace = CurTime() + 0.15
                     end
-                    util.ScreenShake(tr.HitPos, 10, 125, 0.25, 750)
+
+                    if tr and tr.Hit then
+                        util.ScreenShake(tr.HitPos, 10, 125, 0.25, 750)
+                    end
+                        
                     ply:EmitSound("physics/body/body_medium_impact_hard" .. math.random(1, 6) .. ".wav")
                 end
             end
