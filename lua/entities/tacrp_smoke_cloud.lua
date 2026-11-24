@@ -59,8 +59,11 @@ function ENT:Initialize()
             smoke:SetNextThink( CurTime() + FrameTime() )
             smoke.bt = CurTime() + self.BillowTime
             smoke.dt = CurTime() + self.BillowTime + self.Life
-            smoke.ft = CurTime() + self.BillowTime + self.Life + math.Rand(2.5, 5)
-            smoke:SetDieTime(smoke.ft)
+
+            local lifetime = self.BillowTime + self.Life + math.Rand(2.5, 5)
+            smoke.ft = CurTime() + lifetime
+            smoke:SetDieTime(lifetime)
+
             smoke.life = self.Life
             smoke.billowed = false
             smoke.radius = self.SmokeRadius
