@@ -4,7 +4,7 @@ TacRP.ShotgunHullSize = 0.5 // Bigger equals more generous hitboxes
 
 // For Steam policy compliance reasons, this feature is disabled in TacRP's Workshop release.
 // But I can't stop you if you want to change the below line from "false" to "true"...
-TacRP.AllowSelfShoot = true
+TacRP.AllowSelfShoot = false
 
 TacRP.PenTable = {
     [MAT_ANTLION]     = 0.1,
