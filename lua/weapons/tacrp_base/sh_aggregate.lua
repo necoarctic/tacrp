@@ -64,18 +64,6 @@ function SWEP:CalcHolsterTime(base)
     return basetime * mult * self.HolsterEarlyFraction
 end
 
-function SWEP:GetMuzzleVelocity(base)
-    local valfunc = base and self.GetBaseValue or self.GetValue
-
-    local basetime = valfunc(self, "MuzzleVelocity")
-
-    if valfunc(self, "ShootEnt") then
-        basetime = valfunc(self, "ShootEntForce")
-    end
-
-    return math.ceil(0.3048 * basetime / 12)
-end
-
 -- function SWEP:GetMeanShotsToFail(base)
 --     local valfunc = base and self.GetBaseValue or self.GetValue
 --     local shootchance = valfunc(self, "ShootChance")
@@ -869,13 +857,20 @@ SWEP.StatDisplay = {
     {
         Name = "stat.muzzlevelocity",
         Description = "stat.muzzlevelocity.desc",
+        Value = "MuzzleVelocity",
         AggregateFunction = function(self, base, val)
-            return math.Round(self:GetMuzzleVelocity(base), 2)
+            local valfunc = base and self.GetBaseValue or self.GetValue
+            local velocity = valfunc(self, "MuzzleVelocity")
+            if valfunc(self, "ShootEnt") then
+                velocity = valfunc(self, "ShootEntForce")
+            end
+            return velocity
+        end,
+        DisplayFunction = function(self, base, val)
+            return self:RangeUnitize(val) .. "/s"
         end,
         ConVarCheck = "tacrp_physbullet",
-        Value = "MuzzleVelocity",
         LowerIsBetter = false,
-        Unit = "unit.mps",
     },
     {
         Name = "stat.penetration",
@@ -1433,7 +1428,7 @@ SWEP.StatDisplayMelee = {
         Value = "MeleeThrowForce",
         ValueCheck = "ThrowAttack",
         AggregateFunction = function(self, base, val)
-            return math.Round(0.3048 * self:GetMeleePerkVelocity(base) / 12, 1)
+            return math.Round(TacRP.HUToM * self:GetMeleePerkVelocity(base), 1)
         end,
         Unit = "unit.mps",
     },

@@ -56,7 +56,7 @@ TacRP.PresetPath = "tacrp_presets/"
 
 TacRP.OverDraw = false
 
-TacRP.HUToM = 0.3048 / 12
+TacRP.HUToM = 0.0254
 
 TacRP.HolsterNetBits = 3
 TacRP.HOLSTER_SLOT_BACK = 1
