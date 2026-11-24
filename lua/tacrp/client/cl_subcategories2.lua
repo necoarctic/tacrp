@@ -94,17 +94,21 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 			local p_scroll = god_panel:Add("DScrollPanel")
 			p_scroll:Dock(FILL)
 
+			local all_weapons = {}
+			local categories = {}
+
 			for _, subcat in ipairs( categories_keys ) do
 				local subcat_data = subcats[subcat]
 				local p_category = p_scroll:Add("DCollapsibleCategory")
 				p_category:Dock(TOP)
 				p_category:SetLabel( subcat )
+				table.insert(categories, p_category)
 
 				local p_layout = vgui.Create( "DIconLayout", p_category )
 				p_layout:Dock(TOP)
-				-- p_layout:SetTall( 2 )
 				p_layout:SetSpaceY( 4 )
 				p_layout:SetSpaceX( 4 )
+				p_category.IconLayout = p_layout
 
 				if TacRP.UseTiers() then
 					local tiers_keys = table.GetKeys(subcat_data.tiered_weapons)
@@ -120,16 +124,35 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 							button_weapon.Material = Material( swep.IconOverride or ("entities/" .. classname .. ".png") )
 							button_weapon.WeaponClassname = classname
 							button_weapon.WeaponData = swep
+
+							all_weapons[classname] = { Button = button_weapon, Tier = swep.SubCatTier  }
 						end
 					end
 				else
 					for _, classname in ipairs( subcat_data.all_weapons ) do
+						local swep = weapons.GetStored( classname )
 						local button_weapon = p_layout:Add("S2_WeaponIcon")
 						button_weapon:SetSize( 160, 72 )
-						button_weapon.Material = Material( "entities/" .. classname .. ".png" )
+						button_weapon.Material = Material( swep.IconOverride or ("entities/" .. classname .. ".png") )
 						button_weapon.WeaponClassname = classname
-						button_weapon.WeaponData = weapons.GetStored( classname )
+						button_weapon.WeaponData = swep
+
+						all_weapons[classname] = { Button = button_weapon, Tier = swep.SubCatTier  }
 					end
+				end
+			end
+
+			local show = true
+			function p_filterbutton:DoClick()
+				show = not show
+				for classname, icon_data in pairs( all_weapons ) do
+					icon_data.Button:Show()
+					if not show and not TacRP.PackCategorization["tacrp"].Weapons[classname] then
+						icon_data.Button:Hide()
+					end
+				end
+				for _, category in ipairs( categories ) do
+					category.IconLayout:Layout()
 				end
 			end
 
