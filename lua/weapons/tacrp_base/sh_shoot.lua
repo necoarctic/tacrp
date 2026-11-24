@@ -744,7 +744,6 @@ function SWEP:Player_Secondary()
 end
 
 function SWEP:ThinkBurst()
-    local max_burst = self:GetMaxBurst()
     local owner = self:GetOwner()
     if not IsValid(owner) then
         owner = nil
@@ -759,7 +758,7 @@ function SWEP:ThinkBurst()
         local attack_down = owner and owner:KeyDown( key ) or false
         local burst_count = self:A_GetBurstCount( gun2 )
         local dryfire = self:A_GetClip( gun2 ) < self:GetValue("AmmoPerShot") or self:GetJammed()
-        local max_burst = dryfire and 1 or max_burst
+        local max_burst = dryfire and 1 or self:GetMaxBurst()
         local burst_mode = max_burst ~= math.huge and max_burst ~= 1
 
         if burst_count == 0 then
@@ -881,7 +880,7 @@ function SWEP:Weapon_Attack( gun2 )
     end
 
     self:A_TakeAmmo( gun2, self:GetValue("AmmoPerShot") )
-    self:A_SetNextFire( gun2, curatt + 60/self:GetValue("RPM") )
+    self:A_SetNextFire( gun2, curatt + 60 / self:GetRPM() )
     self:A_SetBurstCount( gun2, self:A_GetBurstCount( gun2 ) + 1 )
     self:SetPatternCount( self:GetPatternCount() + 1 )
     self:DoBulletBodygroups()
