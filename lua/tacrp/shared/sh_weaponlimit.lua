@@ -107,20 +107,58 @@ hook.Add("PlayerGiveSWEP", "TacRP_Pickup", function(ply, wepname, weptbl)
     end
 end)
 
+
+
+local slot_lut = {
+    ["Bladed Melee"] = 0,
+    ["Blunt Melee"] = 0,
+    -- ["Melee Weapon"] = 0,
+
+    ["Pistol"] = 1,
+    ["Magnum Pistol"] = 1,
+    ["Akimbo"] = 1,
+    ["Machine Pistol"] = 1,
+
+    ["Submachine Gun"] = 2,
+    ["Assault Rifle"] = 2,
+    ["Battle Rifle"] = 2,
+    ["Sporter"] = 2,
+
+    ["Machine Gun"] = 3,
+    ["Shotgun"] = 3,
+    ["Marksman Rifle"] = 3,
+    ["Sniper Rifle"] = 3,
+
+    ["Launcher"] = 4,
+    ["Special Weapon"] = 4,
+    ["Throwable"] = 4,
+
+    ["Equipment"] = 5,
+}
+
+local slotpos_lut = {
+    ["Throwable"] = 110,
+}
+
 local function slotty()
-    local ahh = TacRP.ConVars["slot_hl2"]:GetBool()
-    for _, wpn in pairs(weapons.GetList()) do
+    local autoslot = TacRP.ConVars["slot_hl2"]:GetBool()
+    for _, list_weapon in pairs(weapons.GetList()) do
+        local classname = list_weapon.ClassName
 
-        -- weapons.GetStored does not contain inherited values (like ArcticTacRP)
-        local tbl = weapons.Get(wpn.ClassName)
-        if !tbl.ArcticTacRP then continue end
+        local weapon_clone = weapons.Get(classname)
+        if not weapon_clone.ArcticTacRP then continue end
 
-        local tblStored = weapons.GetStored(wpn.ClassName)
-        if tblStored.SlotOrig == nil then
-            tblStored.SlotOrig = tblStored.Slot
+        local weapon = weapons.GetStored(classname)
+        if weapon.SlotOrig == nil then
+            weapon.SlotOrig = weapon.Slot
+        end
+        if weapon.SlotPosOrig == nil then
+            weapon.SlotPosOrig = weapon.SlotPos
         end
 
-        tblStored.Slot = ahh and tblStored.SlotAlt or tblStored.SlotOrig
+        local subcattype = weapon_clone.SubCatType
+        weapon.Slot = autoslot and slot_lut[subcattype] or weapon.SlotOrig
+        weapon.SlotPos = autoslot and slotpos_lut[subcattype] or weapon.SlotPosOrig
     end
 end
 
