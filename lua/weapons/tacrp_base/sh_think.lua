@@ -122,7 +122,7 @@ function SWEP:Think()
         end
     end
 
-    if self:GetValue("Melee") and self:GetOwner():KeyPressed(TacRP.IN_MELEE) then
+    if self:GetValue("Melee") and self:GetOwner():KeyDown(TacRP.IN_MELEE) then
         self:Melee()
     end
 
