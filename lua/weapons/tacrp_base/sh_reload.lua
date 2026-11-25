@@ -219,47 +219,51 @@ function SWEP:EndReload()
     end
 end
 
-function SWEP:CancelReload(doanims, keeptime)
-    if self:GetReloading() then
+function SWEP:CancelReload(do_finish_anim, keep_slow)
+    if not self:GetReloading() then
+        return
+    end
+    if self:A_GetClip(false) < self:A_GetMaxClip(false) and (not akimbo or self:A_GetClip(true) < self:A_GetMaxClip(true)) then
+        self:SetAnimLockTime(0)
+    end
 
-        self:RunHook("Hook_CancelReload")
+    self:RunHook("Hook_CancelReload")
 
-        local stop = false
+    local stop = false
 
-        if doanims then
-            if self:GetValue("ShotgunReload") then
-                local mult = self:GetValue("ReloadTimeMult") / TacRP.ConVars["mult_reloadspeed"]:GetFloat()
-                local t = 1
-                if self.CurrentAnimation == "reload_start" and self.ShotgunReloadCompleteStart then
-                    self:SetEndReload(true)
-                elseif self:Clip1() == self:GetLoadedRounds() and !self.ShotgunNoReverseStart then
-                    t = self:PlayAnimation("reload_start", -0.75 * mult, true, true)
-                    stop = true
-                else
-                    t = self:PlayAnimation("reload_finish", mult, true, true)
-                    stop = true
-                end
-                self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD_END, t * 1000)
+    if do_finish_anim then
+        if self:GetValue("ShotgunReload") then
+            local mult = self:GetValue("ReloadTimeMult") / TacRP.ConVars["mult_reloadspeed"]:GetFloat()
+            local t = 1
+            if self.CurrentAnimation == "reload_start" and self.ShotgunReloadCompleteStart then
+                self:SetEndReload(true)
+            elseif self:Clip1() == self:GetLoadedRounds() and !self.ShotgunNoReverseStart then
+                t = self:PlayAnimation("reload_start", -0.75 * mult, true, true)
+                stop = true
             else
-                self:Idle()
+                t = self:PlayAnimation("reload_finish", mult, true, true)
                 stop = true
             end
+            self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD_END, t * 1000)
         else
+            self:Idle()
             stop = true
         end
+    else
+        stop = true
+    end
 
-        if stop then
-            self:KillTimer("SetLoadedRounds")
-            self:KillTimer("ShotgunRestoreClip")
-            self:KillTimer("ReloadUpIn")
-            self:KillTimer("DropMagazine")
-            self:SetReloading(false)
-            self:SetNthShot(0)
-            self:DoBulletBodygroups()
-            if !keeptime then
-                self:SetEndReload(false)
-                self:SetReloadFinishTime(0)
-            end
+    if stop then
+        self:KillTimer("SetLoadedRounds")
+        self:KillTimer("ShotgunRestoreClip")
+        self:KillTimer("ReloadUpIn")
+        self:KillTimer("DropMagazine")
+        self:SetReloading(false)
+        self:SetNthShot(0)
+        self:DoBulletBodygroups()
+        if not keep_slow then
+            self:SetEndReload(false)
+            self:SetReloadFinishTime(0)
         end
     end
 end

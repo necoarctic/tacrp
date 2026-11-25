@@ -2,7 +2,7 @@ function SWEP:PlayAnimation(seq, mult, lock, doidle)
     mult = mult or 1
     lock = lock or false
     local anim = self:TranslateSequence(seq)
-    doidle = doidle or false
+    doidle = doidle or true
     local reverse = false
 
     if mult < 0 then
@@ -66,26 +66,24 @@ end
 function SWEP:Idle()
     if self:GetPrimedGrenade() then return end
 
-    local leftEmpty = self:Clip1() == 0
-    local rightEmpty = self:GetValue("DualAkimbo") and self:Clip2() == 0
+    local akimbo = self:GetValue("DualAkimbo")
+    local left_empty = self:A_GetClip( false ) == 0
+    local right_empty = akimbo and self:A_GetClip( true ) == 0
 
     if self:GetBlindFire() then
-        if leftEmpty and (!self:GetValue("DualAkimbo") or rightEmpty) then
-            // Both guns empty (or not DualAkimbo)
-            self:PlayAnimation("blind_dryfire", 0, false, false)
+        if left_empty and (not akimbo or right_empty) then
+            self:PlayAnimation("blind_dryfire", 0)
         else
             self:PlayAnimation("blind_idle")
         end
     else
-        if self:GetValue("DualAkimbo") then
-            if leftEmpty and rightEmpty then
-                // Both guns empty
-                self:PlayAnimation("dryfire", 0, false, false)
-            elseif leftEmpty and self:HasSequence("idle_left_empty") then
-                // Only left gun empty
+        if akimbo then
+            if left_empty and right_empty then
+                self:PlayAnimation("dryfire", 0)
+            -- TODO PLEASE get rid of these HasSequence checks
+            elseif left_empty and self:HasSequence("idle_left_empty") then
                 self:PlayAnimation("idle_left_empty")
-            elseif rightEmpty and self:HasSequence("idle_right_empty") then
-                // Only right gun empty
+            elseif right_empty and self:HasSequence("idle_right_empty") then
                 self:PlayAnimation("idle_right_empty")
             else
                 self:PlayAnimation("idle")
@@ -95,5 +93,5 @@ function SWEP:Idle()
         end
     end
 
-    self:SetAnimLockTime(0)
+    self:SetNextIdle( math.huge )
 end

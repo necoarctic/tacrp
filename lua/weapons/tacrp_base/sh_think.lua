@@ -63,11 +63,6 @@ function SWEP:Think()
 
     self:ThinkHoldBreath()
 
-    if self:GetValue("Melee") and self:GetOwner():KeyPressed(TacRP.IN_MELEE) then
-        self:Melee()
-        return
-    end
-
     if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() and self:GetValue("TacticalThink") and self:GetTactical() then
         self:GetValue("TacticalThink")(self)
     end
@@ -88,7 +83,7 @@ function SWEP:Think()
         self:SetJammed(false)
     end
 
-    if self:GetNextIdle() < CurTime() and (SERVER or !game.SinglePlayer()) then
+    if self:GetNextIdle() <= CurTime() then
         self:Idle()
     end
 
@@ -134,6 +129,10 @@ function SWEP:Think()
         if owner:KeyDown(IN_ATTACK2) then
             self:Player_Secondary()
         end
+    end
+
+    if self:GetValue("Melee") and self:GetOwner():KeyPressed(TacRP.IN_MELEE) then
+        self:Melee()
     end
 
     if owner:GetInfoNum("tacrp_autoreload", 0) ~= 0 then

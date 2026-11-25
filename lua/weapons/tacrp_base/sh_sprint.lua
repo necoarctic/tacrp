@@ -80,12 +80,7 @@ function SWEP:EnterSprint()
         self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
     end
     if !self:CanReloadInSprint() and self:GetReloading() then
-        -- use clip1 to check for whether the up-in has happened. if so, do not cancel (can't have you cancel the animation *that* easily)
-        -- this causes fringe cases related to maniuplating magazine sizes but shouldn't be abusable
-        if self:Clip1() < self:GetMaxClip1() then
-            self:CancelReload(true)
-            -- self:Idle()
-        end
+        self:CancelReload(true)
     end
     self:ScopeToggle(0)
 

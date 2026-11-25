@@ -21,7 +21,7 @@ function SWEP:PrimeGrenade()
 
     -- if self:SprintLock() then return end
 
-    self:CancelReload()
+    self:CancelReload(false)
 
     local nade = self:GetValue("PrimaryGrenade") and TacRP.QuickNades[self:GetValue("PrimaryGrenade")] or self:GetGrenade()
 

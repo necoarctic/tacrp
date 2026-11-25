@@ -21,7 +21,7 @@ function SWEP:Melee(alt)
     if self:GetNextMeleeTime() > CurTime() then return end
     -- if self:SprintLock() then return end
 
-    self:CancelReload(nil, true)
+    self:CancelReload(false, true)
     self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
     self:ScopeToggle(0)
 
@@ -29,12 +29,12 @@ function SWEP:Melee(alt)
     local range = self:GetValue("MeleeRange")
     local delay = self:GetValue("MeleeDelay")
     if alt then
-        self:PlayAnimation("melee2", 1, false, true)
+        self:PlayAnimation("melee2")
         -- self:GetOwner():DoAnimationEvent(self:GetValue("GestureBash2") or self:GetValue("GestureBash"))
         -- range = self:GetValue("Melee2Range") or range
         dmg = self:GetHeavyAttackDamage() * self:GetConfigDamageMultiplier()
     else
-        self:PlayAnimation("melee", 1, false, true)
+        self:PlayAnimation("melee")
         -- self:GetOwner():DoAnimationEvent(self:GetValue("GestureBash"))
     end
 

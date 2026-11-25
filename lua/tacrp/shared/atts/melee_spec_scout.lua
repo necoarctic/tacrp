@@ -25,8 +25,8 @@ ATT.Hook_PreReload = function(wep)
     if ply:GetNWFloat("TacRPScoutBall", 0) > CurTime() then return end
     ply:SetNWFloat("TacRPScoutBall", CurTime() + balldelay)
 
-    wep:SetNextPrimaryFire(CurTime() + 0.3)
-    wep:PlayAnimation("melee", 0.5, false, true)
+    wep:SetNextMeleeTime(CurTime() + 0.3)
+    wep:PlayAnimation("melee", 0.5)
     wep:GetOwner():DoAnimationEvent(ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE2)
 
     wep:EmitSound("tacrp/sandman/bat_baseball_hit" .. math.random(1, 2) .. ".wav")
