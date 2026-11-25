@@ -6,6 +6,9 @@ SWEP.AdminOnly = false
 SWEP.PrintName = "Arctic's Tactical RP Base"
 SWEP.Category = "Tactical RP"
 
+SWEP.SubCatType = "Equipment"
+SWEP.SubCatTier = "Special"
+
 SWEP.Description = ""
 SWEP.Description_Quote = nil // Italics, always on last line. Make sure to save some space for it (may overlap)
 

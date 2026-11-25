@@ -1142,7 +1142,6 @@ SWEP.StatDisplay = {
             return math.max(0, math.Round(val, 1))
         end,
         LowerIsBetter = true,
-        -- HideIfSame = true,
         ConVarCheck = "tacrp_freeaim",
     },
     {
@@ -1154,7 +1153,6 @@ SWEP.StatDisplay = {
         Unit = "°",
         Value = "MidAirSpreadPenalty",
         LowerIsBetter = true,
-        -- HideIfSame = true,
     },
     {
         Name = "stat.hipfirespread",
@@ -1165,7 +1163,16 @@ SWEP.StatDisplay = {
         Unit = "°",
         Value = "HipFireSpreadPenalty",
         LowerIsBetter = true,
-        -- HideIfSame = true,
+    },
+    {
+        Name = "stat.movespread",
+        Description = "stat.movespread.desc",
+        AggregateFunction = function(self, base, val)
+            return math.Round(math.deg(val), 1)
+        end,
+        Unit = "°",
+        Value = "MoveSpreadPenalty",
+        LowerIsBetter = true,
     },
     {
         Name = "spacer.sway",
