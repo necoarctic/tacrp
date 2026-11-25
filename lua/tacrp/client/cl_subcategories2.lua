@@ -147,7 +147,7 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 				show = not show
 				for classname, icon_data in pairs( all_weapons ) do
 					icon_data.Button:Show()
-					if not show and not TacRP.PackCategorization["tacrp"].Weapons[classname] then
+					if not show and not TacRP.Packs["tacrp"].Weapons[classname] then
 						icon_data.Button:Hide()
 					end
 				end
