@@ -44,23 +44,14 @@ function SWEP:Think()
     end
 
     self:ThinkRecoil()
-
     self:ThinkSprint()
-
     self:ThinkGrenade()
-
     self:ThinkReload()
-
     self:ThinkSights()
-
     self:ThinkFreeAim()
-
     self:ThinkBlindFire()
-
     self:ProcessTimers()
-
     self:ThinkLockOn()
-
     self:ThinkHoldBreath()
 
     if IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() and self:GetValue("TacticalThink") and self:GetTactical() then
@@ -78,7 +69,7 @@ function SWEP:Think()
     -- end
 
     if self:GetJammed() and !self:StillWaiting() and TacRP.ConVars["jam_autoclear"]:GetBool() then
-        local t = self:PlayAnimation("jam", 0.75, true, true)
+        local t = self:PlayAnimation("jam", 0.75, true)
         self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_CANCEL_RELOAD, t * 1000)
         self:SetJammed(false)
     end

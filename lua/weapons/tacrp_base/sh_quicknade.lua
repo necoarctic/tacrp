@@ -75,7 +75,7 @@ function SWEP:ThrowGrenade()
     local t = 0
 
     if !nade.OverhandOnly and (self.GrenadeThrowOverride == true or (self.GrenadeThrowOverride == nil and !self:GetOwner():KeyDown(self.GrenadeDownKey))) then
-        t = self:PlayAnimation("throw_grenade_underhand", self:GetValue("QuickNadeTimeMult"), true, true)
+        t = self:PlayAnimation("throw_grenade_underhand", self:GetValue("QuickNadeTimeMult"), true)
 
         force = force / 2
         ang:RotateAroundAxis(ang:Right(), 20)
@@ -87,7 +87,7 @@ function SWEP:ThrowGrenade()
         end
     else
         ang:RotateAroundAxis(ang:Right(), 5)
-        t = self:PlayAnimation("throw_grenade", self:GetValue("QuickNadeTimeMult"), true, true)
+        t = self:PlayAnimation("throw_grenade", self:GetValue("QuickNadeTimeMult"), true)
     end
 
     self.GrenadeThrowOverride = nil
@@ -180,7 +180,7 @@ function SWEP:ThrowGrenade()
             end
         else
             self:SetTimer(t, function()
-                self:PlayAnimation("deploy", self:GetValue("DeployTimeMult"), true, true)
+                self:PlayAnimation("deploy", self:GetValue("DeployTimeMult"), true)
             end)
         end
     elseif nade.Singleton and self:GetOwner():HasWeapon(nade.GrenadeWep) then

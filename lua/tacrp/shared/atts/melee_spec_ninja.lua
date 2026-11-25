@@ -92,7 +92,7 @@ ATT.Hook_PreReload = function(wep)
         end
     elseif !wep:StillWaiting() and getcharge(wep) >= cost then
         wep:SetNextSecondaryFire(CurTime() + 0.8)
-        wep:PlayAnimation("halt", 0.4, false, true)
+        wep:PlayAnimation("halt", 0.4)
         -- wep:EmitSound("ambient/energy/weld2.wav", 75, 110, 0.5)
         wep:GetOwner():DoAnimationEvent(ACT_HL2MP_GESTURE_RANGE_ATTACK_FIST)
         wep:EmitSound("npc/fast_zombie/claw_miss1.wav", 75, 90, 1)

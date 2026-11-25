@@ -126,7 +126,7 @@ function SWEP:Melee(alt)
             end
 
             if self:GetJammed() or (self:GetReloadFinishTime() > 0 and self:GetEndReload() and self:GetReloadFinishTime() - CurTime() > 0.3 and self:GetReloadFinishTime() - CurTime() < 1) then
-                local t2 = self:PlayAnimation("jam", 1 / 3, false, true) or 0
+                local t2 = self:PlayAnimation("jam", 1/3) or 0
                 self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_CANCEL_RELOAD, t2 * 1000)
                 self:SetJammed(false)
             end

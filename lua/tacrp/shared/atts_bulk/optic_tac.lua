@@ -1100,10 +1100,8 @@ ATT.Hook_ToggleTactical = function(wep)
 
     if wep:GetReloading() then return end
     if wep:StillWaiting() then return end
-
     if wep:GetCapacity() <= 0 then return end
-
-    if (wep:GetNWInt("TacRP_SpecialRounds", 0) > 0) then return end
+    if wep:GetNWInt("TacRP_SpecialRounds", 0) > 0 then return end
 
     local loadamt = math.min(wep:GetCapacity() - wep:Clip1(), ((wep:GetValue("Akimbo") and !wep:GetValue("DualAkimbo")) and 2 or 1) * wep:GetValue("AmmoPerShot"))
 
@@ -1111,7 +1109,7 @@ ATT.Hook_ToggleTactical = function(wep)
     if wep:Ammo1() < loadamt and !wep:GetInfiniteAmmo() then return end
 
     -- wep:SetNextPrimaryFire(CurTime() + 1)
-    local t = wep:PlayAnimation("jam", 1 / 2, true, true)
+    local t = wep:PlayAnimation("jam", 1 / 2, true)
     wep:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD_LOOP, t * 1000)
     -- wep:GetOwner():DoAnimationEvent(ACT_HL2MP_GESTURE_RELOAD_PISTOL)
     wep:RestoreClip(loadamt)

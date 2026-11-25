@@ -21,7 +21,7 @@ ATT.Hook_SecondaryAttack = function(self)
     if !self:GetInfiniteAmmo() and self:GetOwner():GetAmmoCount("xbowbolt") <= 0 then return end
 
     local s = self:GetValue("MeleeAttackTime") * 3 * self:GetMeleePerkCooldown()
-    self:PlayAnimation("meleethrow", s, false, true)
+    self:PlayAnimation("meleethrow", s)
     --self:GetOwner():DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_THROW)
     self:GetOwner():DoAnimationEvent(ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE)
 
@@ -68,7 +68,7 @@ ATT.Hook_SecondaryAttack = function(self)
 
     local throwtimewait = math.max(0, s - 0.75) --self:GetValue("MeleeThrowTimeWait")
     self:SetTimer(throwtimewait, function()
-        self:PlayAnimation("deploy", 1, false, true)
+        self:PlayAnimation("deploy")
     end)
 
     self:SetNextSecondaryFire(CurTime() + s)

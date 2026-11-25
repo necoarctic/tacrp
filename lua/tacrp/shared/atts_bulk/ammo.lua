@@ -765,7 +765,7 @@ ATT.Hook_PreReload = function(wep)
 
     if SERVER then
         wep:SetNWInt("TacRP_RouletteShot", math.random(1, wep:GetBaseValue("ClipSize")))
-        local t = wep:PlayAnimation("jam", 1, true, true)
+        local t = wep:PlayAnimation("jam", 1, true)
         wep:SetNextPrimaryFire(CurTime() + t)
         wep:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD_LOOP, t * 1000)
     end

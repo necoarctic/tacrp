@@ -21,7 +21,7 @@ function SWEP:Reload()
     if self:StillWaiting() then return end
 
     if self:GetJammed() then
-        local t = self:PlayAnimation("jam", 0.75, true, true) or 0
+        local t = self:PlayAnimation("jam", 0.75, true) or 0
         owner:DoCustomAnimEvent(PLAYERANIMEVENT_CANCEL_RELOAD, t * 1000)
         self:SetJammed(false)
         return
@@ -58,7 +58,7 @@ function SWEP:Reload()
         end
     end
 
-    local t = self:PlayAnimation(anim, mult, true, true)
+    local t = self:PlayAnimation(anim, mult, true)
 
     owner:DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD, t * 1000)
 
@@ -163,9 +163,9 @@ function SWEP:EndReload()
             local cancellable = TacRP.ConVars["reload_sg_cancel"]:GetBool() and !self:GetValue("ShotgunFullCancel")
             local t = 1
             if !self.ShotgunNoReverseStart and (self:Clip1() == self:GetLoadedRounds() or !self:GetEmptyReload()) then
-                t = self:PlayAnimation("reload_start", -0.75 * mult, !cancellable, true)
+                t = self:PlayAnimation("reload_start", -0.75 * mult, !cancellable)
             else
-                t = self:PlayAnimation("reload_finish", mult, !cancellable, true)
+                t = self:PlayAnimation("reload_finish", mult, !cancellable)
             end
             self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD_END, t * 1000)
 
@@ -238,10 +238,10 @@ function SWEP:CancelReload(do_finish_anim, keep_slow)
             if self.CurrentAnimation == "reload_start" and self.ShotgunReloadCompleteStart then
                 self:SetEndReload(true)
             elseif self:Clip1() == self:GetLoadedRounds() and !self.ShotgunNoReverseStart then
-                t = self:PlayAnimation("reload_start", -0.75 * mult, true, true)
+                t = self:PlayAnimation("reload_start", -0.75 * mult, true)
                 stop = true
             else
-                t = self:PlayAnimation("reload_finish", mult, true, true)
+                t = self:PlayAnimation("reload_finish", mult, true)
                 stop = true
             end
             self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_RELOAD_END, t * 1000)

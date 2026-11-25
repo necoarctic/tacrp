@@ -3,15 +3,15 @@ function SWEP:DoDeployAnimation()
     local ct = CurTime()
     local t = 0
     if self:GetReloading() and self:GetValue("MidReload") and !self:GetValue("ShotgunReload") and self:HasSequence("midreload") then
-        t = self:PlayAnimation("midreload", self:GetValue("ReloadTimeMult"), false, true)
+        t = self:PlayAnimation("midreload", self:GetValue("ReloadTimeMult"))
 
         self:SetReloadFinishTime( ct + t )
     else
         self:SetReloading(false)
         if self:GetValue("TryUnholster") then
-            t = self:PlayAnimation("unholster", self:GetValue("DeployTimeMult") * self:GetValue("UnholsterTimeMult"), false, true)
+            t = self:PlayAnimation("unholster", self:GetValue("DeployTimeMult") * self:GetValue("UnholsterTimeMult"))
         else
-            t = self:PlayAnimation("deploy", self:GetValue("DeployTimeMult"), false, true)
+            t = self:PlayAnimation("deploy", self:GetValue("DeployTimeMult"))
         end
     end
     self:SetAnimLockTime( ct + t * self.DeployEarlyFraction )

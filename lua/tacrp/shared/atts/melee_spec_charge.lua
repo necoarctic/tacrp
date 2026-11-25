@@ -110,7 +110,7 @@ local function chargemelee(self)
         * (1 + self:GetOwner():GetNWFloat("TacRPChargeStrength", 0) ^ 1.5 * 2)
     local range = 200
     self:GetOwner():DoAnimationEvent(ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE2)
-    self:PlayAnimation("melee2", 1, false, true)
+    self:PlayAnimation("melee2")
 
     local filter = {self:GetOwner()}
 

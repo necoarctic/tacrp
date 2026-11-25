@@ -67,13 +67,13 @@ ATT.Hook_PostThink = function(wep)
             wep:SetOutOfBreath(true)
             wep:SetHoldingBreath(false)
             wep:SetNextIdle(math.huge)
-            wep:PlayAnimation("idle_defend", 1)
+            wep:PlayAnimation("idle_defend", nil, nil, false)
             wep:SetHoldType("magic")
         end
     else
         if !canhold then
             wep:SetOutOfBreath(false)
-            wep:PlayAnimation("idle", 1)
+            wep:PlayAnimation("idle")
             wep:SetShouldHoldType()
             wep:SetNextSecondaryFire(CurTime() + 0.25)
         else
