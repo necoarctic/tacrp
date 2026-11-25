@@ -141,6 +141,7 @@ function SWEP:Player_Primary()
 end
 
 function SWEP:Player_Secondary()
+    self:RunHook("Hook_SecondaryAttack")
 end
 
 function SWEP:ThinkSprint()
