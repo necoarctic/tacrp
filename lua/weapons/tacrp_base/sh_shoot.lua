@@ -836,12 +836,12 @@ function SWEP:Weapon_Attack( gun2 )
         return
     end
 
-    if !dryfire and self:GetReloading() and self:GetValue("ShotgunReload") then
+    if not dryfire and self:GetReloading() and self:GetValue("ShotgunReload") then
         if TacRP.ConVars["reload_sg_cancel"]:GetBool() and not self:GetValue("ShotgunFullCancel") then
             self:CancelReload(false)
             self:Idle()
         else
-            self:CancelReload(true)
+            self:CancelReload(true, true)
         end
     end
     if self:GetAnimLockTime() > ct then return end

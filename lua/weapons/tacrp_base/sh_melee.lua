@@ -21,7 +21,7 @@ function SWEP:Melee(alt)
     if self:GetNextMeleeTime() > CurTime() then return end
     -- if self:SprintLock() then return end
 
-    self:CancelReload(false, true)
+    self:CancelReload(false)
     self:ToggleBlindFire(TacRP.BLINDFIRE_NONE)
     self:ScopeToggle(0)
 
@@ -156,10 +156,6 @@ function SWEP:Melee(alt)
                 self:EmitSound(self:ChooseSound(self:GetValue("Sound_MeleeSwing")), 75, 100, 1)
             end
         end
-
-        self:SetReloadFinishTime(0)
-        self:SetEndReload(false)
-
         self:GetOwner():LagCompensation(false)
     end, "Melee")
 

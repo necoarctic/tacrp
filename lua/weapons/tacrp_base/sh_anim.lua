@@ -1,4 +1,8 @@
 function SWEP:PlayAnimation(seq, mult, lock, doidle)
+    local vm = self:GetVM()
+    if not vm then return end
+    if not vm:IsValid() then return end
+
     mult = mult or 1
     lock = lock or false
     if doidle == nil then
@@ -12,10 +16,6 @@ function SWEP:PlayAnimation(seq, mult, lock, doidle)
         mult = -mult
     end
 
-    local vm = self:GetVM()
-
-    if !IsValid(vm) then return end
-
     if isstring(anim) then
         seq = vm:LookupSequence(anim)
     end
@@ -26,9 +26,7 @@ function SWEP:PlayAnimation(seq, mult, lock, doidle)
     self.CurrentSeqeunce = seq
 
     local time = vm:SequenceDuration(seq)
-
     time = time * mult
-
     vm:SendViewModelMatchingSequence(seq)
 
     if mult == 0 then

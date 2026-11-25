@@ -219,12 +219,16 @@ function SWEP:EndReload()
     end
 end
 
-function SWEP:CancelReload(do_finish_anim, keep_slow)
+function SWEP:CancelReload(do_finish_anim, dont_reset_lock)
     if not self:GetReloading() then
         return
     end
-    if self:A_GetClip(false) < self:A_GetMaxClip(false) and (not akimbo or self:A_GetClip(true) < self:A_GetMaxClip(true)) then
+
+    local reset_lock = not dont_reset_lock
+    if reset_lock and self:A_GetClip(false) < self:A_GetMaxClip(false) and (not akimbo or self:A_GetClip(true) < self:A_GetMaxClip(true)) then
         self:SetAnimLockTime(0)
+    else
+        reset_lock = false
     end
 
     self:RunHook("Hook_CancelReload")
@@ -237,7 +241,7 @@ function SWEP:CancelReload(do_finish_anim, keep_slow)
             local t = 1
             if self.CurrentAnimation == "reload_start" and self.ShotgunReloadCompleteStart then
                 self:SetEndReload(true)
-            elseif self:Clip1() == self:GetLoadedRounds() and !self.ShotgunNoReverseStart then
+            elseif self:Clip1() == self:GetLoadedRounds() and not self.ShotgunNoReverseStart then
                 t = self:PlayAnimation("reload_start", -0.75 * mult, true)
                 stop = true
             else
@@ -261,7 +265,7 @@ function SWEP:CancelReload(do_finish_anim, keep_slow)
         self:SetReloading(false)
         self:SetNthShot(0)
         self:DoBulletBodygroups()
-        if not keep_slow then
+        if reset_lock then
             self:SetEndReload(false)
             self:SetReloadFinishTime(0)
         end
