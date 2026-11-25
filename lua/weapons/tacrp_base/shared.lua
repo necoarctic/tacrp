@@ -721,6 +721,13 @@ function SWEP:OnDrop(owner)
     end
 end
 
+function SWEP:GetPrintName()
+    return TacRP:TryTranslate("wep."..self.ClassName..".name.full")
+        or TacRP:TryTranslate("wep."..self.ClassName..".name")
+        or self:GetValue("FullName")
+        or self:GetValue("PrintName")
+end
+
 local function clunpredictvar(tbl, name, varname, default)
     local clvar = "CL_" .. name
 
