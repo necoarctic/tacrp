@@ -29,12 +29,12 @@ function SWEP:Melee(alt)
     local range = self:GetValue("MeleeRange")
     local delay = self:GetValue("MeleeDelay")
     if alt then
-        self:PlayAnimation("melee2", 1, true, true)
+        self:PlayAnimation("melee2", 1, false, true)
         -- self:GetOwner():DoAnimationEvent(self:GetValue("GestureBash2") or self:GetValue("GestureBash"))
         -- range = self:GetValue("Melee2Range") or range
         dmg = self:GetHeavyAttackDamage() * self:GetConfigDamageMultiplier()
     else
-        self:PlayAnimation("melee", 1, true, true)
+        self:PlayAnimation("melee", 1, false, true)
         -- self:GetOwner():DoAnimationEvent(self:GetValue("GestureBash"))
     end
 
