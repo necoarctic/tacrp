@@ -6,7 +6,7 @@ TacRP.Attachments_Count = 0
 TacRP.Attachments_Bits = 16
 
 function TacRP.InvalidateCache()
-    for _, e in pairs(ents.GetAll()) do
+    for _, e in ents.Iterator() do
         if e:IsWeapon() and e.ArcticTacRP then
             e:InvalidateCache()
             e:SetBaseSettings()
