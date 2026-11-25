@@ -296,6 +296,7 @@ function SWEP:C2_Open()
 	if IsValid( c2 ) then c2:Remove() end
 	local sw, sh = ScrW(), ScrH()
 	local wep = self
+	local wep_class = wep.ClassName
 	local is_grenade = wep:GetValue("PrimaryGrenade")
 	c2 = vgui.Create( "EditablePanel" )
 	c2:SetSize( sw, sh )
@@ -522,11 +523,15 @@ function SWEP:C2_Open()
 	local p_header = c2:Add("Panel")
 	p_header:Dock(TOP)
 	p_header:SetTall( s(MARGIN_S+24+MARGIN_S) )
+	local weapon_full_name = TacRP:GetPhrase("wep."..wep_class..".name.full")
+		or TacRP:GetPhrase("wep."..wep_class..".name")
+		or wep:GetValue("FullName")
+		or wep:GetValue("PrintName")
 	function p_header:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
 
 		C2_DrawText(
-			wep.PrintName,
+			weapon_full_name,
 			"TacRP_STD_24",
 			s(MARGIN_M), h/2,
 			color_white,
@@ -582,12 +587,12 @@ function SWEP:C2_Open()
 		local txt_desc, txt_quote
 		if is_grenade then
 			local def = TacRP.QuickNades[is_grenade]
-			txt_desc = (TacRP:GetPhrase("quicknade." .. def.PrintName .. ".dettype") or def.DetType or "")
+			txt_desc = TacRP:GetPhrase("quicknade." .. def.PrintName .. ".dettype") or def.DetType or ""
 			txt_desc = txt_desc .. "\n" .. (TacRP:GetPhrase("quicknade." .. def.PrintName .. ".desc") or def.Description)
 			-- txt_quote = "Grenade Quote"
 		else
-			txt_desc = wep.Description
-			txt_quote = wep.Description_Quote
+			txt_desc = TacRP:GetPhrase("wep."..wep_class..".desc") or wep:GetValue("Description")
+			txt_quote = TacRP:GetPhrase("wep."..wep_class..".desc.quote") or wep:GetValue("Description_Quote")
 		end
 		
 		function p_footer:Paint( w, h )
