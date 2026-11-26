@@ -55,8 +55,9 @@ function PANEL:Paint( w, h )
 		surface.DrawLine( p2_x, min_y + i, w, min_y + i )
 	end
 
-	local txt_dmg_max = math.floor(dmg_max) .. TacRP.GetPhrase("unit.damage")
-	local txt_dmg_min = math.floor(dmg_min) .. TacRP.GetPhrase("unit.damage")
+	local txt_unit_damage = TacRP.GetPhrase("unit.damage")
+	local txt_dmg_max = math.floor(dmg_max) .. txt_unit_damage
+	local txt_dmg_min = math.floor(dmg_min) .. txt_unit_damage
 	if pellets > 1 then
 		txt_dmg_max = dmg_max * pellets .. "-" .. txt_dmg_max
 		txt_dmg_min = dmg_min * pellets .. "-" .. txt_dmg_min
