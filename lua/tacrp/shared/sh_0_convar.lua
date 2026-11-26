@@ -119,11 +119,13 @@ local conVars = {
     {
         name = "fixedspread",
         default = "1",
+        replicated = true,
         notify = true,
     },
     {
         name = "pelletspread",
         default = "1",
+        replicated = true,
         notify = true,
     },
     {
@@ -388,17 +390,14 @@ local conVars = {
         default = "0",
         client = true,
     },
-    {
+    { -- client language
         name = "language",
         default = "",
-        replicated = true,
-        callback = function()
-            if SERVER then
-                TacRP:LoadLanguages()
-                net.Start("tacrp_reloadlangs")
-                net.Broadcast()
-            end
-        end
+        client = true,
+    },
+    { -- server language
+        name = "language",
+        default = "",
     },
     {
         name = "dev_benchgun",
@@ -1327,6 +1326,9 @@ for _, var in pairs(conVars) do
             TacRP.ConVars[var.name] = CreateClientConVar(convar_name, var.default, !var.noarchive, var.userinfo)
         end
     else
+        if CLIENT and not var.replicated then
+            continue
+        end
         local flag = FCVAR_ARCHIVE
         for k, v in pairs(flags) do if var[k] then flag = flag + v end end
         TacRP.ConVars[var.name] = CreateConVar(convar_name, var.default, flag, var.help, var.min, var.max)
