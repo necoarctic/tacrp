@@ -125,7 +125,7 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 							button_weapon.WeaponClassname = classname
 							button_weapon.WeaponData = swep
 
-							all_weapons[classname] = { Button = button_weapon, Tier = swep.SubCatTier  }
+							all_weapons[classname] = { Button = button_weapon, Tier = swep.SubCatTier, Pack = TacRP.ClassToPack[classname] or true }
 						end
 					end
 				else
@@ -137,23 +137,58 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 						button_weapon.WeaponClassname = classname
 						button_weapon.WeaponData = swep
 
-						all_weapons[classname] = { Button = button_weapon, Tier = swep.SubCatTier  }
+						all_weapons[classname] = { Button = button_weapon, Tier = swep.SubCatTier, Pack = TacRP.ClassToPack[classname] or true }
 					end
 				end
 			end
 
-			local show = true
-			function p_filterbutton:DoClick()
-				show = not show
+			local function reload()
 				for classname, icon_data in pairs( all_weapons ) do
-					icon_data.Button:Show()
-					if not show and not TacRP.Packs["tacrp"].Weapons[classname] then
-						icon_data.Button:Hide()
-					end
+					icon_data.Button:SetVisible( not p_filterbutton.HiddenPacks[icon_data.Pack] and not p_filterbutton.HiddenTiers[icon_data.Tier] )
 				end
 				for _, category in ipairs( categories ) do
 					category.IconLayout:Layout()
 				end
+			end
+
+			local function toggle_pack(option, checked)
+				p_filterbutton.HiddenPacks[option.Pack] = not p_filterbutton.HiddenPacks[option.Pack]
+				reload()
+			end
+
+			local function toggle_tier(option, checked)
+				p_filterbutton.HiddenTiers[option.Tier] = not p_filterbutton.HiddenTiers[option.Tier]
+				reload()
+			end
+
+			p_filterbutton.HiddenPacks = {}
+			p_filterbutton.HiddenTiers = {}
+			function p_filterbutton:DoClick()
+				local menu = DermaMenu()
+				for _, pack_id in ipairs( TacRP.PackOrder ) do
+					local pack = TacRP.Packs[pack_id]
+					local option = menu:AddOption(pack.Title)
+					option.Pack = pack_id
+					option.m_bChecked = not self.HiddenPacks[pack_id]
+					option.OnChecked = toggle_pack
+					option:SetIsCheckable(true)
+				end
+				do -- uncategorized
+					local option = menu:AddOption("One-offs")
+					option.Pack = true
+					option.m_bChecked = not self.HiddenPacks[true]
+					option.OnChecked = toggle_pack
+					option:SetIsCheckable(true)
+				end
+				menu:AddSpacer()
+				for _, tier in ipairs( TacRP.Tiers ) do
+					local option = menu:AddOption(tier)
+					option.Tier = tier
+					option.m_bChecked = not self.HiddenTiers[tier]
+					option.OnChecked = toggle_tier
+					option:SetIsCheckable(true)
+				end
+				menu:Open()
 			end
 
 			function node:DoClick()

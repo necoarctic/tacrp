@@ -154,37 +154,40 @@ TacRP.Tier_Fix = {
     ["9Special"]        = "Special",
 }
 
-TacRP.Tier_SortOrder = {
-    ["Exotic"] = 1,
-    ["Elite"] = 2,
-    ["Operator"] = 3,
-    ["Security"] = 4,
-    ["Consumer"] = 5,
-    ["Value"] = 6,
-    ["Special"] = 7,
+TacRP.Tiers = {
+    "Exotic",
+    "Elite",
+    "Operator",
+    "Security",
+    "Consumer",
+    "Value",
+    "Special",
 }
 
-TacRP.Type_SortOrder = {
-	["Pistol"]			= 101,
-	["Magnum Pistol"]	= 102,
-	["Akimbo"]			= 103,
-	["Machine Pistol"]	= 104,
-	["Submachine Gun"]	= 105,
-	["Assault Rifle"]	= 106,
-	["Battle Rifle"]	= 107,
-	["Machine Gun"]		= 108,
-	["Shotgun"]			= 109,
-	["Sporter"]			= 110,
-	["Marksman Rifle"]	= 111,
-	["Sniper Rifle"]	= 112,
-	["Launcher"]		= 201,
-	["Special Weapon"]	= 202,
-	["Bladed Melee"]	= 203,
-	["Blunt Melee"]		= 204,
-	["Melee Weapon"]	= 205,
-	["Equipment"]		= 206,
-	["Throwable"]		= 207,
+TacRP.Types = {
+    "Pistol",
+    "Magnum Pistol",
+    "Akimbo",
+    "Machine Pistol",
+    "Submachine Gun",
+    "Assault Rifle",
+    "Battle Rifle",
+    "Machine Gun",
+    "Shotgun",
+    "Sporter",
+    "Marksman Rifle",
+    "Sniper Rifle",
+    "Launcher",
+    "Special Weapon",
+    "Bladed Melee",
+    "Blunt Melee",
+    "Melee Weapon",
+    "Equipment",
+    "Throwable",
 }
+
+TacRP.Tier_SortOrder = table.Flip(TacRP.Tiers)
+TacRP.Type_SortOrder = table.Flip(TacRP.Types)
 
 hook.Add( "PreRegisterSWEP", "TacRP_PreRegisterSWEP", function( swep, class )
     -- needs special logic
