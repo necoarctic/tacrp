@@ -30,7 +30,7 @@ function PANEL:Paint( w, h )
 	end
 
 	C2_DrawText(
-		self.SlotData.PrintName,
+		TacRP:TryTranslate(self.SlotData.PrintName),
 		"TacRP_STD_8",
 		s(MARGIN_S), s(MARGIN_S),
 		color_white

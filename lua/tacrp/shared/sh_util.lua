@@ -209,5 +209,6 @@ hook.Add( "PreRegisterSWEP", "TacRP_PreRegisterSWEP", function( swep, class )
         end
 
         swep.SubCategory = swep.SubCatType
+        swep.PrintName = TacRP:GetPhrase("wep."..class..".name.full") or TacRP:GetPhrase("wep."..class..".name") or swep.PrintName
     end
 end )
