@@ -1,15 +1,16 @@
-function SWEP:GetMuzzleOrigin()
-    if !IsValid(self:GetOwner()) then
+function SWEP:GetMuzzleOrigin(eyepos)
+    local owner = self:GetOwner()
+    if not owner:IsValid() then
         return self:GetPos()
     end
-    if self:GetOwner():IsNPC() then
-        return SERVER and self:GetOwner():GetShootPos() or self:GetOwner():EyePos()
+    if owner:IsNPC() then
+        return SERVER and owner:GetShootPos() or owner:EyePos()
     end
 
-    local pos = self:GetOwner():EyePos()
+    local pos = eyepos or owner:EyePos()
 
     if self:GetBlindFire() then
-        local eyeang = self:GetOwner():EyeAngles()
+        local eyeang = owner:EyeAngles()
 
         local testpos = pos + eyeang:Up() * 24
 
@@ -20,25 +21,16 @@ function SWEP:GetMuzzleOrigin()
         local tr = util.TraceLine({
             start = pos,
             endpos = testpos,
-            filter = self:GetOwner()
+            filter = owner
         })
 
         pos = tr.HitPos
     end
 
     local offset = self:GetValue("ShootOffset")
-
-    if offset.x != 0 then
-        pos = pos + self:GetOwner():GetRight() * offset.x
-    end
-
-    if offset.y != 0 then
-        pos = pos + self:GetOwner():GetForward() * offset.y
-    end
-
-    if offset.z != 0 then
-        pos = pos + self:GetOwner():GetUp() * offset.z
-    end
+    pos = pos + owner:GetRight() * offset.x
+    pos = pos + owner:GetForward() * offset.y
+    pos = pos + owner:GetUp() * offset.z
 
     return pos
 end

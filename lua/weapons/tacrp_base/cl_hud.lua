@@ -58,9 +58,10 @@ function SWEP:DoDrawCrosshair(x, y)
 
     local dir = self:GetShootDir(true)
 
+    local muzzle = self:GetMuzzleOrigin(EyePos())
     local tr = util.TraceLine({
-        start = self:GetMuzzleOrigin(),
-        endpos = self:GetMuzzleOrigin() + (dir:Forward() * 50000),
+        start = muzzle,
+        endpos = muzzle + (dir:Forward() * 50000),
         mask = MASK_SHOT,
         filter = self:GetOwner()
     })
