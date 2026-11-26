@@ -8,6 +8,7 @@ local COLOR_OUTLINE = TacRP.C2.COLOR_OUTLINE
 local PANEL = {}
 function PANEL:Paint( w, h )
 	local wep = self.Weapon
+	local metric = TacRP.ConVars["metricunit"]:GetBool()
 	C2_FullBox( 0, 0, w, h )
 	
 	local raw_dmg_max = wep:GetValue("Damage_Max")
@@ -34,6 +35,8 @@ function PANEL:Paint( w, h )
 
 	-- fit a bit more meters to the right to keep it comfy
 	panel_range = panel_range + (s(32) * phys_to_pixel)
+	local multiple = metric and (50 / TacRP.HUToM) or 1000
+	panel_range = math.ceil(panel_range / multiple + 0.5) * multiple
 	phys_to_pixel = panel_range/w
 
 	local tall = h * .75
@@ -103,14 +106,15 @@ function PANEL:Paint( w, h )
 		color_white
 	)
 
-	local height = math.ceil(s(4))
-	local skip = (TacRP.ConVars["metricunit"]:GetBool() and 25 / TacRP.HUToM or 1000)
+	local height = math.ceil(s(2))
+	local skip = (metric and 25 / TacRP.HUToM or 1000)
 	if density > 2 then
 		skip = skip * 2
 	end
 	for i=0, panel_range, skip do
 		if i == 0 then continue end
 		local x = i/phys_to_pixel
+		if x > w - s(2+16+2) then continue end
 		surface.SetDrawColor( COLOR_OUTLINE )
 		C2_Gradient_Down( x - s(.5), h - height, s(1), height )
 		C2_DrawText(
@@ -121,6 +125,17 @@ function PANEL:Paint( w, h )
 			TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM
 		)
 	end
+
+	-- show panel range
+	C2_DrawText(
+		wep:RangeUnitize(panel_range),
+		"TacRP_STD_6",
+		w - s(1),
+		h - s(1),
+		color_white,
+		TEXT_ALIGN_RIGHT,
+		TEXT_ALIGN_BOTTOM
+	)
 
 	local range = self.LastRange or range_min
 	local hovered = self:IsHovered()
@@ -162,7 +177,6 @@ function PANEL:Paint( w, h )
 		color_white,
 		TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM
 	)
-
 	return true
 end
 
