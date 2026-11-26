@@ -1234,9 +1234,9 @@ SWEP.StatDisplay = {
         Description = "stat.quickscope.desc",
         Value = "QuickScopeSpreadPenalty",
         AggregateFunction = function(self, base, val)
-            return math.Round(math.deg(val) * 60, 1)
+            return math.Round(math.deg(val), 1)
         end,
-        Unit = "′",
+        Unit = "°",
         LowerIsBetter = true,
     },
     {
