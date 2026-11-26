@@ -124,6 +124,9 @@ end
 
 TacRP.LoadLanguages()
 
+concommand.Add("tacrp_reloadlangs", function()
+    TacRP.LoadLanguages()
+end)
 cvars.AddChangeCallback("tacrp_language", function(convar, oldValue, newValue)
     TacRP.LoadLanguages()
 end, "TacRP_ChangeLanguage")
