@@ -79,6 +79,10 @@ function PANEL:DoClick()
 	RunConsoleCommand( "gm_giveswep", self.WeaponClassname )
 end
 
+function PANEL:DoMiddleClick()
+	RunConsoleCommand( "gm_spawnswep", self.WeaponClassname )
+end
+
 function PANEL:DoRightClick()
 	self:OpenGenericSpawnmenuRightClickMenu()
 end
