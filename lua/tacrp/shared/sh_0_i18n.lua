@@ -124,26 +124,9 @@ end
 
 TacRP:LoadLanguages()
 
-if CLIENT then
-
-    concommand.Add("tacrp_reloadlangs", function()
-        if !LocalPlayer():IsSuperAdmin() then return end
-
-        net.Start("tacrp_reloadlangs")
-        net.SendToServer()
-    end)
-
-    net.Receive("tacrp_reloadlangs", function(len, ply)
-        TacRP:LoadLanguages()
-        TacRP.Regen()
-    end)
-elseif SERVER then
-    net.Receive("tacrp_reloadlangs", function(len, ply)
-        if !ply:IsSuperAdmin() then return end
-
-        TacRP:LoadLanguages()
-
-        net.Start("tacrp_reloadlangs")
-        net.Broadcast()
-    end)
-end
+cvars.AddChangeCallback("tacrp_language", function(convar, oldValue, newValue)
+    TacRP:LoadLanguages()
+end, "TacRP_ChangeLanguage")
+cvars.AddChangeCallback("gmod_language", function(convar, oldValue, newValue)
+    TacRP:LoadLanguages()
+end, "TacRP_ChangeLanguage_GMOD")

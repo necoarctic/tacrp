@@ -18,7 +18,6 @@ util.AddNetworkString("tacrp_togglenade")
 util.AddNetworkString("tacrp_addshieldmodel")
 util.AddNetworkString("tacrp_updateslot")
 util.AddNetworkString("tacrp_givenadewep")
-util.AddNetworkString("tacrp_reloadlangs")
 util.AddNetworkString("tacrp_npcweapon")
 util.AddNetworkString("tacrp_drop")
 
