@@ -39,6 +39,8 @@ local fonts_to_make = {
         sizes_unscaled_italic = {
             -- Spawnmenu 2
             16,
+            20,
+            32,
         }
     },
     ["LCD"] = {

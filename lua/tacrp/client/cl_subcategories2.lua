@@ -100,8 +100,11 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 
 			for _, subcat in ipairs( categories_keys ) do
 				local subcat_data = subcats[subcat]
-				local p_category = p_scroll:Add("DCollapsibleCategory")
+				local p_category = p_scroll:Add("S2_CollapsibleCategory")
+				p_category.ItemCount = 0
+				p_category.SubCatType = subcat
 				p_category:Dock(TOP)
+				p_category:DockMargin( 0, 0, 0, 4 )
 				p_category:SetLabel( subcat )
 				table.insert(categories, p_category)
 
@@ -111,26 +114,9 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 				p_layout:SetSpaceX( 4 )
 				p_category.IconLayout = p_layout
 
-				if TacRP.UseTiers() then
-					local tiers_keys = table.GetKeys(subcat_data.tiered_weapons)
-					table.sort(tiers_keys, function(a, b)
-						return (TacRP.Tier_SortOrder[a] or math.huge) < (TacRP.Tier_SortOrder[b] or math.huge)
-					end)
-					for _, tier_name in ipairs( tiers_keys ) do
-						local tier_data = subcat_data.tiered_weapons[tier_name]
-						for _, classname in ipairs( tier_data ) do
-							local swep = weapons.GetStored( classname )
-							local button_weapon = p_layout:Add("S2_WeaponIcon")
-							button_weapon:SetSize( 160, 72 )
-							button_weapon.Material = Material( swep.IconOverride or ("entities/" .. classname .. ".png") )
-							button_weapon.WeaponClassname = classname
-							button_weapon.WeaponData = swep
-
-							all_weapons[classname] = { Button = button_weapon, Tier = swep.SubCatTier, Pack = TacRP.ClassToPack[classname] or true }
-						end
-					end
-				else
-					for _, classname in ipairs( subcat_data.all_weapons ) do
+				local function create_buttons( list )
+					for _, classname in ipairs( list ) do
+						p_category.ItemCount = p_category.ItemCount + 1
 						local swep = weapons.GetStored( classname )
 						local button_weapon = p_layout:Add("S2_WeaponIcon")
 						button_weapon:SetSize( 160, 72 )
@@ -140,6 +126,18 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 
 						all_weapons[classname] = { Button = button_weapon, Tier = swep.SubCatTier, Pack = TacRP.ClassToPack[classname] or true }
 					end
+				end
+
+				if TacRP.UseTiers() then
+					local tiers_keys = table.GetKeys(subcat_data.tiered_weapons)
+					table.sort(tiers_keys, function(a, b)
+						return (TacRP.Tier_SortOrder[a] or math.huge) < (TacRP.Tier_SortOrder[b] or math.huge)
+					end)
+					for _, tier_name in ipairs( tiers_keys ) do
+						create_buttons( subcat_data.tiered_weapons[tier_name] )
+					end
+				else
+					create_buttons( subcat_data.all_weapons )
 				end
 			end
 
