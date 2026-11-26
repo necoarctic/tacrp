@@ -30,13 +30,10 @@ function SWEP:Reload()
     if !self:CanReloadInSprint() and self:GetIsSprinting() then return end
 
     local akimbo = self:GetValue("DualAkimbo")
-    if akimbo then
-        if self:A_GetMaxClip( true ) <= 0 then return end
-        if self:A_GetClip( true ) >= self:A_GetMaxClip( true ) then return end
-    end
-    
-    if self:A_GetMaxClip( false ) <= 0 then return end
-    if self:A_GetClip( false ) >= self:A_GetMaxClip( false ) then return end
+    if self:A_GetMaxClip( false ) <= 0
+        and (not akimbo or self:A_GetMaxClip( true ) <= 0) then return end
+    if self:A_GetClip( false ) >= self:A_GetMaxClip( false )
+        and (not akimbo or self:A_GetClip( true ) >= self:A_GetMaxClip( true )) then return end
     if self:Ammo1() <= 0 and !self:GetInfiniteAmmo() then return end
 
     local mult = self:GetValue("ReloadTimeMult") / TacRP.ConVars["mult_reloadspeed"]:GetFloat()
