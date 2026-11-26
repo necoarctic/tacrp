@@ -32,43 +32,22 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 
 			local swep = weapons.GetStored( classname )
 			local weapon_type = swep.SubCatType or "[missing]"
-			local weapon_tier = swep.SubCatTier or "[missing]"
 			if not subcats[weapon_type] then
-				subcats[weapon_type] = {
-					all_weapons = { --[[
-						"tacrp_ak47",
-					]] },
-					tiered_weapons = { --[[
-						["Consumer"] = {
-							"tacrp_ak47",
-						},
-					]] },
-				}
+				subcats[weapon_type] = {}
 			end
-			if not subcats[weapon_type].tiered_weapons[weapon_tier] then
-				subcats[weapon_type].tiered_weapons[weapon_tier] = {}
-			end
-			table.insert( subcats[weapon_type].all_weapons, classname )
-			table.insert( subcats[weapon_type].tiered_weapons[weapon_tier], classname )
+			table.insert( subcats[weapon_type], classname )
 		end
 
 		for subcat_name, subcat_data in pairs(subcats) do
-			table.sort( subcat_data.all_weapons, function(a, b)
+			table.sort( subcat_data, function(a, b)
 				local a_name = weapons.GetStored(a).PrintName
 				local b_name = weapons.GetStored(b).PrintName
 				return a_name < b_name
 			end)
-			for tier_name, tier_data in pairs(subcat_data.tiered_weapons) do
-				table.sort( tier_data, function(a, b)
-					local a_name = weapons.GetStored(a).PrintName
-					local b_name = weapons.GetStored(b).PrintName
-					return a_name < b_name
-				end)
-			end
 		end
 
 		for _, node in ipairs( p_tree:Root():GetChildNodes() ) do
-			if not node:GetText():StartsWith("Tactical RP") then continue end
+			if not node:GetText():StartsWith("Tactical Remix") then continue end
 			node.IsTacRP = true
 			local god_panel = p_content:Add("Panel")
 			god_panel:Hide()
@@ -114,30 +93,31 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 				p_layout:SetSpaceX( 4 )
 				p_category.IconLayout = p_layout
 
-				local function create_buttons( list )
-					for _, classname in ipairs( list ) do
-						p_category.ItemCount = p_category.ItemCount + 1
-						local swep = weapons.GetStored( classname )
-						local button_weapon = p_layout:Add("S2_WeaponIcon")
-						button_weapon:SetSize( 160, 72 )
-						button_weapon.Material = Material( swep.IconOverride or ("entities/" .. classname .. ".png") )
-						button_weapon.WeaponClassname = classname
-						button_weapon.WeaponData = swep
-
-						all_weapons[classname] = { Button = button_weapon, Tier = swep.SubCatTier, Pack = TacRP.ClassToPack[classname] or true }
+				local weapons_sorted = {}
+				for i, v in ipairs(subcat_data) do weapons_sorted[i] = v end
+				table.sort( weapons_sorted, function(a, b)
+					local a_def = weapons.Get(a)
+					local b_def = weapons.Get(b)
+					if TacRP.UseTiers() then
+						local a_tier = TacRP.Tier_SortOrder[a_def.SubCatTier] or math.huge
+						local b_tier = TacRP.Tier_SortOrder[b_def.SubCatTier] or math.huge
+						if a_tier ~= b_tier then
+							return a_tier < b_tier
+						end
 					end
-				end
+					return a_def.PrintName < b_def.PrintName
+				end)
 
-				if TacRP.UseTiers() then
-					local tiers_keys = table.GetKeys(subcat_data.tiered_weapons)
-					table.sort(tiers_keys, function(a, b)
-						return (TacRP.Tier_SortOrder[a] or math.huge) < (TacRP.Tier_SortOrder[b] or math.huge)
-					end)
-					for _, tier_name in ipairs( tiers_keys ) do
-						create_buttons( subcat_data.tiered_weapons[tier_name] )
-					end
-				else
-					create_buttons( subcat_data.all_weapons )
+				for _, classname in ipairs( weapons_sorted ) do
+					p_category.ItemCount = p_category.ItemCount + 1
+					local swep = weapons.GetStored( classname )
+					local button_weapon = p_layout:Add("S2_WeaponIcon")
+					button_weapon:SetSize( 160, 72 )
+					button_weapon.Material = Material( swep.IconOverride or ("entities/" .. classname .. ".png") )
+					button_weapon.WeaponClassname = classname
+					button_weapon.WeaponData = swep
+
+					all_weapons[classname] = { Button = button_weapon, Tier = swep.SubCatTier, Pack = TacRP.ClassToPack[classname] or true }
 				end
 			end
 
