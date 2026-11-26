@@ -69,6 +69,7 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 
 		for _, node in ipairs( p_tree:Root():GetChildNodes() ) do
 			if not node:GetText():StartsWith("Tactical RP") then continue end
+			node.IsTacRP = true
 			local god_panel = p_content:Add("Panel")
 			god_panel:Hide()
 
@@ -194,6 +195,12 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 			function node:DoClick()
 				p_content:SwitchPanel(god_panel)
 			end
+
+			timer.Simple(0, function()
+				if p_tree:Root():GetChildNode(0).IsTacRP then
+					p_tree:Root():GetChildNode(0):InternalDoClick()
+				end
+			end)
 		end
 	end)
 	if not success then
