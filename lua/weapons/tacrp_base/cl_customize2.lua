@@ -253,7 +253,7 @@ local function compute_stat( wep, stat_cache, index, data )
 	end
 
 	if data.Unit then
-		local unit = TacRP:TryTranslate(data.Unit)
+		local unit = TacRP.TryTranslate(data.Unit)
 		text_base = text_base .. unit
 		text_curr = text_curr .. unit
 	end
@@ -347,7 +347,7 @@ function SWEP:C2_Open()
 		if ( engine.ActiveGamemode() == "terrortown"
 			or TacRP.ConVars["allowdrop"]:GetBool()
 		) and TacRP.ConVars["cust_drop"]:GetBool() and ( !is_grenade or !TacRP.IsGrenadeInfiniteAmmo(is_grenade) ) then
-			local txt = TacRP:TryTranslate("cust.drop_wep")
+			local txt = TacRP.TryTranslate("cust.drop_wep")
 			surface.SetFont("TacRP_STD_6")
 			local width = surface.GetTextSize(txt)
 			width = width + s(BUTTON_SIZE)
@@ -523,8 +523,8 @@ function SWEP:C2_Open()
 	local p_header = c2:Add("Panel")
 	p_header:Dock(TOP)
 	p_header:SetTall( s(MARGIN_S+24+MARGIN_S) )
-	local weapon_full_name = TacRP:GetPhrase("wep."..wep_class..".name.full")
-		or TacRP:GetPhrase("wep."..wep_class..".name")
+	local weapon_full_name = TacRP.GetPhrase("wep."..wep_class..".name.full")
+		or TacRP.GetPhrase("wep."..wep_class..".name")
 		or wep:GetValue("PrintName")
 	function p_header:Paint( w, h )
 		C2_FullBox( 0, 0, w, h )
@@ -586,12 +586,12 @@ function SWEP:C2_Open()
 		local txt_desc, txt_quote
 		if is_grenade then
 			local def = TacRP.QuickNades[is_grenade]
-			txt_desc = TacRP:GetPhrase("quicknade." .. def.PrintName .. ".dettype") or def.DetType or ""
-			txt_desc = txt_desc .. "\n" .. (TacRP:GetPhrase("quicknade." .. def.PrintName .. ".desc") or def.Description)
+			txt_desc = TacRP.GetPhrase("quicknade." .. def.PrintName .. ".dettype") or def.DetType or ""
+			txt_desc = txt_desc .. "\n" .. (TacRP.GetPhrase("quicknade." .. def.PrintName .. ".desc") or def.Description)
 			-- txt_quote = "Grenade Quote"
 		else
-			txt_desc = TacRP:GetPhrase("wep."..wep_class..".desc") or wep:GetValue("Description")
-			txt_quote = TacRP:GetPhrase("wep."..wep_class..".desc.quote") or wep:GetValue("Description_Quote")
+			txt_desc = TacRP.GetPhrase("wep."..wep_class..".desc") or wep:GetValue("Description")
+			txt_quote = TacRP.GetPhrase("wep."..wep_class..".desc.quote") or wep:GetValue("Description_Quote")
 		end
 		
 		function p_footer:Paint( w, h )
@@ -794,11 +794,11 @@ function SWEP:C2_Open()
 				compute_stat( wep, stat_cache, index, data )
 				local TargetData = {
 					{
-						Text = TacRP:TryTranslate(data.Name),
+						Text = TacRP.TryTranslate(data.Name),
 						Big = true,
 					},
 					{
-						Text = TacRP:TryTranslate(data.Description),
+						Text = TacRP.TryTranslate(data.Description),
 					}
 				}
 				local TargetID = "breakdown_" .. data.Name
@@ -829,7 +829,7 @@ function SWEP:C2_Open()
 							C2_Gradient_Left( 0, 0, w, h )
 						end
 						C2_DrawText(
-							TacRP:TryTranslate(data.Name),
+							TacRP.TryTranslate(data.Name),
 							"TacRP_STD_14",
 							s(4), 0,
 							color_white
@@ -853,7 +853,7 @@ function SWEP:C2_Open()
 						end
 
 						C2_DrawText(
-							TacRP:TryTranslate(data.Name),
+							TacRP.TryTranslate(data.Name),
 							"TacRP_STD_8",
 							s(6), 0,
 							color_white

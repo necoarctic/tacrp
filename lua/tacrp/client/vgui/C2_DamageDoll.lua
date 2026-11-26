@@ -45,7 +45,7 @@ local function get_dmgtext_and_setcolor(dmg, num, mult, hover, armor)
     surface.SetDrawColor(c.r, c.g, c.b, 255)
 	
     if hover then
-        return stk .. "x" --TacRP:GetPhrase(num > 1 and "unit.ptk" or "unit.stk")
+        return stk .. "x" --TacRP.GetPhrase(num > 1 and "unit.ptk" or "unit.stk")
     else
         return math.floor(dmg * mult) --  .. (num > 1 and ("×" .. num) or "")
     end
@@ -97,7 +97,7 @@ function PANEL:Paint( w, h )
 	local hovered = self:IsHovered()
 
 	C2_DrawText(
-		TacRP:GetPhrase( hovered and (num > 1 and "unit.ptk" or "unit.stk") or "unit.damage" ),
+		TacRP.GetPhrase( hovered and (num > 1 and "unit.ptk" or "unit.stk") or "unit.damage" ),
 		"TacRP_STD_6",
 		w - s(MARGIN_XS),
 		s(MARGIN_XS),

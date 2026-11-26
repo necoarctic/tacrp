@@ -330,11 +330,11 @@ end
 
 function TacRP.RegisterQuickNade(name, nade)
     if TacRP.QuickNades[name] then
-        print("TacRP: QuickNade " .. name .. " already exists! Overwriting.")
+        print("TacRP. QuickNade " .. name .. " already exists! Overwriting.")
     end
 
     if !istable(nade) then
-        print("TacRP: QuickNade " .. name .. " is not a table! Aborting registration.")
+        print("TacRP. QuickNade " .. name .. " is not a table! Aborting registration.")
         return
     end
 

@@ -725,8 +725,8 @@ function SWEP:OnDrop(owner)
 end
 
 function SWEP:GetPrintName()
-    return TacRP:GetPhrase("wep."..self.ClassName..".name.full")
-        or TacRP:GetPhrase("wep."..self.ClassName..".name")
+    return TacRP.GetPhrase("wep."..self.ClassName..".name.full")
+        or TacRP.GetPhrase("wep."..self.ClassName..".name")
         or self:GetValue("FullName")
         or self:GetValue("PrintName")
 end

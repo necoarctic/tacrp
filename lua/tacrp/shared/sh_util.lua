@@ -72,10 +72,10 @@ end
 
 function TacRP.FormatTierType(wtype, wtier, use_tiers)
     if wtype then
-        local type_txt = TacRP:TryTranslate(wtype)
+        local type_txt = TacRP.TryTranslate(wtype)
         if use_tiers and wtier and wtier != "9Special" then
-            type_txt = TacRP:GetPhrase("cust.type_tier", {
-                tier = TacRP:TryTranslate(wtier), type = type_txt
+            type_txt = TacRP.GetPhrase("cust.type_tier", {
+                tier = TacRP.TryTranslate(wtier), type = type_txt
             })
         end
         return type_txt
@@ -209,6 +209,6 @@ hook.Add( "PreRegisterSWEP", "TacRP_PreRegisterSWEP", function( swep, class )
         end
 
         swep.SubCategory = swep.SubCatType
-        swep.PrintName = TacRP:GetPhrase("wep."..class..".name.full") or TacRP:GetPhrase("wep."..class..".name") or swep.PrintName
+        swep.PrintName = TacRP.GetPhrase("wep."..class..".name.full") or TacRP.GetPhrase("wep."..class..".name") or swep.PrintName
     end
 end )

@@ -982,7 +982,7 @@ function SWEP:Weapon_FireBullet()
                     end
                 })
             else
-                TacRP:ShootPhysBullet(self, self:GetMuzzleOrigin(),
+                TacRP.ShootPhysBullet(self, self:GetMuzzleOrigin(),
                     new_dir:Forward() * self:GetValue("MuzzleVelocity"),
                     { HullSize = (self:IsShotgun() and i % 2 == 0) and TacRP.ShotgunHullSize or 0, })
             end

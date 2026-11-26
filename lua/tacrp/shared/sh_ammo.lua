@@ -66,7 +66,7 @@ hook.Add("Initialize", "tacrp_ammo", function()
         })
 
         if CLIENT then
-            language.Add(k .. "_ammo", TacRP:GetPhrase("ammo." .. k) or k)
+            language.Add(k .. "_ammo", TacRP.GetPhrase("ammo." .. k) or k)
         end
     end
 end)

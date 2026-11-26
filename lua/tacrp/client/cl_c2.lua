@@ -17,17 +17,17 @@ TacRP.C2.COLOR_OUTLINE = color_white
 function TacRP.C2.GetTargetDataForAttachment( adata )
 	local tdata = {
 		{
-			Text = TacRP:TryTranslate( adata.FullName or adata.PrintName ),
+			Text = TacRP.TryTranslate( adata.FullName or adata.PrintName ),
 			Big = true,
 		},
 		{
-			Text = TacRP:TryTranslate( adata.Description ),
+			Text = TacRP.TryTranslate( adata.Description ),
 		}
 	}
 	if adata.Pros then
 		for _, text in ipairs(adata.Pros) do
 			table.insert( tdata, {
-				Text = TacRP:TryTranslate( text ),
+				Text = TacRP.TryTranslate( text ),
 				Stat_Pro = true,
 			})
 		end
@@ -35,7 +35,7 @@ function TacRP.C2.GetTargetDataForAttachment( adata )
 	if adata.Cons then
 		for _, text in ipairs(adata.Cons) do
 			table.insert( tdata, {
-				Text = TacRP:TryTranslate( text ),
+				Text = TacRP.TryTranslate( text ),
 				Stat_Con = true,
 			})
 		end

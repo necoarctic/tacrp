@@ -4,7 +4,7 @@ TacRP.STPTable = TacRP.STPTable or {}
 local lang_cvar = TacRP.ConVars["language"]
 local gmod_language = GetConVar("gmod_language")
 
-function TacRP:GetLanguage()
+function TacRP.GetLanguage()
     if lang_cvar:GetString() ~= "" then
         return string.lower(lang_cvar:GetString())
     end
@@ -12,7 +12,7 @@ function TacRP:GetLanguage()
     return string.lower(l)
 end
 
-function TacRP:AddPhrase(phrase, str, lang)
+function TacRP.AddPhrase(phrase, str, lang)
     if phrase == nil or phrase == "" or str == nil or str == "" then return nil end
     lang = lang and string.lower(lang) or "en"
     TacRP.PhraseTable[lang] = TacRP.PhraseTable[lang] or {}
@@ -22,15 +22,15 @@ end
 --[[
     Add a "String to Phrase", converting a string to a phrase (i.e. "Assault Rifle" to "class.assaultrifle").
 ]]
-function TacRP:AddSTP(phrase, str, lang)
+function TacRP.AddSTP(phrase, str, lang)
     if phrase == nil or phrase == "" or str == nil or str == "" then return nil end
     TacRP.STPTable[string.lower(str)] = phrase
 end
 
-function TacRP:GetPhrase(phrase, format)
+function TacRP.GetPhrase(phrase, format)
     if phrase == nil or phrase == "" then return nil end
     phrase = string.lower(phrase)
-    local lang = TacRP:GetLanguage()
+    local lang = TacRP.GetLanguage()
     if !lang or !TacRP.PhraseTable[lang] or !TacRP.PhraseTable[lang][phrase] then
         lang = "en"
     end
@@ -44,37 +44,37 @@ function TacRP:GetPhrase(phrase, format)
     return nil
 end
 
-function TacRP:TryTranslate(str)
+function TacRP.TryTranslate(str)
     if str == nil then return str end
     if TacRP.STPTable[string.lower(str)] then
-        return TacRP:GetPhrase(TacRP.STPTable[string.lower(str)])
+        return TacRP.GetPhrase(TacRP.STPTable[string.lower(str)])
     end
-    return TacRP:GetPhrase(str) or str
+    return TacRP.GetPhrase(str) or str
 end
 
-function TacRP:GetAttName(att, full)
+function TacRP.GetAttName(att, full)
     local atttbl = TacRP.GetAttTable(att)
     if atttbl == {} then return "INVALID ATT" end
     if full then
-        return TacRP:GetPhrase("att." .. att .. ".name.full")
-                or TacRP:GetPhrase("att." .. att .. ".name")
-                or TacRP:GetPhrase(atttbl.FullName)
-                or TacRP:TryTranslate(atttbl.FullName or atttbl.PrintName)
+        return TacRP.GetPhrase("att." .. att .. ".name.full")
+                or TacRP.GetPhrase("att." .. att .. ".name")
+                or TacRP.GetPhrase(atttbl.FullName)
+                or TacRP.TryTranslate(atttbl.FullName or atttbl.PrintName)
     else
-        return TacRP:GetPhrase("att." .. att .. ".name") or TacRP:TryTranslate(atttbl.PrintName)
+        return TacRP.GetPhrase("att." .. att .. ".name") or TacRP.TryTranslate(atttbl.PrintName)
     end
 end
 
-function TacRP:GetAttDesc(att)
+function TacRP.GetAttDesc(att)
     local atttbl = TacRP.GetAttTable(att)
     if atttbl == {} then return "INVALID ATT" end
-    return TacRP:GetPhrase("att." .. att .. ".desc") or TacRP:TryTranslate(atttbl.Description)
+    return TacRP.GetPhrase("att." .. att .. ".desc") or TacRP.TryTranslate(atttbl.Description)
 end
 
 -- client languages aren't loaded through lua anymore. use gmod's stock localization system instead
 
-function TacRP:LoadLanguage(lang)
-    local cur_lang = lang or TacRP:GetLanguage()
+function TacRP.LoadLanguage(lang)
+    local cur_lang = lang or TacRP.GetLanguage()
 
     for _, v in pairs(file.Find("tacrp/shared/langs/*_" .. cur_lang .. ".lua", "LUA")) do
 
@@ -94,11 +94,11 @@ function TacRP:LoadLanguage(lang)
         end
 
         for phrase, str in pairs(L) do
-            TacRP:AddPhrase(phrase, str, cur_lang)
+            TacRP.AddPhrase(phrase, str, cur_lang)
         end
 
         for str, phrase in pairs(STL) do
-            TacRP:AddSTP(str, phrase)
+            TacRP.AddSTP(str, phrase)
         end
 
         if table.Count(L) > 0 then
@@ -111,22 +111,22 @@ function TacRP:LoadLanguage(lang)
     end
 end
 
-function TacRP:LoadLanguages()
+function TacRP.LoadLanguages()
     TacRP.PhraseTable = {}
     TacRP.STPTable = {}
 
-    local lang = TacRP:GetLanguage()
-    TacRP:LoadLanguage(lang)
+    local lang = TacRP.GetLanguage()
+    TacRP.LoadLanguage(lang)
     if lang ~= "en" then
-        TacRP:LoadLanguage("en")
+        TacRP.LoadLanguage("en")
     end
 end
 
-TacRP:LoadLanguages()
+TacRP.LoadLanguages()
 
 cvars.AddChangeCallback("tacrp_language", function(convar, oldValue, newValue)
-    TacRP:LoadLanguages()
+    TacRP.LoadLanguages()
 end, "TacRP_ChangeLanguage")
 cvars.AddChangeCallback("gmod_language", function(convar, oldValue, newValue)
-    TacRP:LoadLanguages()
+    TacRP.LoadLanguages()
 end, "TacRP_ChangeLanguage_GMOD")

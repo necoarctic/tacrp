@@ -32,7 +32,7 @@ function PANEL:Paint( w, h )
 	surface.DrawTexturedRect( margin, 0, h, h )
 
 	C2_DrawText(
-		TacRP:TryTranslate(data.PrintName),
+		TacRP.TryTranslate(data.PrintName),
 		"TacRP_STD_12",
 		margin + h + margin, h/2,
 		color_white,

@@ -154,7 +154,7 @@ hook.Add("TTTRenderEntityInfo", "TacRP_TTT", function(tData)
             local attName = v.Installed
             local attTbl = TacRP.GetAttTable(attName)
             if attTbl and v.PrintName and attTbl.PrintName then
-                local printName = TacRP:GetAttName(attName)
+                local printName = TacRP.GetAttName(attName)
                 tData:AddDescriptionLine(printName, nil, {attTbl.Icon})
             end
         end

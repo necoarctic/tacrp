@@ -1,4 +1,4 @@
-function TacRP:PlayerGetAtts(ply, att)
+function TacRP.PlayerGetAtts(ply, att)
     if !IsValid(ply) then return 0 end
 
     local atttbl = TacRP.GetAttTable(att)
@@ -17,7 +17,7 @@ function TacRP:PlayerGetAtts(ply, att)
     return ply.TacRP_AttInv[att]
 end
 
-function TacRP:PlayerGiveAtt(ply, att, amt)
+function TacRP.PlayerGiveAtt(ply, att, amt)
     amt = amt or 1
 
     if !IsValid(ply) then return false end
@@ -45,7 +45,7 @@ function TacRP:PlayerGiveAtt(ply, att, amt)
     end
 end
 
-function TacRP:PlayerTakeAtt(ply, att, amt)
+function TacRP.PlayerTakeAtt(ply, att, amt)
     amt = amt or 1
 
     if !IsValid(ply) then return end
@@ -92,11 +92,11 @@ elseif SERVER then
         if trans then return end
         if engine.ActiveGamemode() != "terrortown" and TacRP.ConVars["loseattsondie"]:GetInt() > 0 then
             ply.TacRP_AttInv = {}
-            TacRP:PlayerSendAttInv(ply)
+            TacRP.PlayerSendAttInv(ply)
         end
     end)
 
-    function TacRP:PlayerSendAttInv(ply)
+    function TacRP.PlayerSendAttInv(ply)
         if TacRP.ConVars["free_atts"]:GetBool() then return end
         if !IsValid(ply) then return end
         if !ply.TacRP_AttInv then return end

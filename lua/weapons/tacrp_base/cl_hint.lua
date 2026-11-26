@@ -85,7 +85,7 @@ function SWEP:GetHintCapabilities()
     end
 
     if self:GetValue("CanToggle") and TacRP.ConVars["toggletactical"]:GetBool() then
-        local tactical_text = self:GetValue("CustomTacticalHint") or TacRP:GetPhrase("hint.toggle_tactical", {TacRP:TryTranslate(self:GetValue("TacticalName") or "hint.tac")})
+        local tactical_text = self:GetValue("CustomTacticalHint") or TacRP.GetPhrase("hint.toggle_tactical", {TacRP.TryTranslate(self:GetValue("TacticalName") or "hint.tac")})
         local bind = nil
         if TacRP.GetKeyIsBound("+tacrp_tactical") then
             bind = "+tacrp_tactical"
@@ -210,7 +210,7 @@ function SWEP:DrawHints()
             end
         end
 
-        draw.SimpleText(TacRP:TryTranslate(v.str), font, x + math.max(x3, x_glyph), y2 + row / 2, clr_w, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(TacRP.TryTranslate(v.str), font, x + math.max(x3, x_glyph), y2 + row / 2, clr_w, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
         y2 = y2 + row
     end

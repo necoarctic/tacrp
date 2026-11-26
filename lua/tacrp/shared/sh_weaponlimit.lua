@@ -9,7 +9,7 @@ local whitelist = {
 
 -- return true if within limit
 -- wep is not guaranteed to be an Entity! it could be the weapon table from weapons.Get
-function TacRP:CheckWeaponLimit(weplist, wep)
+function TacRP.CheckWeaponLimit(weplist, wep)
     local limit = TacRP.ConVars["slot_limit"]:GetInt()
     if limit == 0 then return true end
     local countall = TacRP.ConVars["slot_countall"]:GetBool()
@@ -29,7 +29,7 @@ end
 
 hook.Add("PlayerCanPickupWeapon", "TacRP_Pickup", function(ply, wep)
     if !IsValid(wep) or !wep.ArcticTacRP then return end
-    local limit, weps = TacRP:CheckWeaponLimit(ply:GetWeapons(), wep)
+    local limit, weps = TacRP.CheckWeaponLimit(ply:GetWeapons(), wep)
 
     if !limit then
         if TacRP.ConVars["allowdrop"]:GetBool() and ((ply:KeyDown(IN_USE) and !ply:KeyDown(IN_WALK) and ply:GetEyeTrace().Entity == wep) or wep:GetPos() == ply:GetPos()) then
@@ -77,7 +77,7 @@ local slot = {
     weapon_bugbait = 5
 }
 hook.Add("PlayerGiveSWEP", "TacRP_Pickup", function(ply, wepname, weptbl)
-    local _, weps = TacRP:CheckWeaponLimit(ply:GetWeapons(), weapons.Get(wepname) or {Slot = slot[wepname]})
+    local _, weps = TacRP.CheckWeaponLimit(ply:GetWeapons(), weapons.Get(wepname) or {Slot = slot[wepname]})
     if weps and !ply:HasWeapon(wepname) then
         local mode = TacRP.ConVars["slot_action"]:GetInt()
         local limit = TacRP.ConVars["slot_limit"]:GetInt()
@@ -193,19 +193,19 @@ if CLIENT then
 
         if !GetConVar("tacrp_pickuphint"):GetBool() then return end
 
-        local limit, weps = TacRP:CheckWeaponLimit(LocalPlayer():GetWeapons(), wep)
+        local limit, weps = TacRP.CheckWeaponLimit(LocalPlayer():GetWeapons(), wep)
 
         local text = nil
 
         if !limit then
             text = "[" .. TacRP.GetBindKey("+use") .. "] "
-                    .. TacRP:GetPhrase("hint.swap", {
-                        weapon = TacRP:GetPhrase("wep." .. weps[1]:GetClass() .. "name") or weps[1].PrintName,
-                        weapon2 = TacRP:GetPhrase("wep." .. wepclass .. "name") or wep.PrintName
+                    .. TacRP.GetPhrase("hint.swap", {
+                        weapon = TacRP.GetPhrase("wep." .. weps[1]:GetClass() .. "name") or weps[1].PrintName,
+                        weapon2 = TacRP.GetPhrase("wep." .. wepclass .. "name") or wep.PrintName
                     })
         elseif TacRP.ConVars["pickup_use"]:GetBool() then
             text = "[" .. TacRP.GetBindKey("+use") .. "] "
-            .. TacRP:GetPhrase("hint.pickup", {weapon = TacRP:GetPhrase("wep." .. wepclass .. "name") or wep.PrintName})
+            .. TacRP.GetPhrase("hint.pickup", {weapon = TacRP.GetPhrase("wep." .. wepclass .. "name") or wep.PrintName})
         end
 
         if text then

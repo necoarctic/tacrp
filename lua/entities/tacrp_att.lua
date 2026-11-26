@@ -38,14 +38,14 @@ function ENT:GiveAtt(ply)
         return
     end
 
-    if TacRP.ConVars["lock_atts"]:GetBool() and TacRP:PlayerGetAtts(ply, self.AttToGive) > 0 then
+    if TacRP.ConVars["lock_atts"]:GetBool() and TacRP.PlayerGetAtts(ply, self.AttToGive) > 0 then
         ply:PrintMessage(HUD_PRINTTALK, "You already have this attachment!")
         return
     end
 
-    local given = TacRP:PlayerGiveAtt(ply, self.AttToGive, 1)
+    local given = TacRP.PlayerGiveAtt(ply, self.AttToGive, 1)
     if given then
-        TacRP:PlayerSendAttInv(ply)
+        TacRP.PlayerSendAttInv(ply)
         self:EmitSound("TacRP/weapons/flashlight_on.wav")
         self:Remove()
     end
@@ -94,7 +94,7 @@ elseif CLIENT then
             -- surface.SetFont("TacRP_LondonBetween_24_Unscaled")
 
             if !self.PrintLines then
-                self.PrintLines = TacRP.MultiLineText(TacRP:GetAttName(self.AttToGive), 328, font)
+                self.PrintLines = TacRP.MultiLineText(TacRP.GetAttName(self.AttToGive), 328, font)
             end
             for j, text in ipairs(self.PrintLines or {}) do
                 draw.SimpleTextOutlined(text, font, 0, -40 + j * 40, Color(255, 255, 255, alpha * 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 2, Color(0, 0, 0, alpha * 75))

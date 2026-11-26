@@ -66,7 +66,7 @@ local function H2_DrawAmmo( ply, wep )
 	local tacrp = wep.ArcticTacRP
 	C2_FullBox( panel_x, panel_y, panel_w, panel_h )
 
-	local name = tacrp and TacRP:GetPhrase("wep."..wep.ClassName..".name") or wep:GetPrintName()
+	local name = tacrp and TacRP.GetPhrase("wep."..wep.ClassName..".name") or wep:GetPrintName()
 	C2_DrawText(
 		name,
 		"TacRP_STD_12I",
@@ -578,7 +578,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 			)
 			
 			C2_DrawText(
-				TacRP:TryTranslate(data.str),
+				TacRP.TryTranslate(data.str),
 				"TacRP_STD_8",
 				x + s(110),
 				y + s(2) + push_y,

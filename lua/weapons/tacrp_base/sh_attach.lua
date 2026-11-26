@@ -7,14 +7,14 @@ function SWEP:Attach(slot, att, silent, suppress)
     local atttbl = TacRP.GetAttTable(att)
 
     if !atttbl then return end
-    if TacRP:PlayerGetAtts(self:GetOwner(), att) <= 0 then return end
+    if TacRP.PlayerGetAtts(self:GetOwner(), att) <= 0 then return end
 
     local inf_old = self:GetInfiniteAmmo()
     local ammo_old = self:GetAmmoType()
 
     slottbl.Installed = att
 
-    TacRP:PlayerTakeAtt(self:GetOwner(), att, 1)
+    TacRP.PlayerTakeAtt(self:GetOwner(), att, 1)
 
     if atttbl.OnAttach then
         atttbl.OnAttach(self)
@@ -40,7 +40,7 @@ function SWEP:Attach(slot, att, silent, suppress)
         end
     elseif SERVER and !suppress then
         self:NetworkWeapon()
-        TacRP:PlayerSendAttInv(self:GetOwner())
+        TacRP.PlayerSendAttInv(self:GetOwner())
     end
 
     self:SetBurstCount(0)
@@ -74,7 +74,7 @@ function SWEP:Detach(slot, silent, suppress)
 
     if !self:CanDetach(slot, slottbl.Installed) then return end
 
-    TacRP:PlayerGiveAtt(self:GetOwner(), slottbl.Installed, 1)
+    TacRP.PlayerGiveAtt(self:GetOwner(), slottbl.Installed, 1)
 
     local inf_old = self:GetInfiniteAmmo()
     local ammo_old = self:GetAmmoType()
@@ -104,7 +104,7 @@ function SWEP:Detach(slot, silent, suppress)
         end
     elseif SERVER and !suppress then
         self:NetworkWeapon()
-        TacRP:PlayerSendAttInv(self:GetOwner())
+        TacRP.PlayerSendAttInv(self:GetOwner())
     end
 
     self:SetBurstCount(0)

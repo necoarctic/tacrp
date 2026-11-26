@@ -152,7 +152,7 @@ function SWEP:DrawGrenadeHUD()
     filledcircle(scrw / 2, scrh / 2, r, 32)
 
     if #nades == 0 then
-        local nadetext = TacRP:GetPhrase("hint.nogrenades")
+        local nadetext = TacRP.GetPhrase("hint.nogrenades")
         surface.SetFont("TacRP_HD44780A00_5x8_8")
         local nadetextw = surface.GetTextSize(nadetext)
         surface.SetTextPos(scrw / 2 - nadetextw * 0.5, scrh / 2 + TacRP.SS(6))
@@ -206,7 +206,7 @@ function SWEP:DrawGrenadeHUD()
             surface.SetMaterial(nade.Icon)
             surface.DrawTexturedRect(nadex - sg * 0.5, nadey - sg * 0.5 - TacRP.SS(8), sg, sg)
         end
-        local nadetext = TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".name") or nade.PrintName
+        local nadetext = TacRP.GetPhrase("quicknade." .. nade.PrintName .. ".name") or nade.PrintName
         surface.SetFont("TacRP_HD44780A00_5x8_8")
         local nadetextw = surface.GetTextSize(nadetext)
         surface.SetTextPos(nadex - nadetextw * 0.5, nadey + TacRP.SS(6))
@@ -235,7 +235,7 @@ function SWEP:DrawGrenadeHUD()
         surface.DrawTexturedRect(scrw / 2 - sg * 0.5, scrh / 2 - sg * 0.5 - TacRP.SS(8), sg, sg)
     end
 
-    local nadetext = TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".name") or nade.PrintName
+    local nadetext = TacRP.GetPhrase("quicknade." .. nade.PrintName .. ".name") or nade.PrintName
     surface.SetFont("TacRP_HD44780A00_5x8_8")
     local nadetextw = surface.GetTextSize(nadetext)
     surface.SetTextPos(scrw / 2 - nadetextw * 0.5, scrh / 2 + TacRP.SS(6))
@@ -268,8 +268,8 @@ function SWEP:DrawGrenadeHUD()
     TacRP.DrawCorneredBox(tx, ty - h * 0.5 - TacRP.SS(28), w, TacRP.SS(24), col)
     surface.SetTextColor(255, 255, 255, a * 255)
 
-    local name = TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".name.full")
-    or TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".name")
+    local name = TacRP.GetPhrase("quicknade." .. nade.PrintName .. ".name.full")
+    or TacRP.GetPhrase("quicknade." .. nade.PrintName .. ".name")
     or nade.FullName
     or nade.PrintName
     surface.SetFont("TacRP_Myriad_Pro_16")
@@ -289,20 +289,20 @@ function SWEP:DrawGrenadeHUD()
 
     surface.SetFont("TacRP_Myriad_Pro_8")
     surface.SetTextPos(tx + TacRP.SS(4), ty - h / 2 + TacRP.SS(2))
-    surface.DrawText(	TacRP:GetPhrase("quicknade.fuse")	)
+    surface.DrawText(	TacRP.GetPhrase("quicknade.fuse")	)
 
     surface.SetFont("TacRP_Myriad_Pro_8")
     surface.SetTextPos(tx + TacRP.SS(4), ty - h / 2 + TacRP.SS(10))
-    surface.DrawText(TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".dettype") or nade.DetType or "")
+    surface.DrawText(TacRP.GetPhrase("quicknade." .. nade.PrintName .. ".dettype") or nade.DetType or "")
 
     surface.SetFont("TacRP_Myriad_Pro_8")
     surface.SetTextPos(tx + TacRP.SS(4), ty - h / 2 + TacRP.SS(22))
-    surface.DrawText(	TacRP:GetPhrase("cust.description")	)
+    surface.DrawText(	TacRP.GetPhrase("cust.description")	)
 
     surface.SetFont("TacRP_Myriad_Pro_8")
 
     if nade.Description then
-        nade.DescriptionMultiLine = TacRP.MultiLineText(TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".desc") or nade.Description or "", w - TacRP.SS(7), "TacRP_Myriad_Pro_8")
+        nade.DescriptionMultiLine = TacRP.MultiLineText(TacRP.GetPhrase("quicknade." .. nade.PrintName .. ".desc") or nade.Description or "", w - TacRP.SS(7), "TacRP_Myriad_Pro_8")
     end
 
     surface.SetTextColor(255, 255, 255, a * 255)
@@ -327,14 +327,14 @@ function SWEP:DrawGrenadeHUD()
         TacRP.DrawCorneredBox(tx, ty + h * 0.5 + TacRP.SS(2), w, TacRP.SS(28), col)
 
         surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(4))
-        surface.DrawText( "[ " .. TacRP.GetBind("+attack") .. " ] " .. TacRP:GetPhrase("hint.quicknade.over") )
+        surface.DrawText( "[ " .. TacRP.GetBind("+attack") .. " ] " .. TacRP.GetPhrase("hint.quicknade.over") )
 
         surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(12))
-        surface.DrawText( "[ " .. TacRP.GetBind("+attack2") .. " ] " .. TacRP:GetPhrase("hint.quicknade.under") )
+        surface.DrawText( "[ " .. TacRP.GetBind("+attack2") .. " ] " .. TacRP.GetPhrase("hint.quicknade.under") )
 
         if TacRP.AreTheGrenadeAnimsReadyYet then
             surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(20))
-            surface.DrawText( "[ MOUSE3 ] " .. TacRP:GetPhrase("hint.quicknade.pull_out") )
+            surface.DrawText( "[ MOUSE3 ] " .. TacRP.GetPhrase("hint.quicknade.pull_out") )
         end
     else
         local binded = input.LookupBinding("grenade1")
@@ -344,14 +344,14 @@ function SWEP:DrawGrenadeHUD()
         TacRP.DrawCorneredBox(tx, ty + h * 0.5 + TacRP.SS(2), w, TacRP.SS(28), col)
 
         surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(4))
-        surface.DrawText("[ " ..button .. " ] " .. TacRP:GetPhrase("hint.quicknade.over") .. " " .. TacRP:GetPhrase("hint.hold") )
+        surface.DrawText("[ " ..button .. " ] " .. TacRP.GetPhrase("hint.quicknade.over") .. " " .. TacRP.GetPhrase("hint.hold") )
 
         surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(12))
-        surface.DrawText("[ " .. button .. " ] " .. TacRP:GetPhrase("hint.quicknade.under") )
+        surface.DrawText("[ " .. button .. " ] " .. TacRP.GetPhrase("hint.quicknade.under") )
 
         if TacRP.AreTheGrenadeAnimsReadyYet then
             surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(20))
-            surface.DrawText( "[ MOUSE3 ] " .. TacRP:GetPhrase("hint.quicknade.pull_out") )
+            surface.DrawText( "[ MOUSE3 ] " .. TacRP.GetPhrase("hint.quicknade.pull_out") )
         end
     end
 end
@@ -920,7 +920,7 @@ function SWEP:DrawBlindFireHUD()
 
         surface.SetFont("TacRP_Myriad_Pro_12")
         surface.SetTextColor(255, 255, 255, 255 * a)
-        local t1 = TacRP:GetPhrase("hint.shootself")
+        local t1 = TacRP.GetPhrase("hint.shootself")
         local t1_w = surface.GetTextSize(t1)
         surface.SetTextPos(tx - t1_w / 2, ty + TacRP.SS(2))
         surface.DrawText(t1)
@@ -936,10 +936,10 @@ function SWEP:DrawBlindFireHUD()
         local t2 = bf_funnyline or ""
         if bf_suicidelock > 0 then
             surface.SetFont("TacRP_Myriad_Pro_8")
-            t2 = "[ " .. TacRP.GetBind("attack") .. " ] - " .. TacRP:GetPhrase("hint.unlock")
+            t2 = "[ " .. TacRP.GetBind("attack") .. " ] - " .. TacRP.GetPhrase("hint.unlock")
 
             if self:GetCustomize() then
-                t2 = TacRP:GetPhrase("hint.exitcustmenu")
+                t2 = TacRP.GetPhrase("hint.exitcustmenu")
             end
             lastseenfunnyline = false
         elseif !bf_funnyline then

@@ -295,13 +295,13 @@ function ATT.TacticalDraw(self)
             local c_bg, c_cnr, c_txt = TacRP.GetPanelColors(curmode == i, curmode == i)
             surface.SetDrawColor(c_bg)
             TacRP.DrawCorneredBox(x + (i / modecount * w) + (i * TacRP.SS(0.5)), y - TacRP.SS(45), w_mode, TacRP.SS(6), c_cnr)
-            draw.SimpleText(TacRP:GetPhrase("hint.melee_charge." .. i .. ".name"), "TacRP_HD44780A00_5x8_4", x + (i / modecount * w) + (i * TacRP.SS(0.5)) + w_mode / 2, y - TacRP.SS(45 - 3), c_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(TacRP.GetPhrase("hint.melee_charge." .. i .. ".name"), "TacRP_HD44780A00_5x8_4", x + (i / modecount * w) + (i * TacRP.SS(0.5)) + w_mode / 2, y - TacRP.SS(45 - 3), c_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
 
         surface.SetDrawColor(0, 0, 0, 240)
         TacRP.DrawCorneredBox(x, y - TacRP.SS(38), w, TacRP.SS(24))
 
-        local desc = TacRP.MultiLineText(TacRP:GetPhrase("hint.melee_charge." .. curmode .. ".desc"), w - TacRP.SS(6), "TacRP_Myriad_Pro_6")
+        local desc = TacRP.MultiLineText(TacRP.GetPhrase("hint.melee_charge." .. curmode .. ".desc"), w - TacRP.SS(6), "TacRP_Myriad_Pro_6")
         for j, text in ipairs(desc or {}) do
             draw.SimpleText(text, "TacRP_Myriad_Pro_6", x + TacRP.SS(3), y - TacRP.SS(38 - 2) + (j - 1) * TacRP.SS(6.5), color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         end
@@ -314,7 +314,7 @@ function ATT.TacticalDraw(self)
     local c_bg, c_cnr, c_txt = TacRP.GetPanelColors(chargin, chargin)
     surface.SetDrawColor(c_bg)
     TacRP.DrawCorneredBox(x + w / 2 - w / 6, y - TacRP.SS(12), w / 3, TacRP.SS(9), c_cnr)
-    draw.SimpleText(TacRP:GetPhrase("hint.melee_charge." .. curmode .. ".name"), "TacRP_HD44780A00_5x8_6", x + w / 2, y - TacRP.SS(8), c_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(TacRP.GetPhrase("hint.melee_charge." .. curmode .. ".name"), "TacRP_HD44780A00_5x8_6", x + w / 2, y - TacRP.SS(8), c_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
     if chargin then
         c = math.Clamp((ply:GetNWFloat("TacRPChargeTime", 0) + chargestats(ply, stat_dur) - CurTime()) / chargestats(ply, stat_dur), 0, 1)

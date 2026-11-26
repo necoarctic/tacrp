@@ -49,7 +49,7 @@ function SWEP:ReceivePreset()
     end
 
     self:NetworkWeapon()
-    TacRP:PlayerSendAttInv(self:GetOwner())
+    TacRP.PlayerSendAttInv(self:GetOwner())
 
     self:InvalidateCache()
     self:SetBaseSettings()

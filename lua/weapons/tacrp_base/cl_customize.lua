@@ -50,7 +50,7 @@ local function bodydamagetext(name, dmg, num, mult, x, y, hover)
     -- surface.DrawText(name)
     -- surface.SetTextPos(TacRP.SS(1), y + TacRP.SS(6))
     if hover then
-        surface.DrawText(stk .. TacRP:GetPhrase(num > 1 and "unit.ptk" or "unit.stk"))
+        surface.DrawText(stk .. TacRP.GetPhrase(num > 1 and "unit.ptk" or "unit.stk"))
     else
         surface.DrawText(math.floor(dmg * mult)) --  .. (num > 1 and ("×" .. num) or "")
     end
@@ -103,7 +103,7 @@ function SWEP:CreateCustomizeHUD()
             return
         end
 
-        local name_txt = TacRP:GetPhrase("wep." .. self:GetClass() .. ".name.full") or TacRP:GetPhrase("wep." .. self:GetClass() .. ".name") or self:GetValue("FullName") or self:GetValue("PrintName")
+        local name_txt = TacRP.GetPhrase("wep." .. self:GetClass() .. ".name.full") or TacRP.GetPhrase("wep." .. self:GetClass() .. ".name") or self:GetValue("FullName") or self:GetValue("PrintName")
 
         surface.SetFont("TacRP_Myriad_Pro_32")
         local name_w = surface.GetTextSize(name_txt)
@@ -224,7 +224,7 @@ function SWEP:CreateCustomizeHUD()
 
                 local dmg = self:GetDamageAtRange(range) + exp * self:GetConfigDamageMultiplier()
 
-                local txt_dmg1 = tostring(math.Round(dmg)) .. TacRP:GetPhrase("unit.damage")
+                local txt_dmg1 = tostring(math.Round(dmg)) .. TacRP.GetPhrase("unit.damage")
 
                 if self:GetValue("Num") > 1 then
                     txt_dmg1 = math.Round(dmg * self:GetValue("Num")) .. "-" .. txt_dmg1
@@ -252,7 +252,7 @@ function SWEP:CreateCustomizeHUD()
 
 
             if draw_rangetext then
-                local txt_dmg1 = tostring(math.Round(dmg_max)) .. TacRP:GetPhrase("unit.damage")
+                local txt_dmg1 = tostring(math.Round(dmg_max)) .. TacRP.GetPhrase("unit.damage")
 
                 if self:GetValue("Num") > 1 then
                     txt_dmg1 = math.Round(dmg_max * self:GetValue("Num")) .. "-" .. txt_dmg1
@@ -272,7 +272,7 @@ function SWEP:CreateCustomizeHUD()
                 surface.SetTextPos((w / 3) - txt_range1_w - (TacRP.SS(2)), TacRP.SS(1 + 8))
                 surface.DrawText(txt_range1)
 
-                local txt_dmg2 = tostring(math.Round(dmg_min)) .. TacRP:GetPhrase("unit.damage")
+                local txt_dmg2 = tostring(math.Round(dmg_min)) .. TacRP.GetPhrase("unit.damage")
 
                 if self:GetValue("Num") > 1 then
                     txt_dmg2 = math.Round(dmg_min * self:GetValue("Num")) .. "-" .. txt_dmg2
@@ -432,19 +432,19 @@ function SWEP:CreateCustomizeHUD()
 
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextPos(TacRP.SS(4), TacRP.SS(4))
-            surface.DrawText(	TacRP:GetPhrase("quicknade.fuse")	)
+            surface.DrawText(	TacRP.GetPhrase("quicknade.fuse")	)
 
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextPos(TacRP.SS(4), TacRP.SS(12))
-            surface.DrawText(TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".dettype") or nade.DetType or "")
+            surface.DrawText(TacRP.GetPhrase("quicknade." .. nade.PrintName .. ".dettype") or nade.DetType or "")
 
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextColor(255, 255, 255)
             surface.SetTextPos(TacRP.SS(4), TacRP.SS(24))
-            surface.DrawText(TacRP:GetPhrase("cust.description"))
+            surface.DrawText(TacRP.GetPhrase("cust.description"))
 
             if !self.MiscCache["cust_desc"] then
-                self.MiscCache["cust_desc"] = TacRP.MultiLineText(TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".desc") or nade.Description, w - TacRP.SS(8), "TacRP_Myriad_Pro_8")
+                self.MiscCache["cust_desc"] = TacRP.MultiLineText(TacRP.GetPhrase("quicknade." .. nade.PrintName .. ".desc") or nade.Description, w - TacRP.SS(8), "TacRP_Myriad_Pro_8")
             end
 
             for i, k in ipairs(self.MiscCache["cust_desc"]) do
@@ -458,7 +458,7 @@ function SWEP:CreateCustomizeHUD()
         local tabs_h = TacRP.SS(8)
 
         local desc_box = vgui.Create("DPanel", bg)
-        desc_box.PrintName = TacRP:GetPhrase("cust.description2")
+        desc_box.PrintName = TacRP.GetPhrase("cust.description2")
         desc_box:SetSize(TacRP.SS(172), TacRP.SS(36))
         desc_box:SetPos(scrw - TacRP.SS(172) - airgap, stack + smallgap + tabs_h + TacRP.SS(2))
         desc_box.Paint = function(self2, w, h)
@@ -469,7 +469,7 @@ function SWEP:CreateCustomizeHUD()
             TacRP.DrawCorneredBox(0, 0, w, h)
 
             if !self.MiscCache["cust_desc"] then
-                local phrase = TacRP:GetPhrase("wep." .. self:GetClass() .. ".desc") or self.Description
+                local phrase = TacRP.GetPhrase("wep." .. self:GetClass() .. ".desc") or self.Description
                 self.MiscCache["cust_desc"] = TacRP.MultiLineText(phrase, w - TacRP.SS(8), "TacRP_Myriad_Pro_8")
             end
 
@@ -483,7 +483,7 @@ function SWEP:CreateCustomizeHUD()
 			-- local lastseenquoteline = false
 			-- local startseequotelinetime = 0
 
-            local phrase_quote = TacRP:GetPhrase("wep." .. self:GetClass() .. ".desc.quote") or self.Description_Quote
+            local phrase_quote = TacRP.GetPhrase("wep." .. self:GetClass() .. ".desc.quote") or self.Description_Quote
             -- local phrase_quote = "THIS IS A TEST QUOTE THAT IS VERY LONG IN LENGTH TO TEST SCROLLING TEXT THIS IS A TEST"
             if phrase_quote then
                 surface.SetFont("TacRP_Myriad_Pro_6_Italic")
@@ -503,7 +503,7 @@ function SWEP:CreateCustomizeHUD()
         end
 
         local trivia_box = vgui.Create("DPanel", bg)
-        trivia_box.PrintName = TacRP:GetPhrase("cust.trivia")
+        trivia_box.PrintName = TacRP.GetPhrase("cust.trivia")
         trivia_box:SetSize(TacRP.SS(172), TacRP.SS(36))
         trivia_box:SetPos(scrw - TacRP.SS(172) - airgap, stack + smallgap + tabs_h + TacRP.SS(2))
         trivia_box.Paint = function(self2, w, h)
@@ -517,9 +517,9 @@ function SWEP:CreateCustomizeHUD()
             surface.SetTextColor(255, 255, 255)
 
             surface.SetTextPos(TacRP.SS(4), TacRP.SS(6))
-            local manu_str = TacRP:GetPhrase("wep." .. self:GetClass() .. ".trivia.manufacturer")
-                    or TacRP:TryTranslate(self:GetValue("Trivia_Manufacturer"))
-                    or TacRP:GetPhrase("trivia.unknown")
+            local manu_str = TacRP.GetPhrase("wep." .. self:GetClass() .. ".trivia.manufacturer")
+                    or TacRP.TryTranslate(self:GetValue("Trivia_Manufacturer"))
+                    or TacRP.GetPhrase("trivia.unknown")
             local manu_w = surface.GetTextSize(manu_str)
             if manu_w + TacRP.SS(6) >= w / 2 then
                 surface.SetFont("TacRP_Myriad_Pro_8")
@@ -537,36 +537,36 @@ function SWEP:CreateCustomizeHUD()
             surface.SetFont("TacRP_Myriad_Pro_10")
 
             surface.SetTextPos(TacRP.SS(4), TacRP.SS(24))
-            surface.DrawText(TacRP:GetPhrase("wep." .. self:GetClass() .. ".trivia.year")
-                    or TacRP:TryTranslate(self:GetValue("Trivia_Year"))
-                    or TacRP:GetPhrase("trivia.unknown"))
+            surface.DrawText(TacRP.GetPhrase("wep." .. self:GetClass() .. ".trivia.year")
+                    or TacRP.TryTranslate(self:GetValue("Trivia_Year"))
+                    or TacRP.GetPhrase("trivia.unknown"))
 
             surface.SetTextPos(w / 2, TacRP.SS(6))
-            surface.DrawText(TacRP:GetPhrase("wep." .. self:GetClass() .. ".trivia.caliber")
-                    or TacRP:TryTranslate(self:GetValue("Trivia_Caliber"))
-                    or TacRP:GetPhrase("trivia.unknown"))
+            surface.DrawText(TacRP.GetPhrase("wep." .. self:GetClass() .. ".trivia.caliber")
+                    or TacRP.TryTranslate(self:GetValue("Trivia_Caliber"))
+                    or TacRP.GetPhrase("trivia.unknown"))
 
             surface.SetTextPos(w / 2, TacRP.SS(24))
-            surface.DrawText(TacRP:GetPhrase(TacRP.FactionToPhrase[self:GetValue("Faction")]))
+            surface.DrawText(TacRP.GetPhrase(TacRP.FactionToPhrase[self:GetValue("Faction")]))
 
             surface.SetFont("TacRP_Myriad_Pro_6")
             surface.SetTextColor(255, 255, 255)
 
             surface.SetTextPos(TacRP.SS(4), TacRP.SS(2))
-            surface.DrawText(TacRP:GetPhrase("trivia.manufacturer"))
+            surface.DrawText(TacRP.GetPhrase("trivia.manufacturer"))
 
             surface.SetTextPos(TacRP.SS(4), TacRP.SS(20))
-            surface.DrawText(TacRP:GetPhrase("trivia.year"))
+            surface.DrawText(TacRP.GetPhrase("trivia.year"))
 
             surface.SetTextPos(w / 2, TacRP.SS(2))
-            surface.DrawText(TacRP:GetPhrase("trivia.caliber"))
+            surface.DrawText(TacRP.GetPhrase("trivia.caliber"))
 
             surface.SetTextPos(w / 2, TacRP.SS(20))
-            surface.DrawText(TacRP:GetPhrase("trivia.faction"))
+            surface.DrawText(TacRP.GetPhrase("trivia.faction"))
         end
 
         local credits_box = vgui.Create("DPanel", bg)
-        credits_box.PrintName = TacRP:GetPhrase("cust.credits")
+        credits_box.PrintName = TacRP.GetPhrase("cust.credits")
         credits_box:SetSize(TacRP.SS(172), TacRP.SS(36))
         credits_box:SetPos(scrw - TacRP.SS(172) - airgap, stack + smallgap + tabs_h + TacRP.SS(2))
         credits_box.Paint = function(self2, w, h)
@@ -577,7 +577,7 @@ function SWEP:CreateCustomizeHUD()
             TacRP.DrawCorneredBox(0, 0, w, h)
 
             if !self.MiscCache["cust_credits"] then
-                local creditphrase = TacRP:GetPhrase("wep." .. self:GetClass() .. ".credits") or self.Credits
+                local creditphrase = TacRP.GetPhrase("wep." .. self:GetClass() .. ".credits") or self.Credits
                 self.MiscCache["cust_credits"] = TacRP.MultiLineText(creditphrase, w - TacRP.SS(8), "TacRP_Myriad_Pro_8")
             end
 
@@ -670,7 +670,7 @@ function SWEP:CreateCustomizeHUD()
         local tabs_h = TacRP.SS(10)
 
         local group_box = vgui.Create("DPanel", bg)
-        group_box.PrintName = TacRP:GetPhrase("cust.rating")
+        group_box.PrintName = TacRP.GetPhrase("cust.rating")
         group_box:SetSize(TacRP.SS(164), TacRP.SS(172))
         group_box:SetPos(scrw - TacRP.SS(164) - airgap - smallgap, stack + smallgap * 2 + tabs_h)
         group_box.Paint = function(self2)
@@ -712,7 +712,7 @@ function SWEP:CreateCustomizeHUD()
                 surface.DrawRect(x, y, w, h)
                 TacRP.DrawCorneredBox(x, y, w, h)
 
-                draw.SimpleText(TacRP:GetPhrase(v.Name) or v.Name, "TacRP_Myriad_Pro_10", x + TacRP.SS(4), y + TacRP.SS(8), color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(TacRP.GetPhrase(v.Name) or v.Name, "TacRP_Myriad_Pro_10", x + TacRP.SS(4), y + TacRP.SS(8), color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
                 surface.SetDrawColor(75, 75, 75, 100)
                 surface.DrawRect(x + TacRP.SS(64), y + TacRP.SS(4), w2, h2)
@@ -756,7 +756,7 @@ function SWEP:CreateCustomizeHUD()
                 rx = rx + TacRP.SS(16)
                 ry = ry + TacRP.SS(16)
 
-                local desc = TacRP:GetPhrase(v.Description) or v.Description or ""
+                local desc = TacRP.GetPhrase(v.Description) or v.Description or ""
                 desc = string.Explode("\n", desc)
 
                 if self2:GetY() + ry >= TacRP.SS(280) then
@@ -771,13 +771,13 @@ function SWEP:CreateCustomizeHUD()
                 surface.SetDrawColor(col_bg)
                 TacRP.DrawCorneredBox(rx, ry, bw, bh, col_corner)
 
-                local txt = TacRP:GetPhrase(v.Name) or v.Name
+                local txt = TacRP.GetPhrase(v.Name) or v.Name
                 surface.SetTextColor(col_text)
                 surface.SetFont("TacRP_Myriad_Pro_10")
                 surface.SetTextPos(rx + TacRP.SS(2), ry + TacRP.SS(1))
                 surface.DrawText(txt)
 
-                local scoretxt = TacRP:GetPhrase("rating.score", {score = math.Round(hoverscore, 1), max = 100})
+                local scoretxt = TacRP.GetPhrase("rating.score", {score = math.Round(hoverscore, 1), max = 100})
                 draw.SimpleText(scoretxt, "TacRP_Myriad_Pro_8", rx + bw - TacRP.SS(2), ry + TacRP.SS(2), col_text, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
 
                 surface.SetFont("TacRP_Myriad_Pro_6")
@@ -867,7 +867,7 @@ function SWEP:CreateCustomizeHUD()
             end
 
             if k.Unit then
-                local unit = TacRP:TryTranslate(k.Unit)
+                local unit = TacRP.TryTranslate(k.Unit)
                 txt_base = txt_base .. unit
                 txt_curr = txt_curr .. unit
             end
@@ -935,7 +935,7 @@ function SWEP:CreateCustomizeHUD()
                     surface.SetFont(spacer and "TacRP_Myriad_Pro_11" or "TacRP_Myriad_Pro_8")
                     surface.SetTextColor(255, 255, 255)
                     surface.SetTextPos(TacRP.SS(3), 0)
-                    local name = TacRP:GetPhrase(k.Name) or k.Name
+                    local name = TacRP.GetPhrase(k.Name) or k.Name
                     surface.DrawText(name .. (spacer and "" or ":"))
 
                     if !spacer then
@@ -972,7 +972,7 @@ function SWEP:CreateCustomizeHUD()
         end
 
         local stat_box = vgui.Create("DPanel", bg)
-        stat_box.PrintName = TacRP:GetPhrase("cust.stats")
+        stat_box.PrintName = TacRP.GetPhrase("cust.stats")
         stat_box:SetSize(w_statbox, TacRP.SS(172))
         stat_box:SetPos(scrw - w_statbox - airgap - smallgap, stack + smallgap * 2 + tabs_h)
         stat_box.Paint = function(self2, w, h)
@@ -991,22 +991,22 @@ function SWEP:CreateCustomizeHUD()
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextColor(255, 255, 255)
             surface.SetTextPos(TacRP.SS(4), TacRP.SS(2))
-            surface.DrawText(TacRP:GetPhrase("stat.table.stat"))
+            surface.DrawText(TacRP.GetPhrase("stat.table.stat"))
 
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextColor(255, 255, 255)
             surface.SetTextPos(x_1 + TacRP.SS(4), TacRP.SS(2))
-            surface.DrawText(TacRP:GetPhrase("stat.table.base"))
+            surface.DrawText(TacRP.GetPhrase("stat.table.base"))
 
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextColor(255, 255, 255)
             surface.SetTextPos(x_2 + TacRP.SS(4), TacRP.SS(2))
-            surface.DrawText(TacRP:GetPhrase("stat.table.curr"))
+            surface.DrawText(TacRP.GetPhrase("stat.table.curr"))
 
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextColor(255, 255, 255)
             surface.SetTextPos(x_3 + TacRP.SS(4), TacRP.SS(2))
-            surface.DrawText(TacRP:GetPhrase("stat.table.diff"))
+            surface.DrawText(TacRP.GetPhrase("stat.table.diff"))
         end
         local stat_scroll = vgui.Create("DScrollPanel", stat_box)
         stat_scroll:Dock(FILL)
@@ -1049,7 +1049,7 @@ function SWEP:CreateCustomizeHUD()
                 rx = rx + TacRP.SS(16)
                 ry = ry + TacRP.SS(16)
 
-                local desc = istable(stat.Description) and stat.Description or TacRP:GetPhrase(stat.Description) or stat.Description or ""
+                local desc = istable(stat.Description) and stat.Description or TacRP.GetPhrase(stat.Description) or stat.Description or ""
                 if isstring(desc) then
                     desc = string.Explode("\n", desc)
                 end
@@ -1066,7 +1066,7 @@ function SWEP:CreateCustomizeHUD()
                 surface.SetDrawColor(col_bg)
                 TacRP.DrawCorneredBox(rx, ry, bw, bh, col_corner)
 
-                local txt = TacRP:GetPhrase(stat.Name) or stat.Name
+                local txt = TacRP.GetPhrase(stat.Name) or stat.Name
                 surface.SetTextColor(col_text)
                 surface.SetFont("TacRP_Myriad_Pro_10")
                 surface.SetTextPos(rx + TacRP.SS(2), ry + TacRP.SS(1))
@@ -1168,7 +1168,7 @@ function SWEP:CreateCustomizeHUD()
             slot_name.Paint = function(self2, w, h)
                 if !IsValid(self) then return end
 
-                local txt = TacRP:TryTranslate(attslot.PrintName or "Slot")
+                local txt = TacRP.TryTranslate(attslot.PrintName or "Slot")
                 if txt then
                     surface.SetFont("TacRP_Myriad_Pro_8")
                     surface.SetTextColor(Color(255, 255, 255))
@@ -1220,7 +1220,7 @@ function SWEP:CreateCustomizeHUD()
                     surface.SetFont("TacRP_Myriad_Pro_8")
                     surface.SetTextColor(Color(50, 255, 50))
                     surface.SetTextPos(0, TacRP.SS(c * 8))
-                    surface.DrawText("+" .. TacRP:TryTranslate(pro))
+                    surface.DrawText("+" .. TacRP.TryTranslate(pro))
 
                     c = c + 1
                 end
@@ -1229,7 +1229,7 @@ function SWEP:CreateCustomizeHUD()
                     surface.SetFont("TacRP_Myriad_Pro_8")
                     surface.SetTextColor(Color(255, 50, 50))
                     surface.SetTextPos(0, TacRP.SS(c * 8))
-                    surface.DrawText("-" .. TacRP:TryTranslate(con))
+                    surface.DrawText("-" .. TacRP.TryTranslate(con))
 
                     c = c + 1
                 end
@@ -1307,7 +1307,7 @@ function SWEP:CreateCustomizeHUD()
                 surface.DrawRect(0, 0, w, h)
                 TacRP.DrawCorneredBox(0, 0, w, h, col_corner)
 
-                local txt = TacRP:TryTranslate(attslot.PrintName or "Slot")
+                local txt = TacRP.TryTranslate(attslot.PrintName or "Slot")
                 if txt then
                     draw.SimpleText(txt, "TacRP_Myriad_Pro_8", w / 2, h / 2, col_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
@@ -1330,7 +1330,7 @@ function SWEP:CreateCustomizeHUD()
         end
         local todo = DisableClipping(true)
 
-        draw.SimpleText(TacRP:GetPhrase("menu.legacy") or "Legacy Menu", "TacRP_Myriad_Pro_8", w + TacRP.SS(2), h / 2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(TacRP.GetPhrase("menu.legacy") or "Legacy Menu", "TacRP_Myriad_Pro_8", w + TacRP.SS(2), h / 2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
 
         DisableClipping(todo)
@@ -1356,7 +1356,7 @@ function SWEP:CreateCustomizeHUD()
             surface.SetDrawColor(c_bg)
             -- surface.DrawRect(0, 0, w, h)
             TacRP.DrawCorneredBox(0, 0, w, h, c_cnr)
-            draw.SimpleText(TacRP:GetPhrase(phrase), "TacRP_Myriad_Pro_8", w / 2, h / 2, c_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(TacRP.GetPhrase(phrase), "TacRP_Myriad_Pro_8", w / 2, h / 2, c_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
         end
         function dropbox.DoClick(self2)

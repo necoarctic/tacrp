@@ -1,7 +1,7 @@
 TacRP.PhysBullets = {
 }
 
-function TacRP:SendBullet(bullet, attacker)
+function TacRP.SendBullet(bullet, attacker)
     net.Start("TacRP_sendbullet", true)
     net.WriteVector(bullet.Pos)
     net.WriteAngle(bullet.Vel:Angle())
@@ -21,7 +21,7 @@ function TacRP:SendBullet(bullet, attacker)
     end
 end
 
-function TacRP:ShootPhysBullet(wep, pos, vel, tbl)
+function TacRP.ShootPhysBullet(wep, pos, vel, tbl)
     tbl = tbl or {}
     local bullet = {
         Penleft = wep:GetValue("Penetration"),
@@ -71,7 +71,7 @@ function TacRP:ShootPhysBullet(wep, pos, vel, tbl)
         local timestep = engine.TickInterval()
 
         while ping > 0 do
-            TacRP:ProgressPhysBullet(bullet, math.min(timestep, ping))
+            TacRP.ProgressPhysBullet(bullet, math.min(timestep, ping))
             ping = ping - timestep
         end
     end
@@ -80,13 +80,13 @@ function TacRP:ShootPhysBullet(wep, pos, vel, tbl)
         local latency = math.floor(engine.TickCount() - wep:GetOwner():GetCurrentCommand():TickCount() - 1) -- FIXME: this math.floor does nothing
         local timestep = engine.TickInterval()
         while latency > 0 do
-            TacRP:ProgressPhysBullet(bullet, timestep)
+            TacRP.ProgressPhysBullet(bullet, timestep)
             latency = latency - 1
         end
     end
 
     if SERVER then
-        TacRP:SendBullet(bullet, wep:GetOwner())
+        TacRP.SendBullet(bullet, wep:GetOwner())
     end
 end
 
@@ -141,10 +141,10 @@ end)
 
 end
 
-function TacRP:DoPhysBullets()
+function TacRP.DoPhysBullets()
     local new = {}
     for _, i in pairs(TacRP.PhysBullets) do
-        TacRP:ProgressPhysBullet(i, FrameTime())
+        TacRP.ProgressPhysBullet(i, FrameTime())
 
         if !i.Dead then
             table.insert(new, i)
@@ -164,7 +164,7 @@ local function indim(vec, maxdim)
     end
 end
 
-function TacRP:ProgressPhysBullet(bullet, timestep)
+function TacRP.ProgressPhysBullet(bullet, timestep)
     timestep = timestep or FrameTime()
 
     if bullet.Dead then return end
@@ -404,7 +404,7 @@ end
 local head = Material("particle/fire")
 local tracer = Material("tacrp/tracer")
 
-function TacRP:DrawPhysBullets()
+function TacRP.DrawPhysBullets()
     cam.Start3D()
     for _, i in pairs(TacRP.PhysBullets) do
         if i.Invisible then continue end

@@ -30,7 +30,7 @@ function PANEL:Paint( w, h )
 	end
 
 	C2_DrawText(
-		TacRP:TryTranslate(self.SlotData.PrintName),
+		TacRP.TryTranslate(self.SlotData.PrintName),
 		"TacRP_STD_8",
 		s(MARGIN_S), s(MARGIN_S),
 		color_white
@@ -40,7 +40,7 @@ function PANEL:Paint( w, h )
 	if not att_data then C2_Outline( 0, 0, w, h ) return true end
 
 	C2_DrawText(
-		TacRP:TryTranslate(att_data.PrintName),
+		TacRP.TryTranslate(att_data.PrintName),
 		"TacRP_STD_12",
 		s(MARGIN_S), h/2,
 		color_white,

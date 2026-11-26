@@ -52,9 +52,9 @@ function PANEL:Paint( w, h )
 	surface.DrawTexturedRect( w/2 - size/2, h/2 - size/2, size, size )
 
 	surface.SetFont( "TacRP_STD_16XI" )
-	local name = TacRP:GetPhrase("wep."..self.WeaponClassname..".name.full") or self.WeaponData.FullName
+	local name = TacRP.GetPhrase("wep."..self.WeaponClassname..".name.full") or self.WeaponData.FullName
 	if not name or (2+surface.GetTextSize(name)) > w then
-		name = TacRP:GetPhrase("wep."..self.WeaponClassname..".name") or self.WeaponData.PrintName
+		name = TacRP.GetPhrase("wep."..self.WeaponClassname..".name") or self.WeaponData.PrintName
 	end
 	local text_width = surface.GetTextSize(name)
 

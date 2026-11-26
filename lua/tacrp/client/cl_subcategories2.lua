@@ -102,7 +102,7 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 				local subcat_data = subcats[subcat]
 				local p_category = p_scroll:Add("S2_CollapsibleCategory")
 				p_category.ItemCount = 0
-				p_category.SubCatType = TacRP:TryTranslate(subcat)
+				p_category.SubCatType = TacRP.TryTranslate(subcat)
 				p_category:Dock(TOP)
 				p_category:DockMargin( 0, 0, 0, 4 )
 				p_category:SetLabel( subcat )
@@ -181,7 +181,7 @@ hook.Add("PopulateWeapons", "TacRP_C2_SubCategories", function(p_content, p_tree
 				end
 				menu:AddSpacer()
 				for _, tier in ipairs( TacRP.Tiers ) do
-					local option = menu:AddOption(TacRP:TryTranslate(tier))
+					local option = menu:AddOption(TacRP.TryTranslate(tier))
 					option.Tier = tier
 					option.m_bChecked = not self.HiddenTiers[tier]
 					option.OnChecked = toggle_tier

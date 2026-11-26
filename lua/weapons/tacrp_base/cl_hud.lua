@@ -332,7 +332,7 @@ function SWEP:DrawBottomBar(x, y, w, h)
             surface.SetFont("TacRP_HD44780A00_5x8_8")
         end
 
-        local nadetext = TacRP:GetPhrase("quicknade." .. nade.PrintName .. ".name") or nade.PrintName
+        local nadetext = TacRP.GetPhrase("quicknade." .. nade.PrintName .. ".name") or nade.PrintName
         surface.SetTextPos(x + TacRP.SS(4) + sg, y + h - sg + TacRP.SS(1))
         surface.DrawText(nadetext)
 
@@ -431,7 +431,7 @@ function SWEP:DrawHUDBackground()
     end
 
     if !self:GetCustomize() and !TacRP.ConVars["jam_autoclear"]:GetBool() and self:GetJammed() then
-        local text = "[" .. TacRP.GetBindKey("+reload") .. "] " .. TacRP:GetPhrase("hint.unjam")
+        local text = "[" .. TacRP.GetBindKey("+reload") .. "] " .. TacRP.GetPhrase("hint.unjam")
         local font = "TacRP_HD44780A00_5x8_4"
         surface.SetFont(font)
         local w, h = surface.GetTextSize(text)
@@ -443,7 +443,7 @@ function SWEP:DrawHUDBackground()
 
         draw.SimpleText(text, font, ScrW() / 2, ScrH() / 2 + h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     elseif DarkRP and TacRP.ConVars["rp_biocode_cp"]:GetBool() and self:GetNWBool("TacRP_PoliceBiocode") then
-        local text = TacRP:GetPhrase("hint.rp_biocode_cp")
+        local text = TacRP.GetPhrase("hint.rp_biocode_cp")
         local font = "TacRP_HD44780A00_5x8_4"
         surface.SetFont(font)
         local w, h = surface.GetTextSize(text)
@@ -472,7 +472,7 @@ function SWEP:DrawHUDBackground()
             surface.SetDrawColor(0, 0, 0, 150)
             TacRP.DrawCorneredBox(x, y, w, h, col)
 
-            local name_txt = TacRP:GetPhrase("wep." .. self:GetClass() .. ".name") or self:GetValue("PrintName")
+            local name_txt = TacRP.GetPhrase("wep." .. self:GetClass() .. ".name") or self:GetValue("PrintName")
 
             surface.SetFont("TacRP_HD44780A00_5x8_8")
             local tw = surface.GetTextSize(name_txt)
@@ -1105,9 +1105,9 @@ end
 
 function SWEP:RangeUnitize(range)
     if TacRP.ConVars["metricunit"]:GetBool() then
-        return tostring(math.Round(range * TacRP.HUToM)) .. TacRP:GetPhrase("unit.meter")
+        return tostring(math.Round(range * TacRP.HUToM)) .. TacRP.GetPhrase("unit.meter")
     else
-        return tostring(math.Round(range)) .. TacRP:GetPhrase("unit.hu")
+        return tostring(math.Round(range)) .. TacRP.GetPhrase("unit.hu")
     end
 end
 

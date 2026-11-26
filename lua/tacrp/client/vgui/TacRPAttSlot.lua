@@ -45,11 +45,11 @@ function PANEL:PerformLayout(w, h)
 
     if empty then
         self.Icon:SetVisible(false)
-        self.Title:SetText(TacRP:GetPhrase("att.none") or "N/A")
+        self.Title:SetText(TacRP.GetPhrase("att.none") or "N/A")
     else
         self.Icon:SetVisible(true)
         self.Icon:SetMaterial(atttbl.Icon)
-        self.Title:SetText(TacRP:GetAttName(self:GetInstalled()))
+        self.Title:SetText(TacRP.GetAttName(self:GetInstalled()))
     end
 
     self.Title:SetSize(w, ScreenScale(6))
@@ -89,7 +89,7 @@ function PANEL:GetColors()
             col_image = Color(255, 255, 255)
         end
     else
-        if self:GetIsMenu() or TacRP:PlayerGetAtts(LocalPlayer(), att) > 0 then
+        if self:GetIsMenu() or TacRP.PlayerGetAtts(LocalPlayer(), att) > 0 then
             if hover then
                 col_bg = Color(255, 255, 255)
                 col_corner = Color(0, 0, 0)
@@ -125,7 +125,7 @@ function PANEL:Paint(w, h)
 
     local hover = self:IsHovered()
     self:SetDrawOnTop(hover)
-    local has = empty and 0 or TacRP:PlayerGetAtts(wep:GetOwner(), att)
+    local has = empty and 0 or TacRP.PlayerGetAtts(wep:GetOwner(), att)
 
     local col_bg, col_corner, col_text, col_image = self:GetColors()
 
@@ -174,9 +174,9 @@ function PANEL:PaintOver(w, h)
 
         local bw, bh = TacRP.SS(160), TacRP.SS(18)
 
-        local atttxt = TacRP:GetAttName(att, true)
+        local atttxt = TacRP.GetAttName(att, true)
         if !self.DescCache then
-            self.DescCache = TacRP.MultiLineText(TacRP:GetAttDesc(att), bw, "TacRP_Myriad_Pro_6")
+            self.DescCache = TacRP.MultiLineText(TacRP.GetAttDesc(att), bw, "TacRP_Myriad_Pro_6")
         end
         bh = bh + (#self.DescCache - 1) * TacRP.SS(5)
 
@@ -214,7 +214,7 @@ function PANEL:PaintOver(w, h)
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextColor(col_text)
             surface.SetTextPos(rx + rump, ry + bump + txjy)
-            surface.DrawText(TacRP:TryTranslate(ab))
+            surface.DrawText(TacRP.TryTranslate(ab))
 
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextPos(rx + TacRP.SS(3), ry + bump + txjy)
@@ -229,7 +229,7 @@ function PANEL:PaintOver(w, h)
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextColor(col_text)
             surface.SetTextPos(rx + rump, ry + bump + txjy)
-            surface.DrawText(TacRP:TryTranslate(ab))
+            surface.DrawText(TacRP.TryTranslate(ab))
 
             surface.SetFont("TacRP_Myriad_Pro_8")
             surface.SetTextPos(rx + TacRP.SS(3.8), ry + bump + txjy)

@@ -219,8 +219,8 @@ hook.Add("TTTPrepareRound", "TacRP_TTT", function()
                 id = TacRP.Attachments_Index[math.random(1, TacRP.Attachments_Count)]
                 if !TacRP.Attachments[id].InvAtt and (!ply.TacRP_AttInv or ply.TacRP_AttInv[id] == 0) then break end
             end
-            TacRP:PlayerGiveAtt(ply, id, 1)
+            TacRP.PlayerGiveAtt(ply, id, 1)
         end
-        TacRP:PlayerSendAttInv(ply)
+        TacRP.PlayerSendAttInv(ply)
     end
 end)

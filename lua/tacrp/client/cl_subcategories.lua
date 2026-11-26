@@ -65,11 +65,11 @@ spawnmenu.AddContentType("tacrp_weapon", function(container, obj)
         toolTip = toolTip .. "\n"
 
         if SWEPinfo.Description and SWEPinfo.Description != "" then
-            toolTip = toolTip .. "\n" .. ( TacRP:GetPhrase("wep." .. SWEPinfo.ClassName .. ".desc") or SWEPinfo.Description )
+            toolTip = toolTip .. "\n" .. ( TacRP.GetPhrase("wep." .. SWEPinfo.ClassName .. ".desc") or SWEPinfo.Description )
         end
 
         if SWEPinfo.Description_Quote and SWEPinfo.Description_Quote != "" then
-            toolTip = toolTip .. "\n\n" .. ( TacRP:GetPhrase("wep." .. SWEPinfo.ClassName .. ".desc.quote") or SWEPinfo.Description_Quote )
+            toolTip = toolTip .. "\n\n" .. ( TacRP.GetPhrase("wep." .. SWEPinfo.ClassName .. ".desc.quote") or SWEPinfo.Description_Quote )
         end
     end
 
@@ -214,7 +214,7 @@ hook.Add("PopulateWeapons", "zzz_TacRP_SubCategories", function(pnlContent, tree
                     -- Create the subcategory header, if more than one exists for this category
                     if table.Count(catSubcats) > 1 then
                         local label = vgui.Create("ContentHeader", container)
-                        label:SetText(TacRP:TryTranslate(subcatName))
+                        label:SetText(TacRP.TryTranslate(subcatName))
                         self.PropPanel:Add(label)
                     end
 
@@ -233,8 +233,8 @@ hook.Add("PopulateWeapons", "zzz_TacRP_SubCategories", function(pnlContent, tree
 
                     for _, ent in ipairs(subcatWeps) do
                         spawnmenu.CreateContentIcon("tacrp_weapon", self.PropPanel, {
-                            nicename = TacRP:GetPhrase("wep." .. ent.ClassName .. ".name.full")
-                                    or TacRP:GetPhrase("wep." .. ent.ClassName .. ".name")
+                            nicename = TacRP.GetPhrase("wep." .. ent.ClassName .. ".name.full")
+                                    or TacRP.GetPhrase("wep." .. ent.ClassName .. ".name")
                                     or ent.PrintName or ent.ClassName,
                             spawnname = ent.ClassName,
                             material = ent.IconOverride or "entities/" .. ent.ClassName .. ".png",
