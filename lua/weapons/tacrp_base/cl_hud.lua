@@ -133,7 +133,6 @@ function SWEP:DoDrawCrosshair(x, y)
             local spread = self:GetValue("Spread")
             spread = spread + self:GetValue("HipFireSpreadPenalty")
             local bloom_spread = self:GetValue("RecoilSpreadPenalty")
-            local gain_mult = self:GetValue("RecoilPerShot")
             local thickness = 6
             local length = 1
             local spread = spread + (bloom_spread * self:GetValue("RecoilMaximum"))
