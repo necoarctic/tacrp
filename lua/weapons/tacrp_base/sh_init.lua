@@ -372,9 +372,24 @@ function SWEP:OnRemove()
 end
 
 function SWEP:EquipAmmo(ply)
-    local ammotype = self.Primary.Ammo
-    if ammotype == "" then return end
+    local ammotype = self:GetPrimaryAmmoType()
+    if ammotype == -1 then return end
 
-    local supplyamount = self.GaveDefaultAmmo and self:Clip1() or math.ceil(math.max(1, self.Primary.ClipSize) * TacRP.ConVars["defaultammo"]:GetFloat())
-    ply:GiveAmmo(supplyamount, ammotype)
+    if self.PrimaryGrenade then
+        ply:GiveAmmo( 1, ammotype )
+        return
+    end
+
+    if self.GaveDefaultAmmo then
+        ply:GiveAmmo(
+            math.max( 0, self:A_GetClip(false) ) + math.max( 0, self:A_GetClip(true) ),
+            ammotype
+        )
+        return
+    end
+
+    ply:GiveAmmo(
+        math.ceil( math.max( 0, self.Primary.ClipSize ) * TacRP.ConVars["defaultammo"]:GetFloat() ),
+        ammotype
+    )
 end

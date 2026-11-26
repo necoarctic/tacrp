@@ -14,12 +14,13 @@ SWEP.IsSilent = false
 -- The OnDrop() hook is useless for this as it happens AFTER the drop. OwnerChange
 -- does not occur when a drop happens for some reason. Hence this thing.
 function SWEP:PreDrop()
-    if SERVER and IsValid(self:GetOwner()) and self.Primary.Ammo != "none" and self.Primary.Ammo != "" then
+    local ammotype = self:GetPrimaryAmmoType()
+    if SERVER and IsValid(self:GetOwner()) and ammotype ~= -1 then
         local ammo = self:Ammo1()
 
         -- Do not drop ammo if we have another gun that uses this type
         for _, w in ipairs(self:GetOwner():GetWeapons()) do
-            if IsValid(w) and w != self and w:GetPrimaryAmmoType() == self:GetPrimaryAmmoType() then
+            if IsValid(w) and w != self and w:GetPrimaryAmmoType() == ammotype then
             ammo = 0
             end
         end
@@ -49,32 +50,34 @@ SWEP.StoredAmmo = 0
 -- Picked up by player. Transfer of stored ammo and such.
 
 function SWEP:Equip(newowner)
-    if SERVER then
-        if self:IsOnFire() then
-            self:Extinguish()
-        end
+    assert(newowner:IsValid())
 
-        self.fingerprints = self.fingerprints or {}
-
-        if !table.HasValue(self.fingerprints, newowner) then
-            table.insert(self.fingerprints, newowner)
-        end
-
-        if newowner:GetActiveWeapon() != self and self:GetValue("HolsterVisible") then
-            net.Start("TacRP_updateholster")
-                net.WriteEntity(self:GetOwner())
-                net.WriteEntity(self)
-            net.Broadcast()
-        end
+    if self:IsOnFire() then
+        self:Extinguish()
     end
 
-    if SERVER and IsValid(newowner) and self.Primary.ClipMax and self.StoredAmmo > 0 and self.Primary.Ammo != "none" and self.Primary.Ammo != "" then
-        local ammo = newowner:GetAmmoCount(self.Primary.Ammo)
-        local given = math.min(self.StoredAmmo, self.Primary.ClipMax - ammo)
+    self.fingerprints = self.fingerprints or {}
 
-        newowner:GiveAmmo(given, self.Primary.Ammo)
+    if !table.HasValue(self.fingerprints, newowner) then
+        table.insert(self.fingerprints, newowner)
+    end
+
+    if newowner:GetActiveWeapon() != self and self:GetValue("HolsterVisible") then
+        net.Start("TacRP_updateholster")
+            net.WriteEntity(self:GetOwner())
+            net.WriteEntity(self)
+        net.Broadcast()
+    end
+
+    local ammotype = self:GetPrimaryAmmoType()
+    if self.Primary.ClipMax and self.StoredAmmo > 0 and ammotype ~= -1 then
+        local ammo = newowner:GetAmmoCount(ammotype)
+        local given = math.min(self.StoredAmmo, self.Primary.ClipMax - ammo)
+        newowner:GiveAmmo(given, ammotype)
         self.StoredAmmo = 0
     end
+
+    self.GaveDefaultAmmo = true
 
     self:SetHolsterTime(0)
     self:SetHolsterEntity(NULL)

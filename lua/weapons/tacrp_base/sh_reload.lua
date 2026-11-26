@@ -148,8 +148,12 @@ function SWEP:RestoreClip(amt)
 end
 
 function SWEP:Unload(ammotype)
-    self:GetOwner():GiveAmmo(self:Clip1(), ammotype or self.Primary.Ammo)
+    ammotype = ammotype or self:GetPrimaryAmmoType()
+    local ply = self:GetOwner()
+    ply:GiveAmmo(math.max(0, self:Clip1()), ammotype)
     self:SetClip1(0)
+    ply:GiveAmmo(math.max(0, self:Clip2()), ammotype)
+    self:SetClip2(0)
 end
 
 function SWEP:EndReload()
