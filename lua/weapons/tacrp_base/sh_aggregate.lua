@@ -743,9 +743,9 @@ SWEP.StatDisplay = {
         Value = "PostBurstDelay",
         AggregateFunction = function(self, base, val)
             if !self:HasFiremode(-1) then return end
-            return math.Round(val, 2)
+            return math.ceil(val*1000)
         end,
-        Unit = "unit.second",
+        Unit = "unit.millisecond",
         LowerIsBetter = true,
         DefaultValue = 0,
     },

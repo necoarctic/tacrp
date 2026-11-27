@@ -43,6 +43,7 @@ L["cust.drop_nade"] = "Drop Grenade"
 
 L["unit.hu"] = " HU" -- hammer unit
 L["unit.meter"] = "m"
+L["unit.millisecond"] = "ms"
 L["unit.second"] = "s"
 L["unit.persecond"] = "/s"
 L["unit.mps"] = "m/s" -- meters per second
