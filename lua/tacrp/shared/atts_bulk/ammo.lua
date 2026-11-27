@@ -411,7 +411,7 @@ ATT.Mult_Range_Max = 0.3
 
 ATT.Mult_HipFireSpreadPenalty = 0.25
 ATT.Mult_MidAirSpreadPenalty = 0
-ATT.Mult_MovingSpreadPenalty = 0
+ATT.Mult_MoveSpreadPenalty = 0
 
 ATT.Add_Spread = 0.02
 ATT.Add_ShotgunPelletSpread = 0.03
