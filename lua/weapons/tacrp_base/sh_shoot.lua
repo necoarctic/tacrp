@@ -531,7 +531,7 @@ function SWEP:PlayShootSound(force_pos)
     end
 end
 
-local CLOSE_SIMULT = 0.1
+local CLOSE_SIMULT = 0.05
 local CLOSE_RECENT = 0.5
 local LEFT, RIGHT = false, true
 
@@ -710,7 +710,7 @@ function SWEP:Player_Primary()
     end
 
     if self:GetValue("DualAkimbo") and self:IsOneButtonAkimbo() then
-        if self:GetMaxBurst() > 1 then
+        if self:GetMaxBurst() == math.huge then
             self:Weapon_Attack( false )
             self:Weapon_Attack( true )
         else
@@ -866,8 +866,8 @@ function SWEP:Weapon_Attack( gun2 )
     end
     self:PlayShootAnim( gun2 )
     self:Weapon_Effects( gun2 )
-    self:ApplyRecoil()
     self:Weapon_FireBullet()
+    self:ApplyRecoil()
 
     -- Jane's fix
     local curatt = self:A_GetNextFire( gun2 )
@@ -889,9 +889,6 @@ function SWEP:Weapon_Attack( gun2 )
             if self:GetValue("AutoBurst") then
                 self:A_SetBurstCount( gun2, 0 )
             end
-        end
-        if self:A_GetClip( gun2 ) == 0 then
-            self:A_SetBurstCount( gun2, 0 )
         end
     end
 
