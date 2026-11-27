@@ -782,10 +782,7 @@ function SWEP:ThinkBurst()
         else
             if not attack_down then
                 if burst_count ~= max_burst then
-                    self:A_SetNextFire( gun2, math.max(
-                        self:A_GetNextFire( gun2 ),
-                        CurTime() + self:GetValue("PostBurstDelay")
-                    ) )
+                    self:A_SetNextFire( gun2, self:A_GetNextFire( gun2 ) + self:GetValue("PostBurstDelay") )
                 end
                 self:A_SetBurstCount( gun2, 0 )
             end
@@ -888,10 +885,7 @@ function SWEP:Weapon_Attack( gun2 )
     local burst_mode = max_burst ~= math.huge and max_burst >= 2
     if burst_mode then
         if self:A_GetBurstCount( gun2 ) >= max_burst then
-            self:A_SetNextFire( gun2, math.max(
-                self:A_GetNextFire( gun2 ),
-                curatt + self:GetValue("PostBurstDelay")
-            ) )
+            self:A_SetNextFire( gun2, self:A_GetNextFire( gun2 ) + self:GetValue("PostBurstDelay") )
             if self:GetValue("AutoBurst") then
                 self:A_SetBurstCount( gun2, 0 )
             end
