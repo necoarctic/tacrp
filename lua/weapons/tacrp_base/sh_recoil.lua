@@ -4,8 +4,12 @@ function SWEP:GetRecoilResetTime(base)
     return delay + valfunc(self, "RecoilResetTime")
 end
 
+function SWEP:IsRecoilResetting()
+    return self:GetLastRecoilTime() + self:GetRecoilResetTime() < CurTime()
+end
+
 function SWEP:ThinkRecoil()
-    if self:GetLastRecoilTime() + engine.TickInterval() + self:GetRecoilResetTime() < CurTime() then
+    if self:IsRecoilResetting() then
         local rec = self:GetRecoilAmount()
 
         rec = rec - (FrameTime() * self:GetValue("RecoilDissipationRate"))

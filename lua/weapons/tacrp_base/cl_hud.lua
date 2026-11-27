@@ -1,3 +1,5 @@
+local s = TacRP.SS
+
 function SWEP:ShouldDrawCrosshair()
     if not TacRP.ConVars["crosshair"]:GetBool() then
         return false
@@ -35,6 +37,10 @@ end
 
 local function thickrect( x, y, w, h )
     surface.DrawRect( x-1, y-1, w+2, h+2 )
+end
+
+local function places(num, points)
+    return string.format("%." .. points .. "f", num)
 end
 
 function SWEP:DoDrawCrosshair(x, y)
@@ -176,52 +182,112 @@ function SWEP:DoDrawCrosshair(x, y)
 
     -- Developer Crosshair
     if dev then
-
+        local radius = s(2)
         if self:StillWaiting() then
-            surface.SetDrawColor(150, 150, 150, 75)
+            surface.SetDrawColor(150, 150, 150)
         else
-            surface.SetDrawColor(255, 50, 50, 75)
+            surface.SetDrawColor(255, 50, 50)
         end
-        surface.DrawLine(x2, y2 - 256, x2, y2 + 256)
-        surface.DrawLine(x2 - 256, y2, x2 + 256, y2)
+        surface.DrawLine(x2, y2 - radius, x2, y2 + radius)
+        surface.DrawLine(x2 - radius, y2, x2 + radius, y2)
         spread = TacRP.GetFOVAcc(self:GetSpread())
-        local recoil_txt = "Recoil: " .. tostring(math.Round(self:GetRecoilAmount() or 0, 3))
         surface.DrawCircle(x2, y2, spread, 255, 255, 255, 75)
         surface.DrawCircle(x2, y2, spread + 1, 255, 255, 255, 75)
-        surface.SetFont("TacRP_Myriad_Pro_32_Unscaled")
-        surface.SetTextColor(255, 255, 255, 255)
-        surface.SetTextPos(x2 - 256, y2)
-        surface.DrawText(recoil_txt)
-        local spread_txt = tostring("Cone: " .. math.Round(math.deg(self:GetSpread()), 3)) .. " deg"
-        surface.SetTextPos(x2 - 256, y2 - 34)
-        surface.DrawText(spread_txt)
-        local spread_txt = tostring(math.Round( math.deg(self:GetSpread()) * 60, 3)) .. "MOA"
-        surface.SetTextPos(x2 - 256, y2 - 66)
-        surface.DrawText(spread_txt)
-        -- local tw = surface.GetTextSize(spread_txt)
-        -- surface.SetTextPos(x2 + 256 - tw, y2)
-        -- surface.DrawText(spread_txt)
 
+        local o_x, o_y = ScrW()/2 - s(256), ScrH()/2 - s(64)
+        local function shift(amt)
+            o_y = o_y + s(amt)
+        end
+
+        S2_DrawText(
+            "Spread",
+            "TacRP_STD_6",
+            o_x,
+            o_y
+        ) shift(6)
+        S2_DrawText(
+            places(math.deg(self:GetSpread()), 1) .. "°",
+            "TacRP_STD_12",
+            o_x,
+            o_y
+        ) shift(12)
+        S2_DrawText(
+            places( math.deg(self:GetSpread()) * 60, 1) .. "`",
+            "TacRP_STD_12",
+            o_x,
+            o_y
+        ) shift(12)
+        S2_DrawText(
+            "Bloom",
+            "TacRP_STD_6",
+            o_x,
+            o_y
+        ) shift(6)
+        S2_DrawText_Col(
+            places(self:GetRecoilAmount(), 1),
+            "TacRP_STD_12",
+            o_x,
+            o_y,
+            self:IsRecoilResetting() and color_white or Color(255, 0, 0)
+        ) shift(12)
+        do
+            surface.SetDrawColor( 0, 0, 0, 255 )
+            local bar_w, bar_h = math.ceil(s(32)), math.ceil(s(2))
+            local inset = 1
+
+            local pers = self:GetLastRecoilTime() + engine.TickInterval() + self:GetRecoilResetTime()
+            pers = pers - CurTime()
+            pers = math.Remap(pers, 0, self:GetRecoilResetTime(), 0, 1)
+            pers = math.Clamp(pers, 0, 1)
+            surface.DrawRect( o_x, o_y, bar_w, bar_h )
+            surface.SetDrawColor( 255, 0, 0, 255 )
+            surface.DrawRect( o_x + inset, o_y + inset, (bar_w - inset*2) * pers, bar_h - inset*2 )
+        end shift(4)
+
+        S2_DrawText(
+            "Range",
+            "TacRP_STD_6",
+            o_x,
+            o_y
+        ) shift(6)
         local dist = (tr.HitPos - tr.StartPos):Length()
-        local dist_txt = math.Round(dist) .. " HU"
-        local tw = surface.GetTextSize(dist_txt)
-        surface.SetTextPos(x2 + 256 - tw, y2)
-        surface.DrawText(dist_txt)
+        S2_DrawText(
+            self:RangeUnitize(dist),
+            "TacRP_STD_12",
+            o_x,
+            o_y
+        ) shift(12)
+        S2_DrawText(
+            math.Round( self:GetDamageAtRange(dist) ) .. " DMG",
+            "TacRP_STD_12",
+            o_x,
+            o_y
+        ) shift(12)
 
-        local damage_txt = math.Round(self:GetDamageAtRange(dist)) .. " DMG"
-        local tw2 = surface.GetTextSize(damage_txt)
-        surface.SetTextPos(x2 + 256 - tw2, y2 - 34)
-        surface.DrawText(damage_txt)
-
-        local sprint_txt = math.Round(self:GetSprintAmount() * 100) .. "%"
-        local tw3 = surface.GetTextSize(sprint_txt)
-        surface.SetTextPos(x2 - tw3 * 0.5, y2 + 256)
-        surface.DrawText(sprint_txt)
-
-        local sight_txt = math.Round(self:GetSightAmount() * 100) .. "%"
-        local tw4 = surface.GetTextSize(sight_txt)
-        surface.SetTextPos(x2 - tw4 * 0.5, y2 + 256 + 32)
-        surface.DrawText(sight_txt)
+        S2_DrawText(
+            "Sprint Amount",
+            "TacRP_STD_6",
+            o_x,
+            o_y
+        ) shift(6)
+        S2_DrawText(
+            math.Round(self:GetSprintAmount() * 100) .. "%",
+            "TacRP_STD_12",
+            o_x,
+            o_y
+        ) shift(12)
+        S2_DrawText(
+            "Sight Amount",
+            "TacRP_STD_6",
+            o_x,
+            o_y
+        ) shift(6)
+        S2_DrawText(
+            math.Round(self:GetSightAmount() * 100) .. "%",
+            "TacRP_STD_12",
+            o_x,
+            o_y
+        ) shift(12)
     end
 
     return true

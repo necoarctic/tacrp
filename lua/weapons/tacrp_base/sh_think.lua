@@ -43,7 +43,6 @@ function SWEP:Think()
         end
     end
 
-    self:ThinkRecoil()
     self:ThinkSprint()
     self:ThinkGrenade()
     self:ThinkReload()
@@ -121,6 +120,7 @@ function SWEP:Think()
             self:Player_Secondary()
         end
     end
+    self:ThinkRecoil()
 
     if self:GetValue("Melee") and self:GetOwner():KeyDown(TacRP.IN_MELEE) then
         self:Melee()

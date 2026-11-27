@@ -1,4 +1,4 @@
-function S2_DrawText( text, font, w, h, alignx, aligny )
+function S2_DrawText_Col( text, font, w, h, col, alignx, aligny )
 	draw.SimpleText( text, font, w-1, h-1, color_black, alignx, aligny )
 	draw.SimpleText( text, font, w,   h-1, color_black, alignx, aligny )
 	draw.SimpleText( text, font, w+1, h-1, color_black, alignx, aligny )
@@ -10,7 +10,11 @@ function S2_DrawText( text, font, w, h, alignx, aligny )
 	draw.SimpleText( text, font, w,   h+1, color_black, alignx, aligny )
 	draw.SimpleText( text, font, w+1, h+1, color_black, alignx, aligny )
 
-	draw.SimpleText( text, font, w, h, color_white, alignx, aligny )
+	draw.SimpleText( text, font, w, h, col, alignx, aligny )
+end
+
+function S2_DrawText( text, font, w, h, alignx, aligny )
+	S2_DrawText_Col( text, font, w, h, col, alignx, aligny )
 end
 
 local COLOR_FILTERED = Color( 70, 60, 60, 100 )
