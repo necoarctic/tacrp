@@ -49,10 +49,8 @@ hook.Add("PostDrawEffects", "TacRP_CleanFlashlights", function()
     TacRP.FlashlightPile = newflashlightpile
 
     local wpn = LocalPlayer():GetActiveWeapon()
-
-    if !wpn then return end
-    if !IsValid(wpn) then return end
-    if !wpn.ArcticTacRP then return end
+    if not wpn:IsValid() then return end
+    if not wpn.ArcticTacRP then return end
 
     if GetViewEntity() == LocalPlayer() then return end
 

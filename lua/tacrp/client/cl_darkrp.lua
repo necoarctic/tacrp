@@ -20,8 +20,7 @@ local function makeattmdl(self, atttbl, slottbl)
     end
 
     local csmodel = ClientsideModel(model)
-
-    if !IsValid(csmodel) then return end
+    if not csmodel then return end
 
     local scale = Matrix()
     local vec = Vector(1, 1, 1) * (atttbl.Scale or 1) * (slottbl.WMScale or 1)

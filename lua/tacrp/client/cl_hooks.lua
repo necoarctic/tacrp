@@ -130,29 +130,27 @@ hook.Add( "HUDDrawTargetID", "TacRP_FlashlightGlint", function()
 end)
 
 hook.Add("CreateMove", "TacRP_CreateMove", function(cmd)
-    local wpn = LocalPlayer():GetActiveWeapon()
+    local ply = LocalPlayer()
+    local not_typing = not ply:IsTyping()
+    local wpn = ply:GetActiveWeapon()
 
     -- In TTT ScreenClicker isn't disabled for some reason
-    if TacRP.CursorEnabled and !LocalPlayer():Alive() then
+    if TacRP.CursorEnabled and not ply:Alive() then
         TacRP.CursorEnabled = false
         gui.EnableScreenClicker(false)
     end
 
-    if !IsValid(wpn) then return end
-    if !wpn.ArcticTacRP then return end
+    if not wpn:IsValid() then return end
+    if not wpn.ArcticTacRP then return end
 
-    local grenade1bind = input.LookupBinding("+grenade1")
-
-    if !grenade1bind then
-        if input.IsKeyDown( KEY_G ) and !LocalPlayer():IsTyping() then
+    if not input.LookupBinding("+grenade1") then
+        if not_typing and input.IsKeyDown( KEY_G ) then
             cmd:AddKey(IN_GRENADE1)
         end
     end
 
-    local grenade2bind = input.LookupBinding("+grenade2")
-
-    if !grenade2bind then
-        if input.IsKeyDown( KEY_H ) and !LocalPlayer():IsTyping() then
+    if not input.LookupBinding("+grenade2") then
+        if not_typing and input.IsKeyDown( KEY_H ) then
             cmd:AddKey(IN_GRENADE2)
         end
     end
@@ -169,7 +167,7 @@ hook.Add("CreateMove", "TacRP_CreateMove", function(cmd)
         cmd:AddKey(TacRP.IN_TACTICAL)
     end
 
-    local mult = TacRP.CalculateMaxMoveSpeed(LocalPlayer())
+    local mult = TacRP.CalculateMaxMoveSpeed(ply)
 
     local basemove = Vector(cmd:GetForwardMove(), cmd:GetUpMove(), cmd:GetSideMove())
     local maxspeed = basemove:Length()

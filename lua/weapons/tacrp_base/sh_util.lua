@@ -1,12 +1,7 @@
-function SWEP:SanityCheck()
-    if !IsValid(self) then return false end
-    if !IsValid(self:GetOwner()) then return false end
-    if !IsValid(self:GetVM()) then return false end
-end
-
 function SWEP:GetVM()
-    if !IsValid(self:GetOwner()) or !self:GetOwner():IsPlayer() then return end
-    return self:GetOwner():GetViewModel()
+    local owner = self:GetOwner()
+    if not owner:IsValid() or not owner:IsPlayer() then return end
+    return owner:GetViewModel()
 end
 
 function SWEP:Curve(x)

@@ -1,7 +1,7 @@
 hook.Add("PlayerBindPress", "TacRP_Binds", function(ply, bind, pressed, code)
     local wpn = ply:GetActiveWeapon()
 
-    if !wpn or !IsValid(wpn) or !wpn.ArcticTacRP then return end
+    if not wpn:IsValid() or not wpn.ArcticTacRP then return end
 
     -- if we don't block, TTT will do radio menu
     if engine.ActiveGamemode() == "terrortown" and bind == "+zoom" and !LocalPlayer():KeyDown(IN_USE) then
