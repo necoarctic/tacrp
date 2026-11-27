@@ -935,7 +935,8 @@ SWEP.StatDisplay = {
         Description = "stat.recoilspread2.desc",
         AggregateFunction = function(self, base, val)
             if !self:UseAltRecoil(base) then return end
-            return math.Round(val * (base and self:GetBaseValue("RecoilAltMultiplier") or self:GetValue("RecoilAltMultiplier")), 2)
+            local valfunc = base and self.GetBaseValue or self.GetValue
+            return math.Round(val * valfunc(self, "RecoilAltMultiplier"), 2)
         end,
         Unit = nil,
         Value = "RecoilSpreadPenalty",
@@ -957,8 +958,11 @@ SWEP.StatDisplay = {
         Name = "stat.recoilresettime",
         Description = "stat.recoilresettime.desc",
         Value = "RecoilResetTime",
+        AggregateFunction = function(self, base, val)
+            return math.ceil(self:GetRecoilResetTime(base)*1000)
+        end,
         LowerIsBetter = true,
-        Unit = "s",
+        Unit = "ms",
     },
     {
         Name = "stat.recoilmaximum",

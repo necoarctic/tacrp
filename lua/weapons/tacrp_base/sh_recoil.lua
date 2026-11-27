@@ -1,9 +1,7 @@
 function SWEP:GetRecoilResetTime(base)
-    if base then
-        return (self:GetBaseValue("RecoilResetInstant") and 0 or math.min(0.5, 60 / self:GetRPM(true))) + self:GetBaseValue("RecoilResetTime")
-    else
-        return (self:GetValue("RecoilResetInstant") and 0 or math.min(0.5, 60 / self:GetRPM())) + self:GetValue("RecoilResetTime")
-    end
+    local valfunc = base and self.GetBaseValue or self.GetValue
+    local delay = valfunc(self, "RecoilResetInstant") and 0 or math.min(0.5, 60/self:GetRPM(base))
+    return delay + valfunc(self, "RecoilResetTime")
 end
 
 function SWEP:ThinkRecoil()
