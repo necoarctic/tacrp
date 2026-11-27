@@ -954,8 +954,7 @@ function ATT.TacticalDraw(self)
         surface.DrawText("0")
     end
 
-    local last_fire = math.Clamp((self:GetNextPrimaryFire() - CurTime()) / (60 / self:GetValue("RPM")), 0, 1)
-    surface.SetDrawColor(255, 255, 255, last_fire * 255)
+    surface.SetDrawColor(255, 255, 255, self:IsRecoilResetting() and 0 or 255)
     surface.SetMaterial(mat_spread_fire)
     surface.DrawTexturedRect(x, y, w, h)
 
