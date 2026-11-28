@@ -114,10 +114,9 @@ function SWEP:Melee(alt)
 
             if IsValid(tr.Entity) and self:GetValue("MeleeSlow") then
                 tr.Entity.TacRPBashSlow = true
-            end
-
-            if tr.HitGroup == HITGROUP_HEAD then
-                dmginfo:ScaleDamage(1.25)
+                if tr.Entity:IsNPC() then
+                    tr.Entity:SetSchedule(SCHED_COWER)
+                end
             end
 
             if IsValid(tr.Entity) then
@@ -126,7 +125,7 @@ function SWEP:Melee(alt)
             end
 
             if self:GetJammed() or (self:GetReloadFinishTime() > 0 and self:GetEndReload() and self:GetReloadFinishTime() - CurTime() > 0.3 and self:GetReloadFinishTime() - CurTime() < 1) then
-                local t2 = self:PlayAnimation("jam", 1/3) or 0
+                local t2 = self:PlayAnimation("jam", 1 / 3) or 0
                 self:GetOwner():DoCustomAnimEvent(PLAYERANIMEVENT_CANCEL_RELOAD, t2 * 1000)
                 self:SetJammed(false)
             end
