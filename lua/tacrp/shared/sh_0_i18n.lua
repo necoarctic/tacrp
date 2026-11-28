@@ -101,10 +101,6 @@ function TacRP.LoadLanguage(lang)
             TacRP.AddSTP(str, phrase)
         end
 
-        if table.Count(L) > 0 then
-            hasany = true
-        end
-
         print("Loaded TacRP language file " .. v .. " with " .. table.Count(L) .. " strings.")
         L = nil
         STL = nil

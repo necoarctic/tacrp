@@ -72,10 +72,9 @@ hook.Add("onDrawSpawnedWeapon", "TacRP", function(ent)
             if !boneindex then continue end
 
             local bonemat = ent:GetBoneMatrix(boneindex)
-            if bonemat then
-                bpos = bonemat:GetTranslation()
-                bang = bonemat:GetAngles()
-            end
+            assert(bonemat, "getting bone matrix failed")
+            local bpos = bonemat:GetTranslation()
+            local bang = bonemat:GetAngles()
 
             local apos, aang
 

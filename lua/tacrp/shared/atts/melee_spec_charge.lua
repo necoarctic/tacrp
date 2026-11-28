@@ -408,7 +408,7 @@ hook.Add("Move", "TacRP_Charge", function(ply, mv)
         local addspeed = wishspeed - currentspeed
 
         if addspeed > 0 then
-            accelspeed = math.min(addspeed, flAccelerate * FrameTime() * wishspeed) -- * player->m_surfaceFriction but it seems like it's 1 by default?
+            local accelspeed = math.min(addspeed, flAccelerate * FrameTime() * wishspeed) -- * player->m_surfaceFriction but it seems like it's 1 by default?
 
             mv:SetVelocity(mv:GetVelocity() + accelspeed * wishdir)
         end

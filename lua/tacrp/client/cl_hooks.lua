@@ -58,7 +58,7 @@ hook.Add("PostPlayerDraw", "TacRP_Holster", function(ply, flags)
 
         debugoverlay.Axis(pos, ang, 8, FrameTime() * 2, true)
 
-        model = ply.TacRP_HolsterModels[i]
+        local model = ply.TacRP_HolsterModels[i]
         model:SetPos(pos)
         model:SetAngles(ang)
         model:SetRenderOrigin(pos)

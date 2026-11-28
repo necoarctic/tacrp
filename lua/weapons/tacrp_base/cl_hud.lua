@@ -1145,7 +1145,6 @@ function SWEP:DrawHUDBackground()
 
     self:DrawBlindFireHUD()
 
-    lastammo = self:Clip1()
     lastarmor = LocalPlayer():Armor()
 end
 
@@ -1227,8 +1226,8 @@ function SWEP:DrawLockOnHUD()
     })
     cam.Start3D()
         local w2s = tr.HitPos:ToScreen()
-        sx = math.Round(w2s.x)
-        sy = math.Round(w2s.y)
+        local sx = math.Round(w2s.x)
+        local sy = math.Round(w2s.y)
     cam.End3D()
 
     local ss = ScreenScale(1)

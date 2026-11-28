@@ -221,7 +221,6 @@ function PANEL:PaintOver(w, h)
             surface.DrawText("+")
 
             bump = bump + statjump
-            statted = true
         end end
         if atttbl.Cons then for aa, ab in ipairs(atttbl.Cons) do
             surface.SetDrawColor(col_text_con)
@@ -236,13 +235,7 @@ function PANEL:PaintOver(w, h)
             surface.DrawText("-")
 
             bump = bump + statjump
-            statted = true
         end end
-
-        -- if statted then
-        --     surface.SetDrawColor(col_bg)
-        --     surface.DrawLine(rx, ry + gap, rx + bw, ry + gap)
-        -- end
 
         local can, reason = TacRP.CanCustomize(wep:GetOwner(), wep, att, attslot)
         if !can then

@@ -114,8 +114,6 @@ function SWEP:HoldingBreath()
         self:SetHoldingBreath(holding)
     end
 
-    lastpressed = holding
-
     return self:CanHoldBreath() and self:GetSightAmount() >= 1 and self:NotOutOfBreath() and self:GetHoldingBreath()
 end
 

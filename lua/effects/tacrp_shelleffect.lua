@@ -41,6 +41,7 @@ function EFFECT:Init(data)
         ang = EyeAngles()
         dir = ang:Right() -- not exactly correct but we can't rely on weapon model here
     else
+        local mdl
         if LocalPlayer():ShouldDrawLocalPlayer() or ent:GetOwner() != LocalPlayer() then
             mdl = ent
             att = data:GetHitBox()

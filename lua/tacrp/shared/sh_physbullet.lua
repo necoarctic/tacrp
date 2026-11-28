@@ -14,9 +14,6 @@ function TacRP.SendBullet(bullet, attacker)
     if attacker and attacker:IsValid() and attacker:IsPlayer() and !game.SinglePlayer() then
         net.SendOmit(attacker)
     else
-        if game.SinglePlayer() then
-            net.WriteEntity(attacker)
-        end
         net.Broadcast()
     end
 end
@@ -100,10 +97,6 @@ net.Receive("TacRP_sendbullet", function(len, ply)
     local grav = net.ReadFloat()
     local weapon = net.ReadEntity()
     local hullsize = net.ReadUInt(4)
-
-    if game.SinglePlayer() then
-        ent = net.ReadEntity()
-    end
 
     if !weapon:IsValid() or !weapon.GetValue then return end
 
