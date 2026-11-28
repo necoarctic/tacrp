@@ -45,7 +45,7 @@ TacRPNewKilliconDraw = function(x, y, name, alpha)
         local selecticon = killicons_cachedicons[name]
 
         if !selecticon then -- not cached
-            local loadedmat = Material(wpn.IconOverride or "entities/" .. name .. ".png", "smooth mips")
+            local loadedmat = Material(wpn.IconOverride or ("entities/" .. name .. ".png"), "smooth mips")
             killicons_cachedicons[name] = loadedmat
             selecticon = loadedmat
         end

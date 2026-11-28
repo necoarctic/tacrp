@@ -503,7 +503,7 @@ if SERVER then
         --     end
         -- })
         if suppress then
-            SuppressHostEvents()
+            SuppressHostEvents(NULL)
         end
     end)
 end

@@ -1,8 +1,8 @@
 local rt_w = 240
 local rt_h = 240
 
-local rtmat = GetRenderTarget("tacrp_pipscope_thermal", rt_w, rt_h, false)
-local rtmat_spare = GetRenderTarget("tacrp_pipscope_thermal2", rt_w, rt_h, false)
+local rtmat = GetRenderTarget("tacrp_pipscope_thermal", rt_w, rt_h)
+local rtmat_spare = GetRenderTarget("tacrp_pipscope_thermal2", rt_w, rt_h)
 
 local lastthermalscope = false
 local thermaltime = 0

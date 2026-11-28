@@ -7,7 +7,7 @@ if !TTT2 then
 
         local panellist = vgui.Create("DPanelList", dtabs)
         panellist:StretchToParent(0,0,padding,0)
-        panellist:EnableVerticalScrollbar(true)
+        panellist:EnableVerticalScrollbar()
         panellist:SetPadding(10)
         panellist:SetSpacing(10)
 

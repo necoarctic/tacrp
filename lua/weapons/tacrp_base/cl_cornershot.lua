@@ -1,7 +1,7 @@
 local rt_w = 426
 local rt_h = 240
 
-local rtmat = GetRenderTarget("tacrp_pipscope", rt_w, rt_h, false)
+local rtmat = GetRenderTarget("tacrp_pipscope", rt_w, rt_h)
 
 local lastblindfire = false
 local blindfiretime = 0

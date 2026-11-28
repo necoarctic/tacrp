@@ -237,7 +237,7 @@ hook.Add("PopulateWeapons", "zzz_TacRP_SubCategories", function(pnlContent, tree
                                     or TacRP.GetPhrase("wep." .. ent.ClassName .. ".name")
                                     or ent.PrintName or ent.ClassName,
                             spawnname = ent.ClassName,
-                            material = ent.IconOverride or "entities/" .. ent.ClassName .. ".png",
+                            material = ent.IconOverride or ("entities/" .. ent.ClassName .. ".png"),
                             admin = ent.AdminOnly,
                             quality = ent.Quality
                         })

@@ -1152,7 +1152,7 @@ SWEP.Mat_Select = nil
 
 function SWEP:DrawWeaponSelection(x, y, w, h, a)
     if !self.Mat_Select then
-        self.Mat_Select = Material(self.IconOverride or  "entities/" .. self:GetClass() .. ".png", "smooth mips")
+        self.Mat_Select = Material(self.IconOverride or ("entities/" .. self:GetClass() .. ".png"), "smooth mips")
 
     end
 

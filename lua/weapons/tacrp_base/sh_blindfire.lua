@@ -253,7 +253,7 @@ function SWEP:ToggleBlindFire(bf)
     end
 
     if diff then
-        if self:StillWaiting(true) then
+        if self:StillWaiting() then
             self:IdleAtEndOfAnimation()
         else
             self:Idle()
