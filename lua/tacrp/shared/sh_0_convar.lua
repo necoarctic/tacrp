@@ -958,8 +958,8 @@ local conVars = {
         min = 0,
         max = 1,
         replicated = true
-    },    
-	{
+    },
+    {
         name = "jam_autoclear",
         default = "0",
         min = 0,
@@ -1110,6 +1110,7 @@ local conVars = {
         name = "thermite_radius",
         default = "200",
         min = 0,
+        replicated = true, // needed for client light radius
     },
     {
         name = "frag_damage",
@@ -1157,7 +1158,7 @@ local conVars = {
         min = 0,
     },
 
-    // Aim Assist
+    // --------------------------- Aim Assist
     {
         name = "aimassist",
         default = "0",
@@ -1198,7 +1199,7 @@ local conVars = {
         client = true,
     },
 
-    -- Cust v2
+    // --------------------------- Cust v2
     {
         name = "c2_enable",
         default = "1",
@@ -1255,7 +1256,7 @@ local conVars = {
         client = true,
     },
 
-    -- HUD v2
+    // --------------------------- HUD v2
     {
         name = "h2_enable",
         default = "1",
@@ -1276,7 +1277,7 @@ local conVars = {
         default = "1",
         client = true,
     },
-    -- Spawnmenu v2
+    // --------------------------- Spawnmenu v2
     {
         name = "s2_enable",
         default = "1",
@@ -1424,7 +1425,7 @@ local function menu_client_ti(panel)
         type = "float",
         min = 0.8,
         max = 1.3,
-        
+
     }):SetDecimals(1)
     panel:ControlHelp("#tacrp.client.hudscale.desc")
 
@@ -1893,12 +1894,12 @@ local function menu_balance_ti(panel)
     panel:AddControl("checkbox", {
         label = "#tacrp.balance.canjam", -- Automatically Clear Jams
         command = "tacrp_can_jam"
-    })    
-	panel:AddControl("checkbox", {
+    })
+    panel:AddControl("checkbox", {
         label = "#tacrp.balance.autoclearjam", -- Automatically Clear Jams
         command = "tacrp_jam_autoclear"
     })
-	panel:ControlHelp("#tacrp.balance.autoclearjam.desc")
+    panel:ControlHelp("#tacrp.balance.autoclearjam.desc")
     panel:AddControl("checkbox", {
         label = "#tacrp.balance.expandammotype", -- Expanded Ammo Types
         command = "tacrp_expandedammotypes"
