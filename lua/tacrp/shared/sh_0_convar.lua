@@ -1317,7 +1317,6 @@ end
 local flags = {
     ["replicated"] = FCVAR_REPLICATED,
     ["userinfo"] = FCVAR_USERINFO,
-    ["notify"] = FCVAR_NOTIFY
 }
 for _, var in pairs(conVars) do
     local convar_name = prefix .. var.name
@@ -1330,7 +1329,7 @@ for _, var in pairs(conVars) do
         if CLIENT and not var.replicated then
             continue
         end
-        local flag = FCVAR_ARCHIVE
+        local flag = FCVAR_ARCHIVE + FCVAR_NOTIFY
         for k, v in pairs(flags) do if var[k] then flag = flag + v end end
         TacRP.ConVars[var.name] = CreateConVar(convar_name, var.default, flag, var.help, var.min, var.max)
 
@@ -1919,7 +1918,6 @@ local function menu_balance_ti(panel)
         min = 0.5,
         max = 1.5,
     })
-    panel:ControlHelp("\n")
 end
 
 local function menu_mechanics_ti(panel)
