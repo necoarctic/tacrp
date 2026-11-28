@@ -719,14 +719,14 @@ function SWEP:SetLastProceduralFireTime( value )
 end
 
 function SWEP:OnDrop(owner)
-    if self.PreviousZoom and IsValid(owner) then
+    if self.PreviousZoom and IsValid(owner) and owner:IsPlayer() then
         owner:SetCanZoom(true)
     end
 end
 
 function SWEP:GetPrintName()
-    return TacRP.GetPhrase("wep."..self.ClassName..".name.full")
-        or TacRP.GetPhrase("wep."..self.ClassName..".name")
+    return TacRP.GetPhrase("wep." .. self.ClassName .. ".name.full")
+        or TacRP.GetPhrase("wep." .. self.ClassName .. ".name")
         or self:GetValue("FullName")
         or self:GetValue("PrintName")
 end
