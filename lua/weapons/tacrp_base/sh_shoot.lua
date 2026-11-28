@@ -951,7 +951,7 @@ function SWEP:Weapon_FireBullet()
             elseif hitscan then
                 self:GetOwner():FireBullets({
                     Damage = self:GetValue("Damage_Max"),
-                    Force = 8,
+                    Force = self:GetBulletForce(),
                     Tracer = tr,
                     TracerName = "tacrp_tracer",
                     Num = 1,
@@ -990,7 +990,7 @@ function SWEP:Weapon_FireBullet()
         -- Also it generates nice big numbers in various hit number addons instead of a buncha small ones.
         self:GetOwner():FireBullets({
             Damage = self:GetValue("Damage_Max"),
-            Force = 8,
+            Force = self:GetBulletForce(),
             Tracer = tr,
             TracerName = "tacrp_tracer",
             Num = num,
@@ -1184,5 +1184,10 @@ end
 
 -- this one is just used by the akimbo firing animation
 function SWEP:A_GetLastShot( gun2 )
-    return self:A_GetNextFire( gun2 ) - (60/self:GetRPM())
+    return self:A_GetNextFire( gun2 ) - (60 / self:GetRPM())
+end
+
+-- push force of bullets
+function SWEP:GetBulletForce()
+    return math.Clamp(math.max(self:GetValue("Damage_Max"), self:GetValue("Damage_Min")) / 10, 1, 10)
 end
