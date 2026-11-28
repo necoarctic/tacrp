@@ -441,8 +441,8 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 		local grenade_style = TacRP.ConVars["h2_enable_grenade"]:GetInt()
 		if grenade_style ~= 0 and wep and tacrp then
 			-- grenades
-			if (grenade_style ~= 2) then
-				local def = wep:GetGrenade()
+			local def = grenade_style ~= 2 and wep:GetGrenade()
+			if def then
 				local qty
 				if def.Singleton then
 					qty = ply:HasWeapon(def.GrenadeWep) and 1 or 0
@@ -505,6 +505,7 @@ hook.Add("HUDPaint", "TacRP_HUD2", function()
 						continue
 					end
 					local def = TacRP.QuickNades[grenade_class]
+					if not def then continue end
 
 					local qty
 					if def.Singleton then

@@ -83,7 +83,7 @@ function ENT:ApplyAmmo(ply)
         if TacRP.ConVars["resupply_grenades"]:GetBool() then
             local nade = wpn:GetGrenade()
 
-            if nade.Ammo then
+            if nade and nade.Ammo then
                 if !nade.AdminOnly or ply:IsAdmin() then
                     t2 = ClampedGiveAmmo(ply, nade.Ammo, 1, 3)
                 end

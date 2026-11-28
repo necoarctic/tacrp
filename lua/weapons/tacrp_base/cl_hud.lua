@@ -372,6 +372,7 @@ function SWEP:DrawBottomBar(x, y, w, h)
 
     if self:IsQuickNadeAllowed() then
         local nade = self:GetGrenade()
+        if !nade then return end
 
         local qty = nil --"INF"
 
@@ -406,7 +407,8 @@ function SWEP:DrawBottomBar(x, y, w, h)
 
         local mat = nil
         if !TacRP.ConVars["nademenu"]:GetBool() then
-            mat = self:GetNextGrenade().Icon
+            local nextnade = self:GetNextGrenade()
+            mat = nextnade and nextnade.Icon
         else
             mat = mat_radial
         end

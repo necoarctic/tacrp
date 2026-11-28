@@ -52,7 +52,10 @@ SWEP.QuickNadeTimeMult = 0.6
 function SWEP:Equip(newowner)
     local wep = self:GetOwner():GetActiveWeapon()
     if self:GetOwner():IsPlayer() and wep != self and wep.ArcticTacRP and !wep:CheckGrenade(nil, true) then
-        self:GetOwner():SetNWInt("ti_nade", TacRP.QuickNades[self.PrimaryGrenade].Index)
+        local nade = TacRP.QuickNades[self.PrimaryGrenade]
+        if nade and nade.Index then
+            self:GetOwner():SetNWInt("ti_nade", nade.Index)
+        end
     end
 
     if engine.ActiveGamemode() == "terrortown" and SERVER then

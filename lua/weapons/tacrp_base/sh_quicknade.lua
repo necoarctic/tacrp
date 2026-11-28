@@ -24,6 +24,7 @@ function SWEP:PrimeGrenade()
     self:CancelReload(false)
 
     local nade = self:GetValue("PrimaryGrenade") and TacRP.QuickNades[self:GetValue("PrimaryGrenade")] or self:GetGrenade()
+    if !nade then return end
 
     if nade.Singleton then
         if !self:GetOwner():HasWeapon(nade.GrenadeWep) then return end
@@ -62,6 +63,7 @@ end
 
 function SWEP:ThrowGrenade()
     local nade = self:GetValue("PrimaryGrenade") and TacRP.QuickNades[self:GetValue("PrimaryGrenade")] or self.CurrentGrenade or self:GetGrenade()
+    if !nade then return end
 
     local force = nade.ThrowForce
     local ent = nade.GrenadeEnt
@@ -203,10 +205,16 @@ function SWEP:GetGrenade(index)
 end
 
 function SWEP:GetGrenadeIndex()
-    return IsValid(self:GetOwner()) and self:GetOwner():GetNWInt("ti_nade", 1) or 1
+    local ind = IsValid(self:GetOwner()) and self:GetOwner():GetNWInt("ti_nade", 1) or 1
+    if !TacRP.QuickNades_Index[ind] then
+        return 1
+    end
+    return ind
 end
 
-function SWEP:GetNextGrenade(ind)
+function SWEP:GetNextGrenade(ind, tries)
+    if (tries or 0) >= TacRP.QuickNades_Count then return self:GetGrenade() end
+
     ind = ind or self:GetGrenadeIndex()
 
     ind = ind + 1
@@ -218,7 +226,7 @@ function SWEP:GetNextGrenade(ind)
     end
 
     if !self:CheckGrenade(ind) then
-        return self:GetNextGrenade(ind)
+        return self:GetNextGrenade(ind, (tries or 0) + 1)
     end
 
     return self:GetGrenade(ind)
@@ -254,13 +262,18 @@ function SWEP:SelectGrenade(index, requireammo)
         end
     end
 
+    local nade = self:GetGrenade(ind)
+    if !nade then return end
+
     self:GetOwner():SetNWInt("ti_nade", ind)
-    self.Secondary.Ammo = self:GetGrenade().Ammo or "none"
+    self.Secondary.Ammo = nade.Ammo or "none"
 end
 
 function SWEP:CheckGrenade(index, checkammo)
-    index = index or (self:GetValue("PrimaryGrenade") and TacRP.QuickNades_Index[self:GetValue("PrimaryGrenade")] or self:GetOwner():GetNWInt("ti_nade", 1))
+    local pg = self:GetValue("PrimaryGrenade")
+    index = index or (pg and TacRP.QuickNades[pg] and TacRP.QuickNades[pg].Index or self:GetOwner():GetNWInt("ti_nade", 1))
     local nade = self:GetGrenade(index)
+    if !nade then return false end
     if nade.Singleton then
         return self:GetOwner():HasWeapon(nade.GrenadeWep)
     end
@@ -296,8 +309,8 @@ function SWEP:ThinkGrenade()
     if !self:IsQuickNadeAllowed() then return end
 
     if CLIENT then
-        if self:GetPrimedGrenade() and !IsValid(self.QuickNadeModel) and self:GetStartPrimedGrenadeTime() + 0.2 < CurTime() and self:GetGrenade().Model then
-            local nade = self:GetGrenade()
+        local nade = self:GetGrenade()
+        if self:GetPrimedGrenade() and !IsValid(self.QuickNadeModel) and self:GetStartPrimedGrenadeTime() + 0.2 < CurTime() and nade and nade.Model then
             local vm = self:GetVM()
 
             local model = ClientsideModel(nade.Model or "models/weapons/tacint/v_quicknade_frag.mdl")
@@ -333,8 +346,7 @@ function SWEP:ThinkGrenade()
         local selected_nade = self:GetGrenadeIndex()
         -- choose only valid grenades
         for i=1, TacRP.QuickNades_Count do
-            local target_nade = selected_nade + i
-            target_nade = ((target_nade-1) % TacRP.QuickNades_Count) + (ply:KeyDown(IN_WALK) and -1 or 1)
+            local target_nade = ((selected_nade - 1 + i * (ply:KeyDown(IN_WALK) and -1 or 1)) % TacRP.QuickNades_Count) + 1
             if self:CheckGrenade(target_nade, true) then
                 self:SelectGrenade(target_nade)
                 ply:EmitSound("tacrp/weapons/grenade/roll-" .. math.random(1, 3) .. ".wav")
