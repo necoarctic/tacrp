@@ -293,30 +293,30 @@ local function compute_stat( wep, stat_cache, index, data )
 end
 
 function SWEP:C2_Open()
-	if IsValid( c2 ) then c2:Remove() end
+	if IsValid( C2 ) then C2:Remove() end
 	local sw, sh = ScrW(), ScrH()
 	local wep = self
 	local wep_class = wep.ClassName
 	local is_grenade = wep:GetValue("PrimaryGrenade")
-	c2 = vgui.Create( "EditablePanel" )
-	c2:SetSize( sw, sh )
-	c2:Center()
-	c2:MakePopup()
-	c2:SetPopupStayAtBack( true )
-	c2:SetKeyboardInputEnabled( false )
-	-- c2.m_bDeleteOnClose = true
+	C2 = vgui.Create( "EditablePanel" )
+	C2:SetSize( sw, sh )
+	C2:Center()
+	C2:MakePopup()
+	C2:SetPopupStayAtBack( true )
+	C2:SetKeyboardInputEnabled( false )
+	-- C2.m_bDeleteOnClose = true
 	local margin = s(MARGIN_L)
-	c2:DockPadding( margin, margin, margin, margin )
+	C2:DockPadding( margin, margin, margin, margin )
 
 	do -- Close & Drop Weapon button
 		local BUTTON_SIZE = 8
-		local p_closebutton = c2:Add("DButton")
+		local p_closebutton = C2:Add("DButton")
 		p_closebutton:SetSize( s(BUTTON_SIZE), s(BUTTON_SIZE) )
 		p_closebutton:AlignRight( s(MARGIN_L) )
 		p_closebutton:AlignTop( s(MARGIN_L/2 - BUTTON_SIZE/2) )
 
 		function p_closebutton:DoClick()
-			c2:Remove()
+			C2:Remove()
 		end
 
 		function p_closebutton:Paint( w, h )
@@ -338,7 +338,7 @@ function SWEP:C2_Open()
 			return true
 		end
 
-		function c2:OnRemove()
+		function C2:OnRemove()
 			if TacRP.ConVars["autosave"]:GetBool() and TacRP.ConVars["free_atts"]:GetBool() then
 				wep:SavePreset()
 			end
@@ -351,7 +351,7 @@ function SWEP:C2_Open()
 			surface.SetFont("TacRP_STD_6")
 			local width = surface.GetTextSize(txt)
 			width = width + s(BUTTON_SIZE)
-			local p_dropweapon = c2:Add("DButton")
+			local p_dropweapon = C2:Add("DButton")
 			p_dropweapon:SetSize( width, s(BUTTON_SIZE) )
 			p_dropweapon:AlignRight( s(MARGIN_L + BUTTON_SIZE + MARGIN_S) )
 			p_dropweapon:AlignTop( s(MARGIN_L/2 - BUTTON_SIZE/2) )
@@ -381,30 +381,30 @@ function SWEP:C2_Open()
 		end
 	end
 
-	--[[ c2.Interp = 0
+	--[[ C2.Interp = 0
 
-	local align_top = c2:Add("Panel")
+	local align_top = C2:Add("Panel")
 	align_top:SetSize( sw, sh )
 	function align_top:Think()
-		c2.Interp = math.Approach(c2.Interp, 1, RealFrameTime() / .4 )
-		align_top:SetY( math.ease.InCirc( 1-c2.Interp ) * -sh/2 )
+		C2.Interp = math.Approach(C2.Interp, 1, RealFrameTime() / .4 )
+		align_top:SetY( math.ease.InCirc( 1-C2.Interp ) * -sh/2 )
 	end
 
-	local align_bottom = c2:Add("Panel")
+	local align_bottom = C2:Add("Panel")
 	align_bottom:SetSize( sw, sh )
 	function align_bottom:Think()
-		c2.Interp = math.Approach(c2.Interp, 1, RealFrameTime() / .4 )
-		align_bottom:SetY( math.ease.InCirc( 1-c2.Interp ) * -sh/2 )
+		C2.Interp = math.Approach(C2.Interp, 1, RealFrameTime() / .4 )
+		align_bottom:SetY( math.ease.InCirc( 1-C2.Interp ) * -sh/2 )
 	end
 
-	local align_left = c2:Add("Panel")
+	local align_left = C2:Add("Panel")
 	align_left:SetSize( sw, sh )
 	function align_left:Think()
-		c2.Interp = math.Approach(c2.Interp, 1, RealFrameTime() / .4 )
-		align_left:SetX( math.ease.InCirc( 1-c2.Interp ) * -sw/2 )
+		C2.Interp = math.Approach(C2.Interp, 1, RealFrameTime() / .4 )
+		align_left:SetX( math.ease.InCirc( 1-C2.Interp ) * -sw/2 )
 	end ]]
 
-	local p_hint = c2:Add("Panel")
+	local p_hint = C2:Add("Panel")
 	p_hint.CurrentID = nil
 	local wide = 160
 	p_hint:SetWide( s(wide) )
@@ -422,7 +422,7 @@ function SWEP:C2_Open()
 		self:SizeToChildren( false, true )
 	end
 
-	function c2:Think()
+	function C2:Think()
 		if !IsValid(wep) or !IsValid(wep:GetOwner()) or wep:GetOwner():GetActiveWeapon() != wep then
 			self:Remove()
 		end
@@ -520,7 +520,7 @@ function SWEP:C2_Open()
 		end
 	end
 	
-	local p_header = c2:Add("Panel")
+	local p_header = C2:Add("Panel")
 	p_header:Dock(TOP)
 	p_header:SetTall( s(MARGIN_S+24+MARGIN_S) )
 	local weapon_full_name = TacRP.GetPhrase("wep."..wep_class..".name.full")
@@ -580,7 +580,7 @@ function SWEP:C2_Open()
 		local SPACING_W = MARGIN_L
 		local SPACING_H = MARGIN_M
 		local LINE_HEIGHT = 10
-		local p_footer = c2:Add("Panel")
+		local p_footer = C2:Add("Panel")
 		p_footer:SetWide( s(308) )
 
 		local txt_desc, txt_quote
@@ -635,7 +635,7 @@ function SWEP:C2_Open()
 		end
 	end
 	
-	local p_slotlist = c2:Add("C2_ScrollPanel")
+	local p_slotlist = C2:Add("C2_ScrollPanel")
 	p_slotlist:GetCanvas():DockPadding( 0, 0, s(4), 0 ) -- scrollbar
 	p_slotlist.TopBottomPadding = false
 	p_slotlist:SetWide( s( MARGIN_S * 2 + 96 + 4 ) )
@@ -643,7 +643,7 @@ function SWEP:C2_Open()
 	p_slotlist:DockMargin( 0, s(MARGIN_S), 0, 0 )
 	-- p_slotlist.Paint = paint_box
 
-	local p_attlist = c2:Add("C2_ScrollPanel")
+	local p_attlist = C2:Add("C2_ScrollPanel")
 	p_attlist:GetCanvas():DockPadding( 0, 0, s(4), 0 ) -- scrollbar
 	p_attlist.TopBottomPadding = false
 	p_attlist:SetWide( s( MARGIN_S * 2 + 96 + 4 ) )
@@ -736,7 +736,7 @@ function SWEP:C2_Open()
 	local doll_wide = 36
 	local want_wide = 112
 
-	local p_align_right = c2:Add( "Panel" )
+	local p_align_right = C2:Add( "Panel" )
 	p_align_right:Dock(RIGHT)
 	p_align_right:SetWide( s(want_wide + doll_wide) )
 	p_align_right:DockMargin( 0, s(MARGIN_S), 0, 0 )
@@ -907,9 +907,9 @@ function SWEP:C2_Open()
 end
 
 -- reloading for development
-if IsValid( c2 ) then
-	c2:Remove()
-	c2 = nil
+if IsValid( C2 ) then
+	C2:Remove()
+	C2 = nil
 	net.Start("TacRP_togglecustomize")
 		net.WriteBool(false)
 	net.SendToServer()
@@ -921,7 +921,7 @@ if IsValid( c2 ) then
 end
 
 function SWEP:C2_Close()
-	if IsValid( c2 ) then c2:Remove() return end
+	if IsValid( C2 ) then C2:Remove() return end
 end
 
 local hide = {
