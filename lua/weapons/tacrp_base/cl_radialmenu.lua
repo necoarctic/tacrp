@@ -321,9 +321,6 @@ function SWEP:DrawGrenadeHUD()
     end
 
     if TacRP.ConVars["nademenu_click"]:GetBool() then
-
-        local binded = input.LookupBinding("grenade1")
-
         TacRP.DrawCorneredBox(tx, ty + h * 0.5 + TacRP.SS(2), w, TacRP.SS(28), col)
 
         surface.SetTextPos(tx + TacRP.SS(4), ty + h / 2 + TacRP.SS(4))
@@ -337,9 +334,7 @@ function SWEP:DrawGrenadeHUD()
             surface.DrawText( "[ MOUSE3 ] " .. TacRP.GetPhrase("hint.quicknade.pull_out") )
         end
     else
-        local binded = input.LookupBinding("grenade1")
-
-        if binded then button = TacRP.GetBind("grenade1") else button = "G" end
+        local button = TacRP.GetBind("+grenade1")
 
         TacRP.DrawCorneredBox(tx, ty + h * 0.5 + TacRP.SS(2), w, TacRP.SS(28), col)
 
