@@ -125,11 +125,12 @@ function SWEP:DrawGrenadeHUD()
                 TacRP.CursorEnabled = false
             end
             if currentnade then
-                if currentnade.Index != self:GetGrenade().Index then
+                local cur = self:GetGrenade()
+                if !cur or currentnade.Index != cur.Index then
                     self:GetOwner():EmitSound("tacrp/weapons/grenade/roll-" .. math.random(1, 3) .. ".wav")
                 end
                 net.Start("tacrp_togglenade")
-                net.WriteUInt(currentnade.Index, 4)
+                net.WriteUInt(currentnade.Index, TacRP.QuickNades_Bits)
                 net.WriteBool(false)
                 net.SendToServer()
                 self.Secondary.Ammo = currentnade.Ammo or "none"
