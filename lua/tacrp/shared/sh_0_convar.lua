@@ -1207,47 +1207,47 @@ local conVars = {
     },
     {
         name = "c2_1_h",
-        default = "340",
+        default = "0",
         client = true,
     },
     {
         name = "c2_1_s",
-        default = "0.20",
+        default = "0",
         client = true,
     },
     {
         name = "c2_1_v",
-        default = "0.40",
-        client = true,
-    },
-    {
-        name = "c2_1_a",
-        default = "0.20",
-        client = true,
-    },
-    {
-        name = "c2_2_h",
-        default = "290",
-        client = true,
-    },
-    {
-        name = "c2_2_s",
-        default = "0.20",
-        client = true,
-    },
-    {
-        name = "c2_2_v",
-        default = "1.00",
-        client = true,
-    },
-    {
-        name = "c2_2_a",
         default = "0.1",
         client = true,
     },
     {
+        name = "c2_1_a",
+        default = "0.4",
+        client = true,
+    },
+    {
+        name = "c2_2_h",
+        default = "200",
+        client = true,
+    },
+    {
+        name = "c2_2_s",
+        default = "1",
+        client = true,
+    },
+    {
+        name = "c2_2_v",
+        default = "0.75",
+        client = true,
+    },
+    {
+        name = "c2_2_a",
+        default = "0.2",
+        client = true,
+    },
+    {
         name = "c2_graddown",
-        default = "0",
+        default = "1",
         client = true,
     },
     {
