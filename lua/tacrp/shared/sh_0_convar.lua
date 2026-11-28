@@ -1729,6 +1729,77 @@ local function menu_balance_ti(panel)
     panel:Help("#tacrp.balance.weapontier.desc2")
     panel:Help("#tacrp.balance.weapontier.desc3")
 
+    header(panel, "#tacrp.balance.recoil") -- \nRecoil
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.bloommodrecoil", -- Bloom Modifies Recoil
+        command = "tacrp_altrecoil"
+    })
+    panel:ControlHelp("#tacrp.balance.bloommodrecoil.desc")
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.recoilpattern", -- Recoil Patterns
+        command = "tacrp_recoilpattern"
+    })
+    panel:ControlHelp("#tacrp.balance.recoilpattern.desc")
+
+    header(panel, "#tacrp.balance.aiming") -- \nAiming
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.crosshair", -- Enable Crosshair
+        command = "tacrp_crosshair"
+    })
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.oldschoolscopes", -- Enable Old-School Scopes
+        command = "tacrp_oldschool"
+    })
+    panel:ControlHelp("#tacrp.balance.oldschoolscopes.desc")
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.sway", -- Enable Sway
+        command = "tacrp_sway"
+    })
+    panel:ControlHelp("#tacrp.balance.sway.desc")
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.freeaim", -- Enable Free Aim
+        command = "tacrp_freeaim"
+    })
+    panel:ControlHelp("#tacrp.balance.freeaim.desc")
+
+    header(panel, "#tacrp.balance.ammoreload") -- \nAmmo & Reloading
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.infammo", -- Infinite Ammo
+        command = "tacrp_infiniteammo"
+    })
+    panel:ControlHelp("#tacrp.balance.infammo.desc")
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.inflaunchers", -- Infinite Ammo
+        command = "tacrp_infinitelaunchers"
+    })
+    panel:ControlHelp("#tacrp.balance.inflaunchers.desc")
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.infgren", -- Infinite Grenades
+        command = "tacrp_infinitegrenades"
+    })
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.dumpammo", -- Dump Ammo In Magazines
+        command = "tacrp_reload_dump"
+    })
+    panel:ControlHelp("#tacrp.balance.dumpammo.desc")
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.canjam", -- Automatically Clear Jams
+        command = "tacrp_can_jam"
+    })    
+	panel:AddControl("checkbox", {
+        label = "#tacrp.balance.autoclearjam", -- Automatically Clear Jams
+        command = "tacrp_jam_autoclear"
+    })
+	panel:ControlHelp("#tacrp.balance.autoclearjam.desc")
+    panel:AddControl("checkbox", {
+        label = "#tacrp.balance.expandammotype", -- Expanded Ammo Types
+        command = "tacrp_expandedammotypes"
+    })
+    panel:ControlHelp("#tacrp.balance.expandammotype.desc")
+end
+
+local function menu_multipliers_ti(panel)
+    header(panel, "#tacrp.mechanics.ballistics")
     panel:AddControl("slider", {
         label = "#tacrp.balance.dmg", -- Overall Damage
         command = "tacrp_mult_damage",
@@ -1783,18 +1854,7 @@ local function menu_balance_ti(panel)
     })
     panel:ControlHelp("#tacrp.balance.headshotmult.desc")
 
-
-    header(panel, "#tacrp.balance.recoil") -- \nRecoil
-    panel:AddControl("checkbox", {
-        label = "#tacrp.balance.bloommodrecoil", -- Bloom Modifies Recoil
-        command = "tacrp_altrecoil"
-    })
-    panel:ControlHelp("#tacrp.balance.bloommodrecoil.desc")
-    panel:AddControl("checkbox", {
-        label = "#tacrp.balance.recoilpattern", -- Recoil Patterns
-        command = "tacrp_recoilpattern"
-    })
-    panel:ControlHelp("#tacrp.balance.recoilpattern.desc")
+    header(panel, "#tacrp.balance.recoil")
     panel:AddControl("slider", {
         label = "#tacrp.balance.recoilkick", -- Recoil Kick
         command = "tacrp_mult_recoil_kick",
@@ -1810,26 +1870,7 @@ local function menu_balance_ti(panel)
         max = 2,
     })
 
-    header(panel, "#tacrp.balance.aiming") -- \nAiming
-    panel:AddControl("checkbox", {
-        label = "#tacrp.balance.crosshair", -- Enable Crosshair
-        command = "tacrp_crosshair"
-    })
-    panel:AddControl("checkbox", {
-        label = "#tacrp.balance.oldschoolscopes", -- Enable Old-School Scopes
-        command = "tacrp_oldschool"
-    })
-    panel:ControlHelp("#tacrp.balance.oldschoolscopes.desc")
-    panel:AddControl("checkbox", {
-        label = "#tacrp.balance.sway", -- Enable Sway
-        command = "tacrp_sway"
-    })
-    panel:ControlHelp("#tacrp.balance.sway.desc")
-    panel:AddControl("checkbox", {
-        label = "#tacrp.balance.freeaim", -- Enable Free Aim
-        command = "tacrp_freeaim"
-    })
-    panel:ControlHelp("#tacrp.balance.freeaim.desc")
+    header(panel, "#tacrp.balance.aiming")
     panel:AddControl("slider", {
         label = "#tacrp.balance.adstime", -- Aim Down Sights Time Multiplier
         command = "tacrp_mult_aimdownsights",
@@ -1868,7 +1909,6 @@ local function menu_balance_ti(panel)
         max = 3,
     })
     panel:ControlHelp("#tacrp.balance.shotgunspread.desc")
-
 
     header(panel, "#tacrp.balance.ammoreload") -- \nAmmo & Reloading
     panel:AddControl("checkbox", {
@@ -1969,11 +2009,6 @@ local function menu_mechanics_ti(panel)
         label = "#tacrp.mechanics.penaltymove", -- Movement Penalty
         command = "tacrp_penalty_move"
     })
-    panel:ControlHelp("#tacrp.mechanics.penaltymove.desc")
-    panel:AddControl("checkbox", {
-        label = "#tacrp.mechanics.penaltyfire", -- Firing Movement Penalty
-        command = "tacrp_penalty_firing"
-    })
     panel:ControlHelp("#tacrp.mechanics.penaltyfire.desc")
     panel:AddControl("checkbox", {
         label = "#tacrp.mechanics.penaltyaim", -- Aiming Movement Penalty
@@ -1983,6 +2018,11 @@ local function menu_mechanics_ti(panel)
     panel:AddControl("checkbox", {
         label = "#tacrp.mechanics.penaltyreload", -- Reload Movement Penalty
         command = "tacrp_penalty_reload"
+    })
+    panel:ControlHelp("#tacrp.mechanics.penaltymove.desc")
+    panel:AddControl("checkbox", {
+        label = "#tacrp.mechanics.penaltyfire", -- Firing Movement Penalty
+        command = "tacrp_penalty_firing"
     })
     panel:ControlHelp("#tacrp.mechanics.penaltyreload.desc")
     panel:AddControl("checkbox", {
@@ -2283,6 +2323,9 @@ local clientmenus_ti = {
     },
     {
         text = "#tacrp.settings.server", func = menu_server_ti
+    },
+    {
+        text = "#tacrp.settings.multipliers", func = menu_multipliers_ti
     },
     {
         text = "#tacrp.settings.mechanics", func = menu_mechanics_ti
