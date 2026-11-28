@@ -105,12 +105,14 @@ function ENT:Initialize()
         emitter:Finish()
     end
 
-    if TacRP.ConVars["smoke_affectnpcs"]:GetBool() then
-        self:EnableCustomCollisions()
-        self:SetCustomCollisionCheck(true)
-        self:CollisionRulesChanged()
-    else
-        self:SetSolid(SOLID_NONE)
+    if SERVER then
+        if TacRP.ConVars["smoke_affectnpcs"]:GetBool() then
+            self:EnableCustomCollisions()
+            self:SetCustomCollisionCheck(true)
+            self:CollisionRulesChanged()
+        else
+            self:SetSolid(SOLID_NONE)
+        end
     end
 
     self.dt = CurTime() + self.Life + self.BillowTime
